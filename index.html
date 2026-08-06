@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G-Tech AnthoFix Engineering - Cloud Portal & OCR System</title>
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- EMAIL JS API SCRIPT FOR GMAIL INTEGRATION -->
+   <!-- External Dependencies (SDKs) -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+<!-- G-Tech AnthoFix Local JavaScript Modules (7 Files) -->
+<script src="./js/config.js" defer></script>
+<script src="./js/auth.js" defer></script>
+<script src="./js/firebase-init.js" defer></script>
+<script src="./js/diagnostics.js" defer></script>
+<script src="./js/receipt-audit.js" defer></script>
+<script src="./js/notifications.js" defer></script>
+<script src="./js/app.js" defer></script>
+ 
+    <style>
+        :root {
+            --bg-main: #0a0f1d;
+            --bg-card: #151d33;
+            --bg-input: #0e1628;
+            --accent-primary: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.35);
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #2a3655;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem 1rem; }
+        .hidden { display: none !important; }
+
+        .progress-bar-container { width: 100%; max-width: 700px; margin-bottom: 2rem; }
+        .progress-steps { display: flex; justify-content: space-between; position: relative; }
+        .progress-steps::before {
+            content: ''; position: absolute; top: 50%; left: 0; transform: translateY(-50%);
+            width: 100%; height: 4px; background: var(--border-color); z-index: 1;
+        }
+        .progress-line-fill {
+            position: absolute; top: 50%; left: 0; transform: translateY(-50%);
+            height: 4px; background: var(--accent-primary); z-index: 1; transition: var(--transition); width: 0%;
+        }
+        .step-circle {
+            width: 44px; height: 44px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border-color);
+            display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--text-muted);
+            position: relative; z-index: 2; transition: var(--transition); font-size: 0.95rem;
+        }
+        .step-circle.active { border-color: var(--accent-primary); color: var(--accent-primary); background: var(--bg-main); box-shadow: 0 0 15px var(--accent-glow); }
+        .step-circle.completed { background: var(--accent-primary); color: #000; border-color: var(--accent-primary); }
+
+        .card {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
+            padding: 2.2rem; width: 100%; max-width: 700px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .brand-header { text-align: center; margin-bottom: 1.8rem; }
+        .brand-header i { font-size: 2.6rem; color: var(--accent-primary); margin-bottom: 0.5rem; }
+        .brand-header h2 { font-size: 1.65rem; font-weight: 800; letter-spacing: -0.5px; }
+        .brand-header p { color: var(--text-muted); font-size: 0.88rem; margin-top: 0.3rem; }
+
+        .auth-toggle { display: flex; background: var(--bg-input); border-radius: var(--radius-md); margin-bottom: 1.5rem; border: 1px solid var(--border-color); overflow: hidden; }
+        .auth-tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: var(--text-muted); transition: var(--transition); }
+        .auth-tab.active { background: var(--accent-primary); color: #000; }
+
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+        .form-group { margin-bottom: 1.2rem; position: relative; }
+        .form-group label { display: block; margin-bottom: 0.4rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; }
+        
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-wrapper i.input-icon { position: absolute; left: 14px; color: var(--text-muted); font-size: 0.95rem; z-index: 2; }
+        .input-wrapper .form-control { padding-left: 42px; }
+        
+        .password-toggle { position: absolute; right: 14px; color: var(--text-muted); cursor: pointer; font-size: 1rem; transition: var(--transition); z-index: 5; }
+        .password-toggle:hover { color: var(--accent-primary); }
+
+        .form-control, select.form-control {
+            width: 100%; padding: 12px 14px; background: var(--bg-input); border: 1px solid var(--border-color);
+            border-radius: var(--radius-md); color: var(--text-main); font-size: 0.92rem; outline: none; transition: var(--transition);
+        }
+        .form-control:focus, select.form-control:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-glow); }
+        select.form-control option { background: var(--bg-card); color: var(--text-main); }
+
+        .btn {
+            width: 100%; padding: 14px; border: none; border-radius: var(--radius-md); font-weight: 700;
+            font-size: 0.98rem; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn:disabled { background-color: #334155; color: #64748b; cursor: not-allowed; }
+        .btn-primary { background: var(--accent-primary); color: #000; }
+        .btn-primary:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+        .btn-success { background: var(--accent-success); color: #fff; }
+        .btn-warning { background: var(--accent-warning); color: #000; }
+
+        .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        .role-card {
+            background: var(--bg-input); border: 2px solid var(--border-color); border-radius: var(--radius-md);
+            padding: 1.2rem 1rem; text-align: center; cursor: pointer; transition: var(--transition);
+        }
+        .role-card i { font-size: 2.2rem; color: var(--text-muted); margin-bottom: 0.5rem; transition: var(--transition); }
+        .role-card.selected { border-color: var(--accent-primary); background: rgba(56, 189, 248, 0.08); }
+        .role-card.selected i { color: var(--accent-primary); }
+
+        .bank-details-box { background: rgba(56, 189, 248, 0.05); border: 1px dashed var(--accent-primary); border-radius: var(--radius-md); padding: 1.2rem; margin-bottom: 1.5rem; }
+        .bank-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.88rem; }
+        .bank-row:last-child { margin-bottom: 0; }
+        .bank-label { color: var(--text-muted); }
+        .bank-val { font-weight: bold; color: var(--accent-primary); }
+
+        .ocr-box { background: #020617; border: 1px dashed var(--accent-primary); padding: 12px; border-radius: var(--radius-md); margin-top: 12px; font-size: 13px; }
+        .token-display { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-success); color: #4ade80; padding: 12px; border-radius: var(--radius-md); margin-top: 16px; word-break: break-all; }
+        
+        #console-box { margin-top: 16px; background: #020617; color: var(--accent-primary); padding: 10px; border-radius: 6px; font-family: monospace; font-size: 11px; white-space: pre-wrap; max-height: 140px; overflow-y: auto; border: 1px solid var(--border-color); }
+        #preview-img { max-width: 100%; max-height: 120px; margin-top: 8px; border-radius: 4px; display: none; border: 1px solid var(--accent-primary); }
+
+        .live-alert-box { background: rgba(245, 158, 11, 0.1); border: 1px solid var(--accent-warning); border-radius: var(--radius-md); padding: 1rem; margin-top: 1.2rem; font-size: 0.85rem; color: #fbbf24; }
+        .timer-box { background: var(--bg-input); border: 1px solid var(--accent-success); border-radius: var(--radius-md); padding: 1.2rem; text-align: center; margin-bottom: 1.5rem; }
+        .timer-digit { font-size: 2rem; font-weight: 800; color: var(--accent-success); font-family: monospace; margin-top: 0.3rem; }
+
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
+        .toast { background: var(--bg-card); color: #fff; padding: 1rem 1.4rem; border-left: 4px solid var(--accent-primary); border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); margin-top: 10px; }
+        
+        @media (max-width: 600px) { .form-grid-2 { grid-template-columns: 1fr; gap: 0; } }
+    </style>
+
+    <!-- LOAD MODULAR JAVASCRIPT FILES IN EXACT CHRONOLOGICAL ORDER -->
+    <script src="js/config.js" defer></script>
+    <script src="js/api.js" type="module" defer></script>
+    <script src="js/auth.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/theme.js" defer></script>
+    <script src="js/alert.js" defer></script>
+    <script src="js/main.js" defer></script>
+</head>
+<body>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-bar-container">
+        <div class="progress-steps">
+            <div class="progress-line-fill" id="progress-line"></div>
+            <div class="step-circle active" id="step-dot-1">1</div>
+            <div class="step-circle" id="step-dot-2">2</div>
+            <div class="step-circle" id="step-dot-3">3</div>
+            <div class="step-circle" id="step-dot-4">4</div>
+        </div>
+    </div>
+
+    <!-- PAGE 1: USER AUTH -->
+    <div id="page-1" class="card">
+        <div class="brand-header">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <h2>G-Tech Cloud Portal</h2>
+            <p>Page 1 of 4: Secure Cloud Account Setup</p>
+        </div>
+        <div class="auth-toggle">
+            <div class="auth-tab active" id="tab-signup" onclick="Portal.switchAuthMode('signup')">Create Account</div>
+            <div class="auth-tab" id="tab-login" onclick="Portal.switchAuthMode('login')">Log In</div>
+        </div>
+        <form id="form-page-1" onsubmit="Portal.handlePage1Submit(event)">
+            <div class="form-grid-2" id="grid-username-email">
+                <div class="form-group signup-only">
+                    <label for="p1-username">Username / Handle</label>
+                    <div class="input-wrapper"><i class="fa-solid fa-user input-icon"></i><input type="text" id="p1-username" class="form-control" placeholder="e.g. godfrey_tech" required></div>
+                </div>
+                <div class="form-group">
+                    <label for="p1-email">Email Address</label>
+                    <div class="input-wrapper"><i class="fa-solid fa-envelope input-icon"></i><input type="email" id="p1-email" class="form-control" value="godfreyanthony3245.eng@gmail.com" required></div>
+                </div>
+            </div>
+            <div class="form-group signup-only">
+                <label for="p1-phone">Mobile Phone Number</label>
+                <div class="input-wrapper"><i class="fa-solid fa-phone input-icon"></i><input type="tel" id="p1-phone" class="form-control" placeholder="08012345678" required></div>
+            </div>
+            <div class="form-grid-2" id="grid-passwords">
+                <div class="form-group">
+                    <label for="p1-password">Password (Min. 8 chars)</label>
+                    <div class="input-wrapper"><i class="fa-solid fa-lock input-icon"></i><input type="password" id="p1-password" class="form-control" required><i class="fa-solid fa-eye password-toggle" onclick="Portal.togglePasswordVisibility('p1-password', this)"></i></div>
+                </div>
+                <div class="form-group signup-only">
+                    <label for="p1-confirm-password">Confirm Password</label>
+                    <div class="input-wrapper"><i class="fa-solid fa-lock input-icon"></i><input type="password" id="p1-confirm-password" class="form-control" required><i class="fa-solid fa-eye password-toggle" onclick="Portal.togglePasswordVisibility('p1-confirm-password', this)"></i></div>
+                </div>
+            </div>
+            <button type="submit" id="btn-page-1-submit" class="btn btn-primary"><i class="fa-solid fa-arrow-right"></i> Proceed to Role & Location</button>
+        </form>
+    </div>
+
+    <!-- PAGE 2: LOCATION -->
+    <div id="page-2" class="card hidden">
+        <div class="brand-header"><i class="fa-solid fa-sliders"></i><h2>Profile Category & Location</h2></div>
+        <form id="form-page-2" onsubmit="Portal.handlePage2Submit(event)">
+            <div class="role-grid">
+                <div class="role-card selected" id="role-cust-card" onclick="Portal.selectRole('Customer')"><i class="fa-solid fa-user-gear"></i><h4>Customer</h4></div>
+                <div class="role-card" id="role-tech-card" onclick="Portal.selectRole('Repairer')"><i class="fa-solid fa-screwdriver-wrench"></i><h4>Repairer Engineer</h4></div>
+            </div>
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label for="p2-country">Country</label>
+                    <div class="input-wrapper"><i class="fa-solid fa-globe input-icon"></i><select id="p2-country" class="form-control" onchange="Portal.onCountryChange()" required><option value="Nigeria">Nigeria</option><option value="Ghana">Ghana</option><option value="Other">Other</option></select></div>
+                </div>
+                <div class="form-group">
+                    <label for="p2-state">State / Province</label>
+                    <div class="input-wrapper"><i class="fa-solid fa-map-location-dot input-icon"></i><select id="p2-state" class="form-control" onchange="Portal.onStateChange()" required></select></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="p2-lga">Local Government Area</label>
+                <div class="input-wrapper"><i class="fa-solid fa-city input-icon"></i><select id="p2-lga" class="form-control" required></select></div>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-arrow-right"></i> Save Location & Proceed to Payment</button>
+        </form>
+    </div>
+
+    <!-- PAGE 3: PAYMENT SLIP & OCR SCANNING -->
+    <div id="page-3" class="card hidden">
+        <div class="brand-header"><i class="fa-solid fa-building-columns"></i><h2>Subscription Bank Deposit & OCR Verification</h2></div>
+        
+        <div class="bank-details-box">
+            <div class="bank-row"><span class="bank-label">Bank:</span><span class="bank-val">G-Tech Enterprise Bank</span></div>
+            <div class="bank-row"><span class="bank-label">Account Number:</span><span class="bank-val">0192837465</span></div>
+            <div class="bank-row"><span class="bank-label">Fee:</span><span class="bank-val">₦150</span></div>
+        </div>
+
+        <form id="slip-form" onsubmit="Portal.handlePage3Submit(event)">
+            <div class="form-group">
+                <label for="slip_file">Upload Payment Slip from Gallery</label>
+                <div class="input-wrapper"><i class="fa-solid fa-file-arrow-up input-icon"></i><input type="file" id="slip_file" class="form-control" accept="image/*" required onchange="Portal.handleFileUpload(event)"></div>
+                <img id="preview-img" alt="Gallery Slip Preview">
+            </div>
+
+            <!-- Live OCR Output Display -->
+            <div class="ocr-box">
+                <strong>Extracted Transaction ID / Numbers:</strong>
+                <div id="ocr-result" style="color: #38bdf8; margin-top: 4px;">No image scanned yet...</div>
+            </div>
+
+            <button type="submit" id="send-btn" class="btn btn-primary" style="margin-top: 1rem;" disabled><i class="fa-solid fa-paper-plane"></i> Scan Image & Submit for Verification</button>
+        </form>
+
+        <!-- Step 2: Verification Key Entry -->
+        <div id="verify-section" style="display:none; margin-top: 20px; background: #020617; padding: 16px; border-radius: 8px; border: 1px solid #334155;">
+            <label for="admin_code" style="color: #38bdf8; font-size: 13px;">Enter Admin Approval Code (Sent after verification):</label>
+            <input type="text" id="admin_code" class="form-control" placeholder="e.g. 782910" maxlength="6" style="text-align: center; font-size: 18px; letter-spacing: 4px; margin-top: 8px;">
+            <button type="button" id="verify-btn" class="btn btn-success" style="margin-top: 10px;" onclick="Portal.verifyAdminCode()"><i class="fa-solid fa-shield-check"></i> Verify Admin Code & Grant Token</button>
+        </div>
+
+        <div id="console-box">System ready. Select a payment slip photo...</div>
+
+        <div class="live-alert-box">
+            <p><i class="fa-solid fa-bell"></i> Admin Notification Engine:</p>
+            <button class="btn btn-warning" onclick="Portal.triggerGmailNotification()" id="gmail-btn" style="margin-top: 0.8rem;"><i class="fa-solid fa-envelope"></i> Send Real Gmail Notification to Owner</button>
+        </div>
+    </div>
+
+    <!-- PAGE 4: SUCCESS TOKEN & TIMER -->
+    <div id="page-4" class="card hidden">
+        <div class="brand-header"><i class="fa-solid fa-shield-check" style="color: var(--accent-success);"></i><h2>Activation Complete</h2></div>
+        
+        <div id="token-display" class="token-display" style="display:none; margin-bottom: 1rem;">
+            <strong>STATUS: TRANSACTION VERIFIED!</strong><br>
+            <span id="token-text"></span>
+        </div>
+
+        <div id="activation-status-box">
+            <div class="timer-box"><div style="font-size: 0.85rem;">Cloud Status: Active</div><div class="timer-digit" id="countdown-timer">30d 00h 00m 00s</div></div>
+            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-success); padding: 1.2rem; border-radius: var(--radius-md); text-align: center;">
+                <h4 style="color: var(--accent-success); margin-bottom: 0.5rem;">Secure Cloud Account Permanent!</h4>
+                <a href="https://github.com/godfreyanthony3245eng-lab" target="_blank" style="color: var(--accent-primary);">Enter Lab Repository</a>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="compressor-canvas" style="display:none;"></canvas>
+    <div id="toast-container"></div>
+</body>
+</html>
