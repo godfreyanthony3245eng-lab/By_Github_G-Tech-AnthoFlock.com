@@ -1,289 +1,812 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>G-Tech AnthoFix Engineering - Cloud Portal & OCR System</title>
-    <!-- FontAwesome 6 Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- EMAIL JS API SCRIPT FOR GMAIL INTEGRATION -->
-   <!-- External Dependencies (SDKs) -->
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>G-Tech Anto Flock · Pro IDE</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #090d16;
+      --panel: #161b22;
+      --border: #30363d;
+      --text: #ffffff;
+      --active-line: rgba(56,139,253,0.15);
+      --accent: #38bdf8;
+      --orange: #fb923c;
+      --green: #238636;
+      --purple: #8957e5;
+    }
+    body {
+      font-family: 'Fira Code', 'Consolas', monospace;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      user-select: none;
+    }
+    header {
+      height: 44px;
+      background: var(--panel);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    .title { font-size: 13px; font-weight: bold; color: var(--accent); display: flex; align-items: center; gap: 6px; }
+    .title button {
+      background: #21262d; border: 1px solid var(--border);
+      color: var(--accent); padding: 3px 8px; font-size: 10px;
+      border-radius: 4px; cursor: pointer; font-family: inherit;
+    }
+    .title button:hover { background: #30363d; }
+    .header-controls { display: flex; align-items: center; gap: 6px; }
+    .ai-badge {
+      font-size: 11px; padding: 4px 10px; border-radius: 20px;
+      font-weight: 600; background: var(--green); color: #fff;
+      cursor: pointer; white-space: nowrap; border: none; font-family: inherit;
+    }
+    .tab-bar {
+      height: 32px; background: #0d1117; display: flex;
+      align-items: center; border-bottom: 1px solid var(--border);
+      padding: 0 8px; gap: 4px; overflow-x: auto; flex-shrink: 0;
+      z-index: 10;
+    }
+    .tab-item {
+      background: var(--panel); color: #8b949e;
+      border: 1px solid var(--border); border-bottom: none;
+      border-radius: 6px 6px 0 0; padding: 4px 12px;
+      font-size: 11px; display: flex; align-items: center;
+      gap: 6px; cursor: pointer; white-space: nowrap;
+    }
+    .tab-item.active { background: var(--bg); color: var(--accent); border-color: var(--accent); font-weight: bold; }
+    .tab-close { font-size: 11px; color: #ff7b72; padding: 0 4px; border-radius: 50%; }
+    .tab-close:hover { background: rgba(255,123,114,0.2); }
+    .btn-add-file {
+      background: #21262d; color: var(--accent); border: 1px solid var(--border);
+      padding: 2px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; font-weight: bold;
+    }
+    
+    /* Workspace Area */
+    .workspace { display: flex; flex: 1; height: calc(100vh - 232px); overflow: hidden; position: relative; }
+    .workspace.full-height { height: calc(100vh - 76px); }
+    .editor-section, .preview-section { flex: 1; height: 100%; display: flex; flex-direction: column; min-width: 0; }
+    .preview-section { border-left: 2px solid var(--border); background: #fff; }
+    .editor-wrapper { position: relative; flex: 1; display: flex; overflow: hidden; background: var(--bg); }
+    
+    /* Dynamic Gutter & Code Alignment */
+    .line-gutter {
+      width: 44px; background: var(--panel); color: #484f58;
+      text-align: right; padding: 12px 6px 12px 0; font-size: 12px;
+      line-height: 20px; user-select: none; border-right: 1px solid var(--border);
+      overflow: hidden; flex-shrink: 0; font-family: inherit;
+    }
+    .line-gutter .line-num { display: block; padding-right: 4px; }
+    .line-gutter .active-line { color: var(--accent); font-weight: bold; background: var(--active-line); }
+    .code-container { position: relative; flex: 1; height: 100%; overflow: hidden; }
+    
+    #code-input, #highlight-layer {
+      width: 100%; height: 100%; padding: 12px 16px;
+      font-family: inherit; font-size: 12px; line-height: 20px;
+      white-space: pre; word-wrap: normal; border: none;
+      outline: none; background: transparent; position: absolute;
+      top: 0; left: 0; margin: 0; tab-size: 2; box-sizing: border-box;
+    }
+    #code-input {
+      color: transparent; caret-color: var(--accent); z-index: 2;
+      resize: none; -webkit-text-fill-color: transparent; overflow: auto;
+    }
+    #highlight-layer { color: var(--text); z-index: 1; pointer-events: none; overflow: hidden; }
+    #highlight-content { font-family: inherit; font-size: inherit; line-height: inherit; display: block; white-space: pre; }
+    
+    /* Autocomplete Box */
+    #suggest-box {
+      position: absolute; display: none; z-index: 20;
+      background: var(--panel); border: 1px solid var(--accent);
+      border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+      font-size: 11px; max-height: 160px; overflow-y: auto; min-width: 180px;
+    }
+    .suggest-item { padding: 5px 12px; cursor: pointer; color: #c9d1d9; border-bottom: 1px solid #21262d; display: flex; justify-content: space-between; }
+    .suggest-item.selected, .suggest-item:hover { background: #1f6feb; color: #fff; }
 
-<!-- G-Tech AnthoFix Local JavaScript Modules (7 Files) -->
-<script src="./js/config.js" defer></script>
-<script src="./js/auth.js" defer></script>
-<script src="./js/firebase-init.js" defer></script>
-<script src="./js/diagnostics.js" defer></script>
-<script src="./js/receipt-audit.js" defer></script>
-<script src="./js/notifications.js" defer></script>
-<script src="./js/app.js" defer></script>
- 
-    <style>
-        :root {
-            --bg-main: #0a0f1d;
-            --bg-card: #151d33;
-            --bg-input: #0e1628;
-            --accent-primary: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.35);
-            --accent-success: #10b981;
-            --accent-warning: #f59e0b;
-            --accent-danger: #ef4444;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #2a3655;
-            --radius-lg: 16px;
-            --radius-md: 10px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+    /* Token Highlighting Colors */
+    .st-html-tag { color: #ff7b72 !important; font-weight: bold; }
+    .st-html-attr { color: #ffa657 !important; }
+    .st-html-val { color: #a5d6ff !important; }
+    .st-js-kw { color: #ff7b72 !important; font-weight: bold; }
+    .st-bool { color: #ff7b72 !important; font-weight: bold; }
+    .st-num { color: #7ee787 !important; }
+    .st-str { color: #a5d6ff !important; }
+    .st-comment { color: #8b949e !important; font-style: italic; }
+    .st-sym-op-primary { color: #38bdf8 !important; font-weight: bold; }
+    .st-sym-op-secondary { color: #fb923c !important; font-weight: bold; }
+    .st-meta-doctype { color: #8b949e !important; font-style: italic; }
+    .st-css-prop { color: #d2a8ff !important; }
+    .st-css-val { color: #79c0ff !important; }
+    .st-css-unit { color: #7ee787 !important; }
+    .st-css-selector { color: #ffa657 !important; }
+    .st-sym-brace { color: #f2cc60 !important; }
+    .st-sym-paren { color: #d2a8ff !important; }
+    .st-sym-bracket { color: #79c0ff !important; }
+    .st-sym-term { color: #8b949e !important; }
+    .st-plain { color: #c9d1d9 !important; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem 1rem; }
-        .hidden { display: none !important; }
+    /* Toast Modal */
+    #custom-alert-box {
+      position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+      background: var(--panel); border: 1px solid var(--accent); color: #fff;
+      padding: 12px 24px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      z-index: 9999; font-size: 13px; font-family: inherit; display: flex;
+      align-items: center; gap: 12px; transition: top 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+    #custom-alert-box.show { top: 20px; }
+    #custom-alert-box button {
+      background: var(--accent); color: #0d1117; border: none;
+      padding: 4px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;
+    }
 
-        .progress-bar-container { width: 100%; max-width: 700px; margin-bottom: 2rem; }
-        .progress-steps { display: flex; justify-content: space-between; position: relative; }
-        .progress-steps::before {
-            content: ''; position: absolute; top: 50%; left: 0; transform: translateY(-50%);
-            width: 100%; height: 4px; background: var(--border-color); z-index: 1;
-        }
-        .progress-line-fill {
-            position: absolute; top: 50%; left: 0; transform: translateY(-50%);
-            height: 4px; background: var(--accent-primary); z-index: 1; transition: var(--transition); width: 0%;
-        }
-        .step-circle {
-            width: 44px; height: 44px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border-color);
-            display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--text-muted);
-            position: relative; z-index: 2; transition: var(--transition); font-size: 0.95rem;
-        }
-        .step-circle.active { border-color: var(--accent-primary); color: var(--accent-primary); background: var(--bg-main); box-shadow: 0 0 15px var(--accent-glow); }
-        .step-circle.completed { background: var(--accent-primary); color: #000; border-color: var(--accent-primary); }
+    /* Fixed Custom Keyboard - Always Present */
+    .full-keyboard {
+      height: 158px; background: var(--panel); border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; padding: 3px; gap: 3px; flex-shrink: 0;
+      z-index: 10;
+    }
+    .kb-row { display: flex; width: 100%; gap: 2px; flex: 1; }
+    .k-btn {
+      background: #21262d; color: var(--text); border: 1px solid var(--border);
+      border-radius: 4px; font-family: inherit; font-size: 12px; font-weight: bold;
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; cursor: pointer; user-select: none; position: relative;
+    }
+    .k-btn:active { background: var(--accent); color: #0d1117; }
+    .k-btn .sub-num { font-size: 8px; color: var(--accent); position: absolute; top: 1px; right: 3px; pointer-events: none; }
+    .k-btn.wide { flex: 1.5; background: #30363d; }
+    .k-btn.space { flex: 3.5; background: #1f6feb; color: #fff; }
+    .k-btn.action { background: var(--green); color: #fff; }
+    .k-btn.type-mode { background: var(--purple); color: #fff; font-size: 10px; }
 
-        .card {
-            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
-            padding: 2.2rem; width: 100%; max-width: 700px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            animation: fadeIn 0.4s ease-out;
-        }
+    /* Drawer Console */
+    .console-box {
+      height: 28px; background: #0d1117; border-top: 1px solid var(--border);
+      padding: 4px 12px; overflow-y: auto; font-size: 11px;
+      font-family: inherit; color: #8b949e; flex-shrink: 0;
+      display: flex; flex-direction: column; transition: height 0.2s ease;
+      z-index: 10;
+    }
+    .console-box.expanded { height: 110px; }
+    .console-header {
+      display: flex; justify-content: space-between; align-items: center;
+      cursor: pointer; font-weight: bold; color: var(--accent); user-select: none;
+    }
+    .console-logs { display: flex; flex-direction: column; margin-top: 4px; }
+    .console-box .log-entry { border-bottom: 1px solid #21262d; padding: 2px 0; font-family: inherit; }
+    .console-box .log-error { color: #ff7b72; }
+    .console-box .log-warn { color: #f2cc60; }
+    .console-box .log-info { color: var(--accent); }
+    .console-box .log-success { color: #7ee787; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    iframe { width: 100%; height: 100%; border: none; }
 
-        .brand-header { text-align: center; margin-bottom: 1.8rem; }
-        .brand-header i { font-size: 2.6rem; color: var(--accent-primary); margin-bottom: 0.5rem; }
-        .brand-header h2 { font-size: 1.65rem; font-weight: 800; letter-spacing: -0.5px; }
-        .brand-header p { color: var(--text-muted); font-size: 0.88rem; margin-top: 0.3rem; }
-
-        .auth-toggle { display: flex; background: var(--bg-input); border-radius: var(--radius-md); margin-bottom: 1.5rem; border: 1px solid var(--border-color); overflow: hidden; }
-        .auth-tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: var(--text-muted); transition: var(--transition); }
-        .auth-tab.active { background: var(--accent-primary); color: #000; }
-
-        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
-        .form-group { margin-bottom: 1.2rem; position: relative; }
-        .form-group label { display: block; margin-bottom: 0.4rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; }
-        
-        .input-wrapper { position: relative; display: flex; align-items: center; }
-        .input-wrapper i.input-icon { position: absolute; left: 14px; color: var(--text-muted); font-size: 0.95rem; z-index: 2; }
-        .input-wrapper .form-control { padding-left: 42px; }
-        
-        .password-toggle { position: absolute; right: 14px; color: var(--text-muted); cursor: pointer; font-size: 1rem; transition: var(--transition); z-index: 5; }
-        .password-toggle:hover { color: var(--accent-primary); }
-
-        .form-control, select.form-control {
-            width: 100%; padding: 12px 14px; background: var(--bg-input); border: 1px solid var(--border-color);
-            border-radius: var(--radius-md); color: var(--text-main); font-size: 0.92rem; outline: none; transition: var(--transition);
-        }
-        .form-control:focus, select.form-control:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-glow); }
-        select.form-control option { background: var(--bg-card); color: var(--text-main); }
-
-        .btn {
-            width: 100%; padding: 14px; border: none; border-radius: var(--radius-md); font-weight: 700;
-            font-size: 0.98rem; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .btn:disabled { background-color: #334155; color: #64748b; cursor: not-allowed; }
-        .btn-primary { background: var(--accent-primary); color: #000; }
-        .btn-primary:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
-        .btn-success { background: var(--accent-success); color: #fff; }
-        .btn-warning { background: var(--accent-warning); color: #000; }
-
-        .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-        .role-card {
-            background: var(--bg-input); border: 2px solid var(--border-color); border-radius: var(--radius-md);
-            padding: 1.2rem 1rem; text-align: center; cursor: pointer; transition: var(--transition);
-        }
-        .role-card i { font-size: 2.2rem; color: var(--text-muted); margin-bottom: 0.5rem; transition: var(--transition); }
-        .role-card.selected { border-color: var(--accent-primary); background: rgba(56, 189, 248, 0.08); }
-        .role-card.selected i { color: var(--accent-primary); }
-
-        .bank-details-box { background: rgba(56, 189, 248, 0.05); border: 1px dashed var(--accent-primary); border-radius: var(--radius-md); padding: 1.2rem; margin-bottom: 1.5rem; }
-        .bank-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.88rem; }
-        .bank-row:last-child { margin-bottom: 0; }
-        .bank-label { color: var(--text-muted); }
-        .bank-val { font-weight: bold; color: var(--accent-primary); }
-
-        .ocr-box { background: #020617; border: 1px dashed var(--accent-primary); padding: 12px; border-radius: var(--radius-md); margin-top: 12px; font-size: 13px; }
-        .token-display { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-success); color: #4ade80; padding: 12px; border-radius: var(--radius-md); margin-top: 16px; word-break: break-all; }
-        
-        #console-box { margin-top: 16px; background: #020617; color: var(--accent-primary); padding: 10px; border-radius: 6px; font-family: monospace; font-size: 11px; white-space: pre-wrap; max-height: 140px; overflow-y: auto; border: 1px solid var(--border-color); }
-        #preview-img { max-width: 100%; max-height: 120px; margin-top: 8px; border-radius: 4px; display: none; border: 1px solid var(--accent-primary); }
-
-        .live-alert-box { background: rgba(245, 158, 11, 0.1); border: 1px solid var(--accent-warning); border-radius: var(--radius-md); padding: 1rem; margin-top: 1.2rem; font-size: 0.85rem; color: #fbbf24; }
-        .timer-box { background: var(--bg-input); border: 1px solid var(--accent-success); border-radius: var(--radius-md); padding: 1.2rem; text-align: center; margin-bottom: 1.5rem; }
-        .timer-digit { font-size: 2rem; font-weight: 800; color: var(--accent-success); font-family: monospace; margin-top: 0.3rem; }
-
-        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
-        .toast { background: var(--bg-card); color: #fff; padding: 1rem 1.4rem; border-left: 4px solid var(--accent-primary); border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); margin-top: 10px; }
-        
-        @media (max-width: 600px) { .form-grid-2 { grid-template-columns: 1fr; gap: 0; } }
-    </style>
-
-    <!-- LOAD MODULAR JAVASCRIPT FILES IN EXACT CHRONOLOGICAL ORDER -->
-    <script src="js/config.js" defer></script>
-    <script src="js/api.js" type="module" defer></script>
-    <script src="js/auth.js" defer></script>
-    <script src="js/ui.js" defer></script>
-    <script src="js/theme.js" defer></script>
-    <script src="js/alert.js" defer></script>
-    <script src="js/main.js" defer></script>
+    /* Face-to-Face Face Overlay Chat Webpage */
+    .ai-chat-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: #090d16; z-index: 1000;
+      display: none; flex-direction: column; padding: 16px;
+      overflow-y: auto;
+    }
+    .ai-chat-overlay.active { display: flex; }
+    .ai-chat-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 12px;
+    }
+    .ai-chat-header h1 { color: var(--accent); font-size: 18px; }
+    .ai-chat-back {
+      background: var(--panel); border: 1px solid var(--border);
+      color: #fff; padding: 6px 14px; border-radius: 6px;
+      cursor: pointer; font-family: inherit; font-size: 12px;
+    }
+    
+    /* Animated Face Avatar */
+    .ai-avatar-container {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; background: var(--panel); padding: 14px; border-radius: 8px;
+      border: 1px solid var(--border); margin-bottom: 12px;
+    }
+    .ai-avatar {
+      width: 52px; height: 52px; border-radius: 50%; background: var(--accent);
+      display: flex; align-items: center; justify-content: center; font-size: 26px;
+      box-shadow: 0 0 15px var(--accent); transition: transform 0.2s;
+    }
+    .ai-avatar.speaking { transform: scale(1.15); box-shadow: 0 0 25px var(--green); }
+    
+    .ai-chat-messages {
+      flex: 1; overflow-y: auto; max-height: 52vh;
+      background: #0d1117; border-radius: 8px; padding: 12px;
+      margin-bottom: 12px; font-size: 13px; line-height: 1.6;
+      border: 1px solid var(--border);
+    }
+    .ai-chat-messages .msg { margin-bottom: 10px; padding: 8px 12px; border-radius: 6px; }
+    .ai-chat-messages .user { color: var(--accent); background: rgba(56,139,253,0.1); }
+    .ai-chat-messages .assistant { color: #7ee787; background: rgba(126,231,135,0.08); }
+    .ai-chat-messages .system { color: #f2cc60; background: rgba(242,204,96,0.08); font-style: italic; }
+    
+    .ai-chat-input-area { display: flex; gap: 8px; flex-wrap: wrap; }
+    .ai-chat-input-area input[type="text"] {
+      flex: 1; padding: 10px 14px; border-radius: 6px;
+      border: 1px solid var(--border); background: #0d1117;
+      color: #fff; font-family: inherit; font-size: 13px; outline: none; min-width: 200px;
+    }
+    .file-upload-label {
+      background: var(--panel); color: var(--accent); border: 1px solid var(--accent);
+      padding: 10px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;
+    }
+    .ai-chat-input-area button.send-btn {
+      padding: 10px 20px; border-radius: 6px; border: none;
+      background: var(--accent); color: #0d1117; font-weight: bold;
+      cursor: pointer; font-family: inherit; font-size: 13px;
+    }
+    .ai-chat-code-btn {
+      background: var(--green); color: #fff; border: none;
+      padding: 4px 10px; border-radius: 4px; cursor: pointer;
+      font-family: inherit; font-size: 11px; margin-left: 6px;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- PROGRESS BAR -->
-    <div class="progress-bar-container">
-        <div class="progress-steps">
-            <div class="progress-line-fill" id="progress-line"></div>
-            <div class="step-circle active" id="step-dot-1">1</div>
-            <div class="step-circle" id="step-dot-2">2</div>
-            <div class="step-circle" id="step-dot-3">3</div>
-            <div class="step-circle" id="step-dot-4">4</div>
-        </div>
+<!-- Custom Notification Box -->
+<div id="custom-alert-box">
+  <span id="custom-alert-msg">Notification</span>
+  <button onclick="dismissCustomAlert()">OK</button>
+</div>
+
+<header>
+  <div class="title">
+    <span>⚡ G-Tech Anto Flock</span>
+    <button onclick="formatCode()">🧹 Format</button>
+    <button onclick="toggleWordWrap()" id="btn-wrap">Wrap</button>
+    <button onclick="copyCode()">📋 Copy</button>
+    <button onclick="clearEditor()" style="color:#ff7b72;">Clear</button>
+  </div>
+  <div class="header-controls">
+    <button class="ai-badge" id="ai-status" onclick="triggerAIFix()">🤖 AI Fix</button>
+    <!-- Tap Button to Open Interactive Face-to-Face AI Page -->
+    <button class="ai-badge" style="background:var(--purple);" onclick="openAIChat()">💬 AI Studio Page</button>
+  </div>
+</header>
+
+<div class="tab-bar" id="tab-bar">
+  <button class="btn-add-file" onclick="addNewFile()">+ New</button>
+</div>
+
+<div class="workspace" id="workspace">
+  <div class="editor-section">
+    <div class="editor-wrapper">
+      <div class="line-gutter" id="line-gutter">1</div>
+      <div class="code-container">
+        <pre id="highlight-layer"><code id="highlight-content"></code></pre>
+        <textarea id="code-input" oninput="scheduleUpdate()" onscroll="syncScroll()" spellcheck="false" autocomplete="off" autocapitalize="off" onclick="scheduleUpdate()" onkeyup="scheduleUpdate()"></textarea>
+        <div id="suggest-box"></div>
+      </div>
     </div>
+  </div>
+  <div class="preview-section">
+    <iframe id="preview-viewport" sandbox="allow-scripts allow-modals"></iframe>
+  </div>
+</div>
 
-    <!-- PAGE 1: USER AUTH -->
-    <div id="page-1" class="card">
-        <div class="brand-header">
-            <i class="fa-solid fa-cloud-arrow-up"></i>
-            <h2>G-Tech Cloud Portal</h2>
-            <p>Page 1 of 4: Secure Cloud Account Setup</p>
-        </div>
-        <div class="auth-toggle">
-            <div class="auth-tab active" id="tab-signup" onclick="Portal.switchAuthMode('signup')">Create Account</div>
-            <div class="auth-tab" id="tab-login" onclick="Portal.switchAuthMode('login')">Log In</div>
-        </div>
-        <form id="form-page-1" onsubmit="Portal.handlePage1Submit(event)">
-            <div class="form-grid-2" id="grid-username-email">
-                <div class="form-group signup-only">
-                    <label for="p1-username">Username / Handle</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-user input-icon"></i><input type="text" id="p1-username" class="form-control" placeholder="e.g. godfrey_tech" required></div>
-                </div>
-                <div class="form-group">
-                    <label for="p1-email">Email Address</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-envelope input-icon"></i><input type="email" id="p1-email" class="form-control" value="godfreyanthony3245.eng@gmail.com" required></div>
-                </div>
-            </div>
-            <div class="form-group signup-only">
-                <label for="p1-phone">Mobile Phone Number</label>
-                <div class="input-wrapper"><i class="fa-solid fa-phone input-icon"></i><input type="tel" id="p1-phone" class="form-control" placeholder="08012345678" required></div>
-            </div>
-            <div class="form-grid-2" id="grid-passwords">
-                <div class="form-group">
-                    <label for="p1-password">Password (Min. 8 chars)</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-lock input-icon"></i><input type="password" id="p1-password" class="form-control" required><i class="fa-solid fa-eye password-toggle" onclick="Portal.togglePasswordVisibility('p1-password', this)"></i></div>
-                </div>
-                <div class="form-group signup-only">
-                    <label for="p1-confirm-password">Confirm Password</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-lock input-icon"></i><input type="password" id="p1-confirm-password" class="form-control" required><i class="fa-solid fa-eye password-toggle" onclick="Portal.togglePasswordVisibility('p1-confirm-password', this)"></i></div>
-                </div>
-            </div>
-            <button type="submit" id="btn-page-1-submit" class="btn btn-primary"><i class="fa-solid fa-arrow-right"></i> Proceed to Role & Location</button>
-        </form>
+<!-- Custom On-Screen Virtual Keyboard Permanently Anchored -->
+<div class="full-keyboard" id="custom-keyboard">
+  <div class="kb-row">
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('q')">q<span class="sub-num">1</span></button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('w')">w<span class="sub-num">2</span></button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('e')">e<span class="sub-num">3</span></button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('r')">r<span class="sub-num">4</span></button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('t')">t<span class="sub-num">5</span></button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('y')">y<span class="sub-num">6</span></button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('u')">u<span class="sub-num">7</span></button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('i')">i<span class="sub-num">8</span></button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('o')">o<span class="sub-num">9</span></button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('p')">p<span class="sub-num">0</span></button>
+    <button class="k-btn wide" onmousedown="event.preventDefault()" onclick="kbBackspace()">⌫</button>
+  </div>
+  <div class="kb-row">
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('<')">&lt;</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('>')">&gt;</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('/')">/</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('=')">=</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('{')">{</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('}')">}</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('(')">(</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert(')')">)</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('[')">[</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert(']')">]</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert(';')">;</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert(':')">:</button>
+  </div>
+  <div class="kb-row">
+    <button class="k-btn type-mode" onmousedown="event.preventDefault()" onclick="toggleKeyType()" id="kb-type-btn">MODE: ALL</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('a')">a</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('s')">s</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('d')">d</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('f')">f</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('g')">g</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('h')">h</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('j')">j</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('k')">k</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('l')">l</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('+')">+</button>
+    <button class="k-btn wide" onmousedown="event.preventDefault()" onclick="kbInsert('\n')">↵ Enter</button>
+  </div>
+  <div class="kb-row">
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('z')">z</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('x')">x</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('c')">c</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('v')">v</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('b')">b</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('n')">n</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('m')">m</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('.')">.</button>
+    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('&quot;')">"</button>
+    <button class="k-btn space" onmousedown="event.preventDefault()" onclick="kbInsert(' ')">Space</button>
+    <button class="k-btn action" onmousedown="event.preventDefault()" onclick="triggerAIFix()">✨ AI</button>
+  </div>
+</div>
+
+<!-- Output Console Panel -->
+<div class="console-box" id="console-box">
+  <div class="console-header" onclick="toggleConsoleDrawer()">
+    <span>⬢ Output Console</span>
+    <span id="console-toggle-indicator" style="font-size:10px; color:#8b949e;">▲ Tap to Open</span>
+  </div>
+  <div class="console-logs" id="console-logs"></div>
+</div>
+
+<!-- Fullscreen Face-to-Face Offline AI Chat Studio Overlay -->
+<div class="ai-chat-overlay" id="ai-chat-overlay">
+  <div class="ai-chat-header">
+    <h1>🤖 Face-to-Face AI Assistant</h1>
+    <button class="ai-chat-back" onclick="closeAIChat()">← Back to Code Workspace</button>
+  </div>
+  
+  <div class="ai-avatar-container">
+    <div class="ai-avatar" id="ai-face-avatar">🤖</div>
+    <div>
+      <h3 style="font-size: 14px; color: var(--accent);">G-Tech AI Studio Engine</h3>
+      <p style="font-size: 11px; color: #8b949e;">Face-to-face interactive AI generation page active.</p>
     </div>
+  </div>
 
-    <!-- PAGE 2: LOCATION -->
-    <div id="page-2" class="card hidden">
-        <div class="brand-header"><i class="fa-solid fa-sliders"></i><h2>Profile Category & Location</h2></div>
-        <form id="form-page-2" onsubmit="Portal.handlePage2Submit(event)">
-            <div class="role-grid">
-                <div class="role-card selected" id="role-cust-card" onclick="Portal.selectRole('Customer')"><i class="fa-solid fa-user-gear"></i><h4>Customer</h4></div>
-                <div class="role-card" id="role-tech-card" onclick="Portal.selectRole('Repairer')"><i class="fa-solid fa-screwdriver-wrench"></i><h4>Repairer Engineer</h4></div>
-            </div>
-            <div class="form-grid-2">
-                <div class="form-group">
-                    <label for="p2-country">Country</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-globe input-icon"></i><select id="p2-country" class="form-control" onchange="Portal.onCountryChange()" required><option value="Nigeria">Nigeria</option><option value="Ghana">Ghana</option><option value="Other">Other</option></select></div>
-                </div>
-                <div class="form-group">
-                    <label for="p2-state">State / Province</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-map-location-dot input-icon"></i><select id="p2-state" class="form-control" onchange="Portal.onStateChange()" required></select></div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="p2-lga">Local Government Area</label>
-                <div class="input-wrapper"><i class="fa-solid fa-city input-icon"></i><select id="p2-lga" class="form-control" required></select></div>
-            </div>
-            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-arrow-right"></i> Save Location & Proceed to Payment</button>
-        </form>
-    </div>
+  <div class="ai-chat-messages" id="ai-chat-messages">
+    <div class="msg assistant">👋 Welcome! Discuss or request any web layout here. Once generated, your prompt clears instantly so your screen stays clean!</div>
+  </div>
+  
+  <div class="ai-chat-input-area">
+    <input type="text" id="ai-chat-input" placeholder="Describe any webpage/feature to generate...">
+    <label class="file-upload-label" for="ai-file-input">📁 Upload File</label>
+    <input type="file" id="ai-file-input" style="display:none;" onchange="handleFileUpload(event)">
+    <button class="send-btn" onclick="sendAIChat()">Generate / Chat</button>
+  </div>
+</div>
 
-    <!-- PAGE 3: PAYMENT SLIP & OCR SCANNING -->
-    <div id="page-3" class="card hidden">
-        <div class="brand-header"><i class="fa-solid fa-building-columns"></i><h2>Subscription Bank Deposit & OCR Verification</h2></div>
-        
-        <div class="bank-details-box">
-            <div class="bank-row"><span class="bank-label">Bank:</span><span class="bank-val">G-Tech Enterprise Bank</span></div>
-            <div class="bank-row"><span class="bank-label">Account Number:</span><span class="bank-val">0192837465</span></div>
-            <div class="bank-row"><span class="bank-label">Fee:</span><span class="bank-val">₦150</span></div>
-        </div>
+<script>
+  // DOM Elements
+  const codeInput = document.getElementById('code-input');
+  const highlightContent = document.getElementById('highlight-content');
+  const highlightLayer = document.getElementById('highlight-layer');
+  const lineGutter = document.getElementById('line-gutter');
+  const previewViewport = document.getElementById('preview-viewport');
+  const aiStatus = document.getElementById('ai-status');
+  const customKeyboard = document.getElementById('custom-keyboard');
+  const workspace = document.getElementById('workspace');
+  const suggestBox = document.getElementById('suggest-box');
+  const tabBar = document.getElementById('tab-bar');
+  const consoleBox = document.getElementById('console-box');
+  const consoleLogs = document.getElementById('console-logs');
 
-        <form id="slip-form" onsubmit="Portal.handlePage3Submit(event)">
-            <div class="form-group">
-                <label for="slip_file">Upload Payment Slip from Gallery</label>
-                <div class="input-wrapper"><i class="fa-solid fa-file-arrow-up input-icon"></i><input type="file" id="slip_file" class="form-control" accept="image/*" required onchange="Portal.handleFileUpload(event)"></div>
-                <img id="preview-img" alt="Gallery Slip Preview">
-            </div>
+  let isWordWrapped = false;
+  let updateScheduled = false;
+  let currentKeyTypeIndex = 0;
+  const keyTypeModes = ['ALL', 'HTML', 'JS', 'CSS', 'SYM'];
 
-            <!-- Live OCR Output Display -->
-            <div class="ocr-box">
-                <strong>Extracted Transaction ID / Numbers:</strong>
-                <div id="ocr-result" style="color: #38bdf8; margin-top: 4px;">No image scanned yet...</div>
-            </div>
+  // Multi-file Workspace Array
+  let files = [
+    { name: 'index.html', content: '<h1>Hello, G-Tech</h1>\n<p>Start coding...</p>' },
+    { name: 'style.css', content: 'body { background: #0d1117; color: #fff; font-family: sans-serif; }' },
+    { name: 'app.js', content: 'console.log("G-Tech Anto Flock Engine Active!");' }
+  ];
+  let activeFileIndex = 0;
 
-            <button type="submit" id="send-btn" class="btn btn-primary" style="margin-top: 1rem;" disabled><i class="fa-solid fa-paper-plane"></i> Scan Image & Submit for Verification</button>
-        </form>
+  // Custom Toast Notification
+  function showAlert(msg) {
+    const box = document.getElementById('custom-alert-box');
+    document.getElementById('custom-alert-msg').textContent = msg;
+    box.classList.add('show');
+    setTimeout(() => { box.classList.remove('show'); }, 3500);
+  }
+  function dismissCustomAlert() {
+    document.getElementById('custom-alert-box').classList.remove('show');
+  }
 
-        <!-- Step 2: Verification Key Entry -->
-        <div id="verify-section" style="display:none; margin-top: 20px; background: #020617; padding: 16px; border-radius: 8px; border: 1px solid #334155;">
-            <label for="admin_code" style="color: #38bdf8; font-size: 13px;">Enter Admin Approval Code (Sent after verification):</label>
-            <input type="text" id="admin_code" class="form-control" placeholder="e.g. 782910" maxlength="6" style="text-align: center; font-size: 18px; letter-spacing: 4px; margin-top: 8px;">
-            <button type="button" id="verify-btn" class="btn btn-success" style="margin-top: 10px;" onclick="Portal.verifyAdminCode()"><i class="fa-solid fa-shield-check"></i> Verify Admin Code & Grant Token</button>
-        </div>
+  // Completion Rules
+  const completions = {
+    html: ['<!DOCTYPE html>','html','head','body','title','meta','link','script','style','div','span','h1','h2','h3','p','a','button','input','img','ul','li','form','textarea','canvas','iframe','header','footer','section','nav','class=""','id=""','onclick=""','style=""','src=""','href=""'],
+    css: ['display: flex;','display: block;','display: grid;','position: absolute;','position: relative;','top:','left:','width:','height:','margin:','padding:','background:','color:','font-family:','font-size:','border:','border-radius:','box-shadow:','opacity:','z-index:','overflow:','justify-content: center;','align-items: center;','flex-direction: column;','gap:','cursor: pointer;'],
+    js: ['function','const','let','var','return','if','else','for','while','switch','case','break','try','catch','class','async','await','document.getElementById','document.querySelector','addEventListener','console.log','console.error','JSON.stringify','JSON.parse','fetch','setTimeout','setInterval']
+  };
 
-        <div id="console-box">System ready. Select a payment slip photo...</div>
+  // Tabs System
+  function renderTabs() {
+    tabBar.innerHTML = '';
+    files.forEach((file, idx) => {
+      const tab = document.createElement('div');
+      tab.className = 'tab-item' + (idx === activeFileIndex ? ' active' : '');
+      tab.innerHTML = `<span>${file.name}</span><span class="tab-close" data-idx="${idx}">✕</span>`;
+      tab.addEventListener('click', (e) => {
+        if (e.target.classList.contains('tab-close')) { e.stopPropagation(); closeFile(idx); return; }
+        switchTab(idx);
+      });
+      tabBar.appendChild(tab);
+    });
+    const addBtn = document.createElement('button');
+    addBtn.className = 'btn-add-file';
+    addBtn.textContent = '+ New';
+    addBtn.onclick = addNewFile;
+    tabBar.appendChild(addBtn);
+  }
 
-        <div class="live-alert-box">
-            <p><i class="fa-solid fa-bell"></i> Admin Notification Engine:</p>
-            <button class="btn btn-warning" onclick="Portal.triggerGmailNotification()" id="gmail-btn" style="margin-top: 0.8rem;"><i class="fa-solid fa-envelope"></i> Send Real Gmail Notification to Owner</button>
-        </div>
-    </div>
+  function switchTab(idx) {
+    if (idx === activeFileIndex) return;
+    files[activeFileIndex].content = codeInput.value;
+    activeFileIndex = idx;
+    codeInput.value = files[activeFileIndex].content;
+    renderTabs();
+    scheduleUpdate();
+    updatePreview();
+  }
 
-    <!-- PAGE 4: SUCCESS TOKEN & TIMER -->
-    <div id="page-4" class="card hidden">
-        <div class="brand-header"><i class="fa-solid fa-shield-check" style="color: var(--accent-success);"></i><h2>Activation Complete</h2></div>
-        
-        <div id="token-display" class="token-display" style="display:none; margin-bottom: 1rem;">
-            <strong>STATUS: TRANSACTION VERIFIED!</strong><br>
-            <span id="token-text"></span>
-        </div>
+  function closeFile(idx) {
+    if (files.length <= 1) return;
+    files.splice(idx, 1);
+    if (idx <= activeFileIndex) activeFileIndex = Math.max(0, activeFileIndex - 1);
+    codeInput.value = files[activeFileIndex].content;
+    renderTabs();
+    scheduleUpdate();
+    updatePreview();
+  }
 
-        <div id="activation-status-box">
-            <div class="timer-box"><div style="font-size: 0.85rem;">Cloud Status: Active</div><div class="timer-digit" id="countdown-timer">30d 00h 00m 00s</div></div>
-            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-success); padding: 1.2rem; border-radius: var(--radius-md); text-align: center;">
-                <h4 style="color: var(--accent-success); margin-bottom: 0.5rem;">Secure Cloud Account Permanent!</h4>
-                <a href="https://github.com/godfreyanthony3245eng-lab" target="_blank" style="color: var(--accent-primary);">Enter Lab Repository</a>
-            </div>
-        </div>
-    </div>
+  function addNewFile() {
+    const name = prompt('Enter new file name:', 'script.js');
+    if (!name) return;
+    const ext = name.split('.').pop();
+    let content = ext === 'html' ? '<div>New Page</div>' : ext === 'css' ? '/* CSS */' : '// JS Code';
+    files.push({ name, content });
+    activeFileIndex = files.length - 1;
+    codeInput.value = content;
+    renderTabs();
+    scheduleUpdate();
+    updatePreview();
+  }
 
-    <canvas id="compressor-canvas" style="display:none;"></canvas>
-    <div id="toast-container"></div>
+  // Update Schedules
+  function scheduleUpdate() {
+    if (!updateScheduled) {
+      updateScheduled = true;
+      requestAnimationFrame(() => {
+        updateScheduled = false;
+        updateEditor();
+        updatePreview();
+      });
+    }
+  }
+
+  function updateEditor() {
+    const text = applyCustomVariableShorthands(codeInput.value);
+    files[activeFileIndex].content = text;
+    highlightContent.innerHTML = highlightSyntax(text);
+    syncScroll();
+    updateGutter();
+    updateAutocomplete();
+  }
+
+  function applyCustomVariableShorthands(code) {
+    if (files[activeFileIndex].name.endsWith('.js')) {
+      return code.replace(/\by\s+=/g, 'let =');
+    }
+    return code;
+  }
+
+  function updatePreview() {
+    let html = '', css = '', js = '';
+    files.forEach(f => {
+      if (f.name.endsWith('.html')) html += f.content + '\n';
+      else if (f.name.endsWith('.css')) css += f.content + '\n';
+      else if (f.name.endsWith('.js')) js += f.content + '\n';
+    });
+    const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${css}</style></head><body>${html}<script>${js}<\/script></body></html>`;
+    const blob = new Blob([fullHtml], { type: 'text/html' });
+    previewViewport.src = URL.createObjectURL(blob);
+  }
+
+  // Color Token Syntax Highlighter
+  function highlightSyntax(text) {
+    let esc = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const rules = [
+      { regex: /\/\/.*/g, class: 'st-comment' },
+      { regex: /\/\*[\s\S]*?\*\//g, class: 'st-comment' },
+      { regex: /<!--[\s\S]*?-->/g, class: 'st-comment' },
+      { regex: /<!DOCTYPE[^>]*>/gi, class: 'st-meta-doctype' },
+      { regex: /'[^']*'/g, class: 'st-str' },
+      { regex: /"[^"]*"/g, class: 'st-str' },
+      { regex: /`[^`]*`/g, class: 'st-str' },
+      { regex: /\b\d+\b/g, class: 'st-num' },
+      { regex: /\b(true|false|null|undefined)\b/g, class: 'st-bool' },
+      { regex: /\b(const|let|var|function|return|if|else|for|while|switch|case|break|try|catch|class|async|await)\b/g, class: 'st-js-kw' },
+      { regex: /&lt;\/?(\w+)(?=[\s>])/g, class: 'st-html-tag' },
+      { regex: /\b(class|id|src|href|onclick|style|type|placeholder)\b(?=\s*=)/g, class: 'st-html-attr' },
+      { regex: /\b(display|position|top|left|right|bottom|width|height|margin|padding|background|color|font-family|font-size|border|border-radius|opacity|z-index)\b/g, class: 'st-css-prop' },
+      { regex: /[\{\}]/g, class: 'st-sym-brace' },
+      { regex: /[\(\)]/g, class: 'st-sym-paren' },
+      { regex: /[\[\]]/g, class: 'st-sym-bracket' },
+      { regex: /[=!<>]=?/g, class: 'st-sym-op-primary' },
+      { regex: /[+\-*\/%]/g, class: 'st-sym-op-secondary' },
+      { regex: /[;,.]/g, class: 'st-sym-term' },
+    ];
+    let matches = [];
+    for (const rule of rules) {
+      let m;
+      while ((m = rule.regex.exec(esc)) !== null) {
+        matches.push({ index: m.index, end: m.index + m[0].length, text: m[0], class: rule.class });
+      }
+    }
+    matches.sort((a,b) => a.index - b.index || b.end - a.end);
+    let merged = [];
+    for (const m of matches) {
+      if (merged.length === 0 || m.index >= merged[merged.length-1].end) merged.push(m);
+    }
+    let out = '', pos = 0;
+    for (const m of merged) {
+      if (m.index > pos) out += `<span class="st-plain">${esc.substring(pos, m.index)}</span>`;
+      out += `<span class="${m.class}">${esc.substring(m.index, m.end)}</span>`;
+      pos = m.end;
+    }
+    if (pos < esc.length) out += `<span class="st-plain">${esc.substring(pos)}</span>`;
+    return out;
+  }
+
+  // Scroll Sync & Gutter Calculation
+  function updateGutter() {
+    const lines = codeInput.value.split('\n').length;
+    let html = '';
+    const cursorLine = getCursorLine();
+    for (let i = 1; i <= lines; i++) {
+      html += `<span class="line-num${i === cursorLine ? ' active-line' : ''}">${i}</span>`;
+    }
+    lineGutter.innerHTML = html;
+  }
+
+  function getCursorLine() {
+    const val = codeInput.value;
+    const pos = codeInput.selectionStart;
+    return val.substring(0, pos).split('\n').length;
+  }
+
+  function syncScroll() {
+    highlightLayer.scrollTop = codeInput.scrollTop;
+    highlightLayer.scrollLeft = codeInput.scrollLeft;
+    lineGutter.scrollTop = codeInput.scrollTop;
+  }
+
+  // Formatting & Utility Controls
+  function copyCode() {
+    navigator.clipboard.writeText(codeInput.value).then(() => {
+      showAlert('📋 Code copied to clipboard successfully!');
+      logToConsole('📋 Code copied to clipboard', 'success');
+    });
+  }
+
+  function formatCode() {
+    try {
+      let text = codeInput.value;
+      text = text.replace(/>/g, '>\n').replace(/</g, '\n<').replace(/\n+/g, '\n').trim();
+      codeInput.value = text;
+      scheduleUpdate();
+      showAlert('🧹 Code formatted successfully!');
+    } catch(e) {}
+  }
+
+  function toggleWordWrap() {
+    isWordWrapped = !isWordWrapped;
+    codeInput.style.whiteSpace = isWordWrapped ? 'pre-wrap' : 'pre';
+    highlightLayer.style.whiteSpace = isWordWrapped ? 'pre-wrap' : 'pre';
+    document.getElementById('btn-wrap').style.color = isWordWrapped ? '#38bdf8' : '#8b949e';
+    scheduleUpdate();
+  }
+
+  function clearEditor() {
+    codeInput.value = '';
+    scheduleUpdate();
+    showAlert('Workspace cleared');
+  }
+
+  // Custom Virtual Keyboard Functions
+  function kbInsert(char) {
+    const start = codeInput.selectionStart, end = codeInput.selectionEnd;
+    const val = codeInput.value;
+    codeInput.value = val.substring(0, start) + char + val.substring(end);
+    codeInput.selectionStart = codeInput.selectionEnd = start + char.length;
+    scheduleUpdate();
+    codeInput.focus();
+  }
+
+  function kbBackspace() {
+    const start = codeInput.selectionStart;
+    if (start === 0) return;
+    const val = codeInput.value;
+    codeInput.value = val.substring(0, start-1) + val.substring(start);
+    codeInput.selectionStart = codeInput.selectionEnd = start-1;
+    scheduleUpdate();
+    codeInput.focus();
+  }
+
+  function toggleKeyType() {
+    currentKeyTypeIndex = (currentKeyTypeIndex + 1) % keyTypeModes.length;
+    document.getElementById('kb-type-btn').textContent = 'MODE: ' + keyTypeModes[currentKeyTypeIndex];
+  }
+
+  // Console Drawer Panel
+  function toggleConsoleDrawer() {
+    consoleBox.classList.toggle('expanded');
+    const isExpanded = consoleBox.classList.contains('expanded');
+    document.getElementById('console-toggle-indicator').textContent = isExpanded ? '▼ Tap to Close' : '▲ Tap to Open';
+  }
+
+  function logToConsole(msg, type='info') {
+    const entry = document.createElement('div');
+    entry.className = `log-entry log-${type}`;
+    entry.textContent = `> ${msg}`;
+    consoleLogs.appendChild(entry);
+    consoleBox.scrollTop = consoleBox.scrollHeight;
+  }
+
+  // Autocomplete Engine
+  function updateAutocomplete() {
+    const text = codeInput.value;
+    const pos = codeInput.selectionStart;
+    let start = pos;
+    while (start > 0 && /[\w-]/.test(text[start-1])) start--;
+    const token = text.substring(start, pos);
+    if (token.length < 1) { suggestBox.style.display = 'none'; return; }
+    let suggestions = completions.js.filter(s => s.toLowerCase().startsWith(token.toLowerCase()));
+    if (suggestions.length === 0) { suggestBox.style.display = 'none'; return; }
+    suggestBox.style.left = '20px';
+    suggestBox.style.top = '30px';
+    suggestBox.style.display = 'block';
+    suggestBox.innerHTML = suggestions.map(s => `<div class="suggest-item" data-value="${s}">${s}</div>`).join('');
+    suggestBox.querySelectorAll('.suggest-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const val = el.dataset.value;
+        codeInput.value = text.substring(0, start) + val + text.substring(pos);
+        codeInput.selectionStart = codeInput.selectionEnd = start + val.length;
+        suggestBox.style.display = 'none';
+        scheduleUpdate();
+      });
+    });
+  }
+
+  // Rapid Automatic AI Structure Repair
+  function triggerAIFix() {
+    aiStatus.textContent = '🧠 Fixing...';
+    setTimeout(() => {
+      let text = codeInput.value;
+      let openBraces = (text.match(/\{/g) || []).length;
+      let closeBraces = (text.match(/\}/g) || []).length;
+      while (closeBraces < openBraces) { text += '}'; closeBraces++; }
+      codeInput.value = text;
+      scheduleUpdate();
+      aiStatus.textContent = '🤖 AI Fix';
+      showAlert('✨ Brackets and code layout auto-adjusted');
+      logToConsole('✨ Fixed missing braces and formatted layout', 'success');
+    }, 300);
+  }
+
+  // Open & Close Overlay Face-to-Face AI Studio
+  function openAIChat() { document.getElementById('ai-chat-overlay').classList.add('active'); }
+  function closeAIChat() { document.getElementById('ai-chat-overlay').classList.remove('active'); }
+
+  // Face-to-Face Chat & Generation Handler
+  function sendAIChat() {
+    const input = document.getElementById('ai-chat-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+    const messagesDiv = document.getElementById('ai-chat-messages');
+    const avatar = document.getElementById('ai-face-avatar');
+    
+    // Display prompt in conversation log
+    messagesDiv.innerHTML += `<div class="msg user">👤 ${msg}</div>`;
+    
+    // Automatically wipe away the input field immediately after prompting
+    input.value = '';
+    avatar.classList.add('speaking');
+    
+    setTimeout(() => {
+      avatar.classList.remove('speaking');
+      const result = processAIRequest(msg);
+      messagesDiv.innerHTML += `<div class="msg assistant">🤖 ${result.reply} ${result.code ? '<button class="ai-chat-code-btn" onclick="insertAICode()">📥 Import Code to IDE</button>' : ''}</div>`;
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      if (result.code) window._aiGeneratedCode = result.code;
+    }, 400);
+  }
+
+  // Reader for File Ingestion
+  function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const content = e.target.result;
+      const messagesDiv = document.getElementById('ai-chat-messages');
+      messagesDiv.innerHTML += `<div class="msg system">📄 Uploaded File: <b>${file.name}</b> (${content.length} chars)</div>`;
+      messagesDiv.innerHTML += `<div class="msg assistant">🤖 I have received <b>${file.name}</b>. Describe what you want me to generate or build using this document!</div>`;
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    };
+    reader.readAsText(file);
+  }
+
+  // Processing AI Prompts and Theme Variations
+  function processAIRequest(prompt) {
+    const lower = prompt.toLowerCase();
+    
+    if (lower.includes('background') || lower.includes('color') || lower.includes('theme')) {
+      const match = lower.match(/(?:color|background|theme)\s+(?:to\s+)?([#\w]+)/);
+      const colorVal = match ? match[1] : '#0d1117';
+      document.documentElement.style.setProperty('--bg', colorVal);
+      return { reply: `Updated primary panel theme to: <b>${colorVal}</b>` };
+    }
+
+    let generatedHTML = `<div class="card"><h2>${prompt.toUpperCase()}</h2><p>Designed and compiled via G-Tech Face-to-Face AI Studio.</p><button onclick="action()">Run Application</button></div>`;
+    let generatedCSS = `body { background: #090d16; color: #38bdf8; font-family: sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; } .card { background:#161b22; border:1px solid #38bdf8; padding:30px; border-radius:12px; text-align:center; box-shadow:0 8px 24px rgba(0,0,0,0.5); } button { background:#238636; color:#fff; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:15px; }`;
+    let generatedJS = `function action() { alert('Application trigger executed!'); }`;
+
+    const code = `<!DOCTYPE html>\n<html>\n<head>\n<style>\n${generatedCSS}\n</style>\n</head>\n<body>\n${generatedHTML}\n<script>\n${generatedJS}\n<\/script>\n</body>\n</html>`;
+    return { reply: `Compiled dynamic page for "${prompt}". Click below to inject it directly into your active workspace.`, code: code };
+  }
+
+  function insertAICode() {
+    if (window._aiGeneratedCode) {
+      codeInput.value = window._aiGeneratedCode;
+      files[activeFileIndex].content = window._aiGeneratedCode;
+      scheduleUpdate();
+      showAlert('📥 Code injected into workspace!');
+      logToConsole('📥 AI Code injected into active file', 'info');
+      closeAIChat();
+    }
+  }
+
+  // App Initialization
+  function init() {
+    codeInput.value = files[activeFileIndex].content;
+    renderTabs();
+    scheduleUpdate();
+
+    // System Log Wrappers
+    const originalLog = console.log;
+    console.log = function(...args) { originalLog(...args); logToConsole(args.join(' '), 'info'); };
+    console.error = function(...args) { originalLog(...args); logToConsole(args.join(' '), 'error'); };
+    console.warn = function(...args) { originalLog(...args); logToConsole(args.join(' '), 'warn'); };
+
+    // Customized Keyboard Always Visible
+    customKeyboard.classList.remove('hidden');
+
+    logToConsole('G-Tech Engine Fully Active', 'success');
+  }
+
+  init();
+</script>
 </body>
 </html>
