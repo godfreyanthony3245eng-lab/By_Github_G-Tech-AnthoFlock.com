@@ -1,812 +1,2020 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>G-Tech Anto Flock · Pro IDE</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #090d16;
-      --panel: #161b22;
-      --border: #30363d;
-      --text: #ffffff;
-      --active-line: rgba(56,139,253,0.15);
-      --accent: #38bdf8;
-      --orange: #fb923c;
-      --green: #238636;
-      --purple: #8957e5;
-    }
-    body {
-      font-family: 'Fira Code', 'Consolas', monospace;
-      background: var(--bg);
-      color: var(--text);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      user-select: none;
-    }
-    header {
-      height: 44px;
-      background: var(--panel);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 12px;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-      z-index: 10;
-    }
-    .title { font-size: 13px; font-weight: bold; color: var(--accent); display: flex; align-items: center; gap: 6px; }
-    .title button {
-      background: #21262d; border: 1px solid var(--border);
-      color: var(--accent); padding: 3px 8px; font-size: 10px;
-      border-radius: 4px; cursor: pointer; font-family: inherit;
-    }
-    .title button:hover { background: #30363d; }
-    .header-controls { display: flex; align-items: center; gap: 6px; }
-    .ai-badge {
-      font-size: 11px; padding: 4px 10px; border-radius: 20px;
-      font-weight: 600; background: var(--green); color: #fff;
-      cursor: pointer; white-space: nowrap; border: none; font-family: inherit;
-    }
-    .tab-bar {
-      height: 32px; background: #0d1117; display: flex;
-      align-items: center; border-bottom: 1px solid var(--border);
-      padding: 0 8px; gap: 4px; overflow-x: auto; flex-shrink: 0;
-      z-index: 10;
-    }
-    .tab-item {
-      background: var(--panel); color: #8b949e;
-      border: 1px solid var(--border); border-bottom: none;
-      border-radius: 6px 6px 0 0; padding: 4px 12px;
-      font-size: 11px; display: flex; align-items: center;
-      gap: 6px; cursor: pointer; white-space: nowrap;
-    }
-    .tab-item.active { background: var(--bg); color: var(--accent); border-color: var(--accent); font-weight: bold; }
-    .tab-close { font-size: 11px; color: #ff7b72; padding: 0 4px; border-radius: 50%; }
-    .tab-close:hover { background: rgba(255,123,114,0.2); }
-    .btn-add-file {
-      background: #21262d; color: var(--accent); border: 1px solid var(--border);
-      padding: 2px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; font-weight: bold;
-    }
-    
-    /* Workspace Area */
-    .workspace { display: flex; flex: 1; height: calc(100vh - 232px); overflow: hidden; position: relative; }
-    .workspace.full-height { height: calc(100vh - 76px); }
-    .editor-section, .preview-section { flex: 1; height: 100%; display: flex; flex-direction: column; min-width: 0; }
-    .preview-section { border-left: 2px solid var(--border); background: #fff; }
-    .editor-wrapper { position: relative; flex: 1; display: flex; overflow: hidden; background: var(--bg); }
-    
-    /* Dynamic Gutter & Code Alignment */
-    .line-gutter {
-      width: 44px; background: var(--panel); color: #484f58;
-      text-align: right; padding: 12px 6px 12px 0; font-size: 12px;
-      line-height: 20px; user-select: none; border-right: 1px solid var(--border);
-      overflow: hidden; flex-shrink: 0; font-family: inherit;
-    }
-    .line-gutter .line-num { display: block; padding-right: 4px; }
-    .line-gutter .active-line { color: var(--accent); font-weight: bold; background: var(--active-line); }
-    .code-container { position: relative; flex: 1; height: 100%; overflow: hidden; }
-    
-    #code-input, #highlight-layer {
-      width: 100%; height: 100%; padding: 12px 16px;
-      font-family: inherit; font-size: 12px; line-height: 20px;
-      white-space: pre; word-wrap: normal; border: none;
-      outline: none; background: transparent; position: absolute;
-      top: 0; left: 0; margin: 0; tab-size: 2; box-sizing: border-box;
-    }
-    #code-input {
-      color: transparent; caret-color: var(--accent); z-index: 2;
-      resize: none; -webkit-text-fill-color: transparent; overflow: auto;
-    }
-    #highlight-layer { color: var(--text); z-index: 1; pointer-events: none; overflow: hidden; }
-    #highlight-content { font-family: inherit; font-size: inherit; line-height: inherit; display: block; white-space: pre; }
-    
-    /* Autocomplete Box */
-    #suggest-box {
-      position: absolute; display: none; z-index: 20;
-      background: var(--panel); border: 1px solid var(--accent);
-      border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.6);
-      font-size: 11px; max-height: 160px; overflow-y: auto; min-width: 180px;
-    }
-    .suggest-item { padding: 5px 12px; cursor: pointer; color: #c9d1d9; border-bottom: 1px solid #21262d; display: flex; justify-content: space-between; }
-    .suggest-item.selected, .suggest-item:hover { background: #1f6feb; color: #fff; }
+<meta charset="UTF-8">
+<meta name="google-site-verification" content="W1S2mHeW31xV0fh1yJ1J9cvbyHLrzwNkK8pOIe1x2xE" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GT-AnthoFix (G'sTAF AI V3.0.3256 - Production Elite)</title>
+<!-- PUTER.JS SDK -->
+<script src="https://js.puter.com/v2/"></script>
+<!-- JSPDF & AUTOTABLE FOR CLIENT-SIDE PDF GENERATION -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<!-- TESSERACT FOR OCR -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 
-    /* Token Highlighting Colors */
-    .st-html-tag { color: #ff7b72 !important; font-weight: bold; }
-    .st-html-attr { color: #ffa657 !important; }
-    .st-html-val { color: #a5d6ff !important; }
-    .st-js-kw { color: #ff7b72 !important; font-weight: bold; }
-    .st-bool { color: #ff7b72 !important; font-weight: bold; }
-    .st-num { color: #7ee787 !important; }
-    .st-str { color: #a5d6ff !important; }
-    .st-comment { color: #8b949e !important; font-style: italic; }
-    .st-sym-op-primary { color: #38bdf8 !important; font-weight: bold; }
-    .st-sym-op-secondary { color: #fb923c !important; font-weight: bold; }
-    .st-meta-doctype { color: #8b949e !important; font-style: italic; }
-    .st-css-prop { color: #d2a8ff !important; }
-    .st-css-val { color: #79c0ff !important; }
-    .st-css-unit { color: #7ee787 !important; }
-    .st-css-selector { color: #ffa657 !important; }
-    .st-sym-brace { color: #f2cc60 !important; }
-    .st-sym-paren { color: #d2a8ff !important; }
-    .st-sym-bracket { color: #79c0ff !important; }
-    .st-sym-term { color: #8b949e !important; }
-    .st-plain { color: #c9d1d9 !important; }
+<style>
+  :root {
+    --primary: #0F172A;
+    --primary-accent: #6366F1;
+    --primary-hover: #4F46E5;
+    --bg: #090D16;
+    --surface: rgba(15, 23, 42, 0.95);
+    --surface-solid: #1E293B;
+    --surface-light: rgba(51, 65, 85, 0.4);
+    --text: #F8FAFC;
+    --text-muted: #94A3B8;
+    --me-bubble: #1E293B;
+    --bot-bubble: #111827;
+    --accent-gold: #F59E0B;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-light: rgba(255, 255, 255, 0.12);
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    --code-bg: #030712;
+    --table-header: #1E1B4B;
+  }
 
-    /* Toast Modal */
-    #custom-alert-box {
-      position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
-      background: var(--panel); border: 1px solid var(--accent); color: #fff;
-      padding: 12px 24px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      z-index: 9999; font-size: 13px; font-family: inherit; display: flex;
-      align-items: center; gap: 12px; transition: top 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-    }
-    #custom-alert-box.show { top: 20px; }
-    #custom-alert-box button {
-      background: var(--accent); color: #0d1117; border: none;
-      padding: 4px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;
-    }
+  [data-theme="light"] {
+    --primary: #FFFFFF;
+    --primary-accent: #4338CA;
+    --primary-hover: #3730A3;
+    --bg: #F8FAFC;
+    --surface: #FFFFFF;
+    --surface-solid: #F1F5F9;
+    --surface-light: #E2E8F0;
+    --text: #0F172A;
+    --text-muted: #475569;
+    --me-bubble: #DCF8C6;
+    --bot-bubble: #FFFFFF;
+    --accent-gold: #D97706;
+    --border: #E2E8F0;
+    --border-light: #CBD5E1;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --code-bg: #0F172A;
+    --table-header: #EEF2FF;
+  }
 
-    /* Fixed Custom Keyboard - Always Present */
-    .full-keyboard {
-      height: 158px; background: var(--panel); border-top: 1px solid var(--border);
-      display: flex; flex-direction: column; padding: 3px; gap: 3px; flex-shrink: 0;
-      z-index: 10;
-    }
-    .kb-row { display: flex; width: 100%; gap: 2px; flex: 1; }
-    .k-btn {
-      background: #21262d; color: var(--text); border: 1px solid var(--border);
-      border-radius: 4px; font-family: inherit; font-size: 12px; font-weight: bold;
-      flex: 1; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; cursor: pointer; user-select: none; position: relative;
-    }
-    .k-btn:active { background: var(--accent); color: #0d1117; }
-    .k-btn .sub-num { font-size: 8px; color: var(--accent); position: absolute; top: 1px; right: 3px; pointer-events: none; }
-    .k-btn.wide { flex: 1.5; background: #30363d; }
-    .k-btn.space { flex: 3.5; background: #1f6feb; color: #fff; }
-    .k-btn.action { background: var(--green); color: #fff; }
-    .k-btn.type-mode { background: var(--purple); color: #fff; font-size: 10px; }
+  * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; user-select: none; }
+  body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; transition: background 0.3s, color 0.3s; overflow: hidden; width: 100%; }
 
-    /* Drawer Console */
-    .console-box {
-      height: 28px; background: #0d1117; border-top: 1px solid var(--border);
-      padding: 4px 12px; overflow-y: auto; font-size: 11px;
-      font-family: inherit; color: #8b949e; flex-shrink: 0;
-      display: flex; flex-direction: column; transition: height 0.2s ease;
-      z-index: 10;
-    }
-    .console-box.expanded { height: 110px; }
-    .console-header {
-      display: flex; justify-content: space-between; align-items: center;
-      cursor: pointer; font-weight: bold; color: var(--accent); user-select: none;
-    }
-    .console-logs { display: flex; flex-direction: column; margin-top: 4px; }
-    .console-box .log-entry { border-bottom: 1px solid #21262d; padding: 2px 0; font-family: inherit; }
-    .console-box .log-error { color: #ff7b72; }
-    .console-box .log-warn { color: #f2cc60; }
-    .console-box .log-info { color: var(--accent); }
-    .console-box .log-success { color: #7ee787; }
+  /* ONBOARDING OVERLAY */
+  #onboardingOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .bg-video-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(8px) brightness(0.3);
+    transform: scale(1.05);
+    z-index: 1;
+  }
+  .onboarding-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+    padding: 20px;
+  }
+  .onboarding-logo {
+    width: 70px;
+    height: 70px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #6366F1, #F59E0B);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFF;
+    font-weight: 900;
+    font-size: 36px;
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.5);
+  }
+  .onboarding-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #FFF;
+  }
+  .skip-btn {
+    margin-top: 10px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #FFF;
+    padding: 8px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+  }
 
-    iframe { width: 100%; height: 100%; border: none; }
+  /* TOAST NOTIFICATIONS */
+  #toastContainer {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+  }
+  .toast-bubble {
+    pointer-events: auto;
+    background: var(--surface-solid);
+    color: var(--text);
+    border: 1px solid var(--border-light);
+    padding: 10px 16px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: toastIn 0.25s ease-out forwards;
+  }
+  .toast-bubble.toast-success { border-left-color: #10B981; }
+  .toast-bubble.toast-warning {  }
+  .toast-bubble.toast-error { border-left-color: #EF4444; }
+  @keyframes toastIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Face-to-Face Face Overlay Chat Webpage */
-    .ai-chat-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: #090d16; z-index: 1000;
-      display: none; flex-direction: column; padding: 16px;
-      overflow-y: auto;
-    }
-    .ai-chat-overlay.active { display: flex; }
-    .ai-chat-header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 12px;
-    }
-    .ai-chat-header h1 { color: var(--accent); font-size: 18px; }
-    .ai-chat-back {
-      background: var(--panel); border: 1px solid var(--border);
-      color: #fff; padding: 6px 14px; border-radius: 6px;
-      cursor: pointer; font-family: inherit; font-size: 12px;
-    }
-    
-    /* Animated Face Avatar */
-    .ai-avatar-container {
-      display: flex; align-items: center; justify-content: center;
-      gap: 12px; background: var(--panel); padding: 14px; border-radius: 8px;
-      border: 1px solid var(--border); margin-bottom: 12px;
-    }
-    .ai-avatar {
-      width: 52px; height: 52px; border-radius: 50%; background: var(--accent);
-      display: flex; align-items: center; justify-content: center; font-size: 26px;
-      box-shadow: 0 0 15px var(--accent); transition: transform 0.2s;
-    }
-    .ai-avatar.speaking { transform: scale(1.15); box-shadow: 0 0 25px var(--green); }
-    
-    .ai-chat-messages {
-      flex: 1; overflow-y: auto; max-height: 52vh;
-      background: #0d1117; border-radius: 8px; padding: 12px;
-      margin-bottom: 12px; font-size: 13px; line-height: 1.6;
-      border: 1px solid var(--border);
-    }
-    .ai-chat-messages .msg { margin-bottom: 10px; padding: 8px 12px; border-radius: 6px; }
-    .ai-chat-messages .user { color: var(--accent); background: rgba(56,139,253,0.1); }
-    .ai-chat-messages .assistant { color: #7ee787; background: rgba(126,231,135,0.08); }
-    .ai-chat-messages .system { color: #f2cc60; background: rgba(242,204,96,0.08); font-style: italic; }
-    
-    .ai-chat-input-area { display: flex; gap: 8px; flex-wrap: wrap; }
-    .ai-chat-input-area input[type="text"] {
-      flex: 1; padding: 10px 14px; border-radius: 6px;
-      border: 1px solid var(--border); background: #0d1117;
-      color: #fff; font-family: inherit; font-size: 13px; outline: none; min-width: 200px;
-    }
-    .file-upload-label {
-      background: var(--panel); color: var(--accent); border: 1px solid var(--accent);
-      padding: 10px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;
-    }
-    .ai-chat-input-area button.send-btn {
-      padding: 10px 20px; border-radius: 6px; border: none;
-      background: var(--accent); color: #0d1117; font-weight: bold;
-      cursor: pointer; font-family: inherit; font-size: 13px;
-    }
-    .ai-chat-code-btn {
-      background: var(--green); color: #fff; border: none;
-      padding: 4px 10px; border-radius: 4px; cursor: pointer;
-      font-family: inherit; font-size: 11px; margin-left: 6px;
-    }
-  </style>
+  /* HEADER & BRANDING */
+  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; z-index: 100; box-shadow: var(--shadow); }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; color: var(--text); }
+  .brand-logo { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, #6366F1, #F59E0B); display: flex; align-items: center; justify-content: center; color: #FFF; font-weight: 900; font-size: 15px; }
+  .brand span { color: var(--accent-gold); }
+  
+  .mode-pills { display: flex; gap: 6px; overflow-x: auto; padding: 2px; scrollbar-width: none; }
+  .mode-pills::-webkit-scrollbar { display: none; }
+  .mode-pill { padding: 5px 12px; background: var(--surface-light); border: 1px solid var(--border-light); border-radius: 16px; color: var(--text-muted); cursor: pointer; font-size: 12px; font-weight: 600; white-space: nowrap; transition: all 0.2s; }
+  .mode-pill:hover { color: var(--text); border-color: var(--primary-accent); }
+  .mode-pill.active { background: var(--primary-accent); color: white; border-color: var(--primary-accent); }
+  
+  .header-actions { display: flex; gap: 6px; align-items: center; }
+  .icon-btn { background: var(--surface-light); border: 1px solid var(--border-light); font-size: 15px; cursor: pointer; color: var(--text); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .icon-btn:active { transform: scale(0.95); }
+
+  /* SEARCH BAR & STATUS TELEMETRY */
+  .toolbar-wrapper { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; flex-direction: column; }
+  .search-filter-bar { display: flex; gap: 8px; padding: 6px 16px; align-items: center; }
+  .search-filter-bar input { flex: 1; background: var(--bg); border: 1px solid var(--border-light); color: var(--text); padding: 5px 12px; border-radius: 8px; font-size: 12px; outline: none; }
+  .search-filter-bar input:focus { border-color: var(--primary-accent); }
+  .filter-status { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+  .telemetry-bar { display: flex; justify-content: space-between; padding: 2px 16px 6px 16px; font-size: 10.5px; color: var(--text-muted); border-top: 1px dashed var(--border); }
+
+  /* CHAT WORKSPACE */
+  .chat-container { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; background: var(--bg); scroll-behavior: smooth; position: relative; }
+  
+  .msg-row { display: flex; flex-direction: column; width: 100%; position: relative; }
+  .msg-row.me-row { align-items: flex-end; }
+  .msg-row.bot-row { align-items: flex-start; }
+
+  /* META AI / WHATSAPP STYLE CHAT BUBBLES */
+  .msg { 
+    max-width: clamp(260px, 85%, 750px); 
+    padding: 10px 14px; 
+    border-radius: 4px; 
+    line-height: 1.5; 
+    font-size: 14px; 
+    word-wrap: break-word; 
+    word-break: break-word;
+    user-select: text; 
+    color: var(--text);
+    position: relative;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+  
+  .me { 
+    background: var(--me-bubble); 
+    color: var(--text);
+    border-top-right-radius: 0px; 
+  
+  }
+
+  [data-theme="light"] .me {
+    color: #0F172A;
+  }
+
+  .bot { 
+    background: var(--bot-bubble); 
+    border-top-left-radius: 0px; 
+  
+  }
+
+  .quoted-reply-box { 
+    background: rgba(0, 0, 0, 0.2); 
+    border-left: 3px solid var(--accent-gold); 
+    padding: 6px 10px; 
+    border-radius: 4px; 
+    font-size: 11.5px; 
+    margin-bottom: 8px; 
+    max-height: 48px; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    display: block;
+    cursor: pointer;
+  }
+
+  .chat-link { color: #38BDF8; text-decoration: underline; font-weight: 500; word-break: break-all; }
+
+  /* STREAMING TEXT FADE ANIMATION */
+  .word-span {
+    display: inline;
+    animation: fadeInWord 0.2s ease-out forwards;
+  }
+  @keyframes fadeInWord {
+    from { opacity: 0; transform: translateY(2px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* MATHEMETICAL SEMANTIC FORMATTING */
+  .math-fraction { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: 0.9em; margin: 0 4px; line-height: 1.2; }
+  .math-numerator { border-bottom: 1px solid var(--text); padding: 0 4px; }
+  .math-denominator { padding: 0 4px; }
+  .math-sqrt { white-space: nowrap; margin: 0 2px; }
+  .math-sqrt-content { border-top: 1px solid var(--text); padding-top: 1px; padding-left: 2px; }
+
+  /* ISOLATED CODE BLOCK CONTAINER */
+  .code-container {
+    background: var(--code-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    margin: 8px 0;
+    overflow: hidden;
+    user-select: text;
+  }
+  .code-header {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: monospace;
+  }
+  .code-action-group {
+    display: flex;
+    gap: 6px;
+  }
+  .code-copy-btn, .code-download-btn {
+    background: var(--primary-accent);
+    color: #FFFFFF;
+    border: none;
+    padding: 3px 8px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .code-body {
+    padding: 10px 12px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    color: #38BDF8;
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
+
+  /* DEDICATED HTML TABLE SYSTEM */
+  .table-container-card {
+    margin: 12px 0;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    background: var(--surface-solid);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .table-toolbar {
+    background: var(--surface-light);
+    padding: 6px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-gold);
+  }
+  .table-action-group {
+    display: flex;
+    gap: 6px;
+  }
+  .tbl-btn {
+    background: var(--primary-accent);
+    color: #FFF;
+    border: none;
+    padding: 3px 8px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 10.5px;
+    font-weight: 600;
+  }
+  .table-scroll-wrapper {
+    overflow-x: auto;
+    width: 100%;
+  }
+  .custom-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    text-align: left;
+  }
+  .custom-data-table th {
+    background: var(--table-header);
+    color: var(--text);
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-light);
+    font-weight: 700;
+  }
+  .custom-data-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text);
+  }
+
+  .msg-footer { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 6px; font-size: 10px; color: var(--text-muted); opacity: 0.9; }
+  .pinned-badge { color: var(--accent-gold); font-size: 10px; font-weight: 700; margin-right: 4px; }
+
+  /* MEDIA CARDS */
+  .video-embed-card { margin-top: 8px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border-light); background: #000; width: 100%; max-width: 420px; aspect-ratio: 16 / 9; }
+  .video-embed-card iframe { width: 100%; height: 100%; border: none; }
+  .video-fallback-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .action-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--surface-light); color: var(--text); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; text-decoration: none; border: 1px solid var(--border-light); }
+
+  .generated-image-card { margin-top: 8px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border-light); background: var(--surface-solid); max-width: 100%; display: flex; flex-direction: column; }
+  .generated-image-card img { width: 100%; height: auto; display: block; }
+  .media-download-bar { padding: 6px 10px; background: var(--surface-light); display: flex; justify-content: flex-end; border-top: 1px solid var(--border-light); }
+
+  .audio-player-card { margin-top: 8px; padding: 10px; background: var(--surface-solid); border: 1px solid var(--border-light); border-radius: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .audio-player-card audio { width: 100%; height: 36px; }
+
+  .reply-preview { display: none; background: var(--surface); padding: 6px 14px; font-size: 12px; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); height: 32px; overflow: hidden; }
+  .reply-preview span { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 85%; color: var(--text); }
+  .reply-preview close { cursor: pointer; font-weight: bold; color: var(--accent-gold); padding: 2px 6px; }
+
+  /* FLOATING JUMP TO BOTTOM BUTTON */
+  #scrollDownBtn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: var(--primary-accent);
+    color: white;
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    z-index: 50;
+    font-size: 16px;
+  }
+
+  /* INPUT DOCK */
+  .input-dock-wrapper { display: flex; flex-direction: column; background: var(--surface); border-top: 1px solid var(--border); }
+  .file-upload-preview { display: none; padding: 6px 14px; background: var(--surface-light); font-size: 11.5px; color: var(--accent-gold); justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); gap: 8px; }
+
+  .input-dock { display: flex; padding: 10px 14px; gap: 8px; align-items: flex-end; }
+  
+  /* Textarea substitution for Enter rule and multi-line support */
+  .input-dock textarea { 
+    flex: 1; border: 1px solid var(--border-light); padding: 10px 16px; border-radius: 16px; 
+    outline: none; background: var(--bg); color: var(--text); font-size: 13.5px; 
+    resize: none; max-height: 80px; font-family: inherit; line-height: 1.4;
+  }
+  .input-dock textarea:focus { border-color: var(--primary-accent); }
+  
+  .input-dock button { background: var(--primary-accent); color: white; border: none; padding: 10px 18px; border-radius: 24px; cursor: pointer; font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+  
+  .voice-btn { background: var(--surface-light); border: 1px solid var(--border-light); color: var(--text); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; flex-shrink: 0; margin-bottom: 2px;}
+  .voice-btn.recording { background: #EF4444; color: white; border-color: #EF4444; animation: pulseRecord 1.2s infinite; }
+  @keyframes pulseRecord { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+  #ttsControlBar { display: none; background: var(--surface-solid); border-top: 1px solid var(--border-light); padding: 6px 16px; align-items: center; justify-content: space-between; font-size: 11.5px; color: var(--accent-gold); }
+  #ttsControlBar button { background: var(--primary-accent); border: none; color: white; padding: 3px 10px; border-radius: 10px; cursor: pointer; font-size: 11px; font-weight: 600; }
+
+  /* ACTION DRAWER MENU */
+  .menu-drawer { position: fixed; top: 0; right: -300px; width: 300px; height: 100%; background: var(--surface-solid); border-left: 1px solid var(--border); box-shadow: var(--shadow); z-index: 1000; transition: right 0.3s ease; padding: 20px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+  .menu-drawer.open { right: 0; }
+  .menu-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; color: var(--text); }
+  .menu-header h3 { font-size: 15px; font-weight: 700; }
+  .menu-item { background: var(--bg); border: 1px solid var(--border-light); color: var(--text); padding: 10px 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 12.5px; font-weight: 600; }
+  .drawer-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 999; display: none; }
+  .drawer-overlay.active { display: block; }
+
+  .user-auth-badge { background: var(--surface-light); border: 1px solid var(--border-light); padding: 10px; border-radius: 10px; font-size: 11.5px; color: var(--accent-gold); display: flex; justify-content: space-between; align-items: center; }
+
+  /* LONG PRESS / CONTEXT MENU ACTION SHEET */
+  .context-sheet-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 30000;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .context-sheet-overlay.active { display: flex; }
+  .context-sheet {
+    background: var(--surface-solid);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    width: 100%;
+    max-width: 500px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: var(--shadow);
+    animation: slideUp 0.2s ease-out forwards;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .context-action-btn {
+    background: var(--bg);
+    border: 1px solid var(--border-light);
+    color: var(--text);
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+  }
+  .context-action-btn:active { background: var(--surface-light); }
+
+  /* MODALS */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 20000; display: none; align-items: center; justify-content: center; padding: 16px; }
+  .modal-overlay.active { display: flex; }
+  .modal-card { background: var(--surface-solid); border: 1px solid var(--border-light); border-radius: 14px; width: 100%; max-width: 460px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: var(--shadow); overflow: hidden; color: var(--text); }
+  .modal-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .modal-body { padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+
+  .typing-dots span { height: 6px; width: 6px; float: left; margin: 0 2px; background-color: var(--text-muted); border-radius: 50%; display: inline-block; animation: bounce 1.3s infinite ease-in-out; }
+  .typing-dots span:nth-child(2) { animation-delay: -1.1s; }
+  .typing-dots span:nth-child(3) { animation-delay: -0.9s; }
+  @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+</style>
 </head>
-<body>
+<body data-theme="dark">
 
-<!-- Custom Notification Box -->
-<div id="custom-alert-box">
-  <span id="custom-alert-msg">Notification</span>
-  <button onclick="dismissCustomAlert()">OK</button>
+<!-- ONBOARDING OVERLAY -->
+<div id="onboardingOverlay" style="display: none;">
+  <video class="bg-video-frame" autoplay loop muted playsinline>
+    <source src="https://assets.mixkit.co/videos/preview/mixkit-tech-abstract-background-animation-31517-large.mp4" type="video/mp4">
+  </video>
+  <div class="onboarding-content">
+    <div class="onboarding-logo">G</div>
+    <div class="onboarding-title" id="onboardingText">G-Tech-Antho-Flock.</div>
+    <button class="skip-btn" onclick="completeOnboarding()">Skip to Chat</button>
+  </div>
 </div>
 
-<header>
-  <div class="title">
-    <span>⚡ G-Tech Anto Flock</span>
-    <button onclick="formatCode()">🧹 Format</button>
-    <button onclick="toggleWordWrap()" id="btn-wrap">Wrap</button>
-    <button onclick="copyCode()">📋 Copy</button>
-    <button onclick="clearEditor()" style="color:#ff7b72;">Clear</button>
-  </div>
-  <div class="header-controls">
-    <button class="ai-badge" id="ai-status" onclick="triggerAIFix()">🤖 AI Fix</button>
-    <!-- Tap Button to Open Interactive Face-to-Face AI Page -->
-    <button class="ai-badge" style="background:var(--purple);" onclick="openAIChat()">💬 AI Studio Page</button>
-  </div>
-</header>
+<div id="toastContainer"></div>
 
-<div class="tab-bar" id="tab-bar">
-  <button class="btn-add-file" onclick="addNewFile()">+ New</button>
+<!-- HEADER BAR -->
+<div class="header">
+  <div class="brand">
+    <div class="brand-logo">G</div>
+    GT-AnthoFlock <span>AI</span>
+  </div>
+  
+  <div class="mode-pills">
+    <button class="mode-pill active" onclick="switchMode('customer', event)">Customer</button>
+    <button class="mode-pill" onclick="switchMode('student', event)">Student</button>
+    <button class="mode-pill" onclick="switchMode('repair', event)">Employees</button>
+  </div>
+
+  <div class="header-actions">
+    <button class="icon-btn" onclick="toggleMenu()" title="Open Menu">⋮</button>
+  </div>
 </div>
 
-<div class="workspace" id="workspace">
-  <div class="editor-section">
-    <div class="editor-wrapper">
-      <div class="line-gutter" id="line-gutter">1</div>
-      <div class="code-container">
-        <pre id="highlight-layer"><code id="highlight-content"></code></pre>
-        <textarea id="code-input" oninput="scheduleUpdate()" onscroll="syncScroll()" spellcheck="false" autocomplete="off" autocapitalize="off" onclick="scheduleUpdate()" onkeyup="scheduleUpdate()"></textarea>
-        <div id="suggest-box"></div>
+<!-- SEARCH & TELEMETRY TOOLBAR -->
+<div class="toolbar-wrapper">
+  <div class="search-filter-bar">
+    <input type="text" id="chatSearchInput" placeholder="🔍 Search current chat messages..." oninput="filterChatMessages()">
+    <span class="filter-status" id="filterStatus"></span>
+  </div>
+</div>
+
+<!-- CHAT WORKSPACE -->
+<div class="chat-container" id="chatBox" onscroll="handleChatScroll()">
+  <button id="scrollDownBtn" onclick="forceScrollToBottom()" title="Jump to Bottom">↓</button>
+</div>
+
+<!-- TTS CONTROL BAR -->
+<div id="ttsControlBar">
+  <span id="ttsStatusText">🔊 Speaking response...</span>
+  <div style="display: flex; gap: 6px;">
+    <button id="ttsPauseBtn" onclick="toggleTTSPause()">Pause</button>
+    <button onclick="stopTTS()">Stop</button>
+  </div>
+</div>
+
+<!-- REPLY PREVIEW BANNER -->
+<div class="reply-preview" id="replyPreview">
+  <span id="replyPreviewText">Replying to message...</span>
+  <close onclick="cancelReply()">✕</close>
+</div>
+
+<!-- INPUT DOCK -->
+<div class="input-dock-wrapper">
+  <div class="file-upload-preview" id="fileUploadPreview">
+    <img id="fileThumbPreview" style="max-height: 28px; border-radius: 4px; display: none;">
+    <span id="fileUploadName" style="flex:1;">📎 File attached</span>
+    <close onclick="cancelAttachment()" style="cursor:pointer; font-weight:bold;">✕</close>
+  </div>
+  <div class="input-dock">
+    <input type="file" id="hiddenFileInput" style="display:none;" onchange="handleFileSelected(event)">
+    <button class="icon-btn" onclick="document.getElementById('hiddenFileInput').click()" title="Attach File for Conversion" style="margin-bottom: 2px;">📎</button>
+    <textarea id="userInput" rows="1" placeholder="Type prompt (or 'im' for files)..." autocomplete="off" oninput="handleInputChange()" onclick="handleInputChange()"></textarea>
+    <button id="actionBtn" class="voice-btn" onclick="handleActionButtonClick()" title="Voice Input">🎤</button>
+  </div>
+</div>
+
+<!-- ACTION DRAWER MENU -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="toggleMenu()"></div>
+<div class="menu-drawer" id="menuDrawer">
+  <div class="menu-header">
+    <h3>System Control</h3>
+    <button class="icon-btn" onclick="toggleMenu()">✕</button>
+  </div>
+
+  <div class="user-auth-badge" id="authBadge">
+    <span id="authBadgeText">Session: Guest Mode</span>
+    <button id="authBtnAction" style="background: var(--primary-accent); border: none; color: white; padding: 4px 10px; border-radius: 8px; font-size: 11px; cursor: pointer; font-weight: 600;" onclick="handleAuthAction()">Sign In</button>
+  </div>
+
+  <div class="menu-item" onclick="openStudentCameraScanner()">
+    <span>📷</span> Student Question Scanner (OCR & Torch)
+  </div>
+  <div class="menu-item" onclick="openExportModal()">
+    <span>📥</span> Export Selected Content
+  </div>
+  <div class="menu-item" onclick="showUpdatesModal()">
+    <span>🔔</span> Get Updates
+  </div>
+  <div class="menu-item" onclick="window.open('https://tiktok.com/@godfreyanthony682', '_blank')">
+    <span>🎵</span> Follow on TikTok (@godfreyanthony682)
+  </div>
+  <div class="menu-item" onclick="toggleTheme()">
+    <span>🌙 / ☀️</span> Toggle Light/Dark Theme
+  </div>
+  <div class="menu-item" onclick="showPinnedMessagesModal()">
+    <span>📌</span> View Pinned Messages
+  </div>
+  <div class="menu-item" onclick="clearCurrentChat()">
+    <span>🗑️</span> Clear Active Chat
+  </div>
+</div>
+
+<!-- LONG-PRESS / CONTEXT MENU ACTION SHEET -->
+<div class="context-sheet-overlay" id="contextSheetOverlay" onclick="closeContextMenu()">
+  <div class="context-sheet" onclick="event.stopPropagation()">
+    <div style="font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 4px;">MESSAGE OPTIONS</div>
+    <div class="context-action-btn" onclick="triggerContextAction('reply')">↩️ Reply to Message</div>
+    <div class="context-action-btn" onclick="triggerContextAction('copy')">📋 Copy Text</div>
+    <div class="context-action-btn" onclick="triggerContextAction('tts')">🔊 Read Aloud (TTS)</div>
+    <div class="context-action-btn" onclick="triggerContextAction('pin')">📌 Pin / Unpin Message</div>
+  </div>
+</div>
+
+<!-- CAMERA OCR SCANNER MODAL WITH TORCH & LENS SWITCH -->
+<div class="modal-overlay" id="cameraModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h4>📷 Student Question Scanner</h4>
+      <button class="icon-btn" onclick="closeStudentCameraScanner()">✕</button>
+    </div>
+    <div class="modal-body" style="align-items: center; text-align: center;">
+      <video id="cameraStream" autoplay playsinline style="width: 100%; max-height: 200px; border-radius: 10px; background: #000;"></video>
+      <canvas id="cameraCanvas" style="display:none;"></canvas>
+      <div style="display: flex; gap: 8px; width: 100%; justify-content: center;">
+        <button style="background: var(--surface-light); color: var(--text); border: 1px solid var(--border-light); padding: 6px 12px; border-radius: 14px; font-size: 12px; cursor: pointer;" onclick="toggleFlashlight()">🔦 Torch / Flash</button>
+        <button style="background: var(--surface-light); color: var(--text); border: 1px solid var(--border-light); padding: 6px 12px; border-radius: 14px; font-size: 12px; cursor: pointer;" onclick="switchCameraLens()">🔄 Switch Lens</button>
+      </div>
+      <button style="background: var(--primary-accent); color: white; border: none; padding: 8px 18px; border-radius: 18px; font-weight: 600; cursor: pointer;" onclick="captureAndScanImage()">Scan Question</button>
+      <div id="ocrStatus" style="font-size: 11px; color: var(--accent-gold);">Ready to scan text, diagrams, and notes...</div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT MODAL -->
+<div class="modal-overlay" id="exportModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h4>📥 Dedicated Export Formats</h4>
+      <button class="icon-btn" onclick="closeExportModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size: 11.5px; color: var(--text-muted);">Select export format for pinned content:</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <button class="menu-item" onclick="processExport('text')">📄 Plain Text (.txt)</button>
+        <button class="menu-item" onclick="processExport('pdf')">📕 Dynamic PDF Document</button>
+        <button class="menu-item" onclick="processExport('table')">📊 Formatted HTML Table</button>
+        <button class="menu-item" onclick="processExport('audio')">🎵 Synthesized Audio (TTS)</button>
       </div>
     </div>
   </div>
-  <div class="preview-section">
-    <iframe id="preview-viewport" sandbox="allow-scripts allow-modals"></iframe>
-  </div>
 </div>
 
-<!-- Custom On-Screen Virtual Keyboard Permanently Anchored -->
-<div class="full-keyboard" id="custom-keyboard">
-  <div class="kb-row">
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('q')">q<span class="sub-num">1</span></button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('w')">w<span class="sub-num">2</span></button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('e')">e<span class="sub-num">3</span></button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('r')">r<span class="sub-num">4</span></button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('t')">t<span class="sub-num">5</span></button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('y')">y<span class="sub-num">6</span></button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('u')">u<span class="sub-num">7</span></button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('i')">i<span class="sub-num">8</span></button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('o')">o<span class="sub-num">9</span></button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('p')">p<span class="sub-num">0</span></button>
-    <button class="k-btn wide" onmousedown="event.preventDefault()" onclick="kbBackspace()">⌫</button>
-  </div>
-  <div class="kb-row">
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('<')">&lt;</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('>')">&gt;</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('/')">/</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('=')">=</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('{')">{</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('}')">}</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('(')">(</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert(')')">)</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('[')">[</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert(']')">]</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert(';')">;</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert(':')">:</button>
-  </div>
-  <div class="kb-row">
-    <button class="k-btn type-mode" onmousedown="event.preventDefault()" onclick="toggleKeyType()" id="kb-type-btn">MODE: ALL</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('a')">a</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('s')">s</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('d')">d</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('f')">f</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('g')">g</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('h')">h</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('j')">j</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('k')">k</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('l')">l</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('+')">+</button>
-    <button class="k-btn wide" onmousedown="event.preventDefault()" onclick="kbInsert('\n')">↵ Enter</button>
-  </div>
-  <div class="kb-row">
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('z')">z</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('x')">x</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('c')">c</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('v')">v</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('b')">b</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('n')">n</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('m')">m</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('.')">.</button>
-    <button class="k-btn" onmousedown="event.preventDefault()" onclick="kbInsert('&quot;')">"</button>
-    <button class="k-btn space" onmousedown="event.preventDefault()" onclick="kbInsert(' ')">Space</button>
-    <button class="k-btn action" onmousedown="event.preventDefault()" onclick="triggerAIFix()">✨ AI</button>
-  </div>
-</div>
-
-<!-- Output Console Panel -->
-<div class="console-box" id="console-box">
-  <div class="console-header" onclick="toggleConsoleDrawer()">
-    <span>⬢ Output Console</span>
-    <span id="console-toggle-indicator" style="font-size:10px; color:#8b949e;">▲ Tap to Open</span>
-  </div>
-  <div class="console-logs" id="console-logs"></div>
-</div>
-
-<!-- Fullscreen Face-to-Face Offline AI Chat Studio Overlay -->
-<div class="ai-chat-overlay" id="ai-chat-overlay">
-  <div class="ai-chat-header">
-    <h1>🤖 Face-to-Face AI Assistant</h1>
-    <button class="ai-chat-back" onclick="closeAIChat()">← Back to Code Workspace</button>
-  </div>
-  
-  <div class="ai-avatar-container">
-    <div class="ai-avatar" id="ai-face-avatar">🤖</div>
-    <div>
-      <h3 style="font-size: 14px; color: var(--accent);">G-Tech AI Studio Engine</h3>
-      <p style="font-size: 11px; color: #8b949e;">Face-to-face interactive AI generation page active.</p>
+<!-- GET UPDATES MODAL -->
+<div class="modal-overlay" id="updatesModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h4>🔔 G'sTAF Release Updates</h4>
+      <button class="icon-btn" onclick="closeUpdatesModal()">✕</button>
+    </div>
+    <div class="modal-body" style="font-size: 12.5px; line-height: 1.5;">
+      <strong>Version V3.0.3256 Production Elite Integration:<br>
+      * Universal File Conversion & Safety Guardrails.<br>
+      * Context-Exact Live Suggestions & Page DOM Awareness.<br>
+      * Media Download Pipeline for Audio, Video, and Code.<br>
+      * Enhanced OCR with Diagram & Handwriting Support.<br>
+      * Clean UI with Long-Press Action Sheets & Clean Text.
     </div>
   </div>
+</div>
 
-  <div class="ai-chat-messages" id="ai-chat-messages">
-    <div class="msg assistant">👋 Welcome! Discuss or request any web layout here. Once generated, your prompt clears instantly so your screen stays clean!</div>
+<!-- PINNED MESSAGES MODAL -->
+<div class="modal-overlay" id="pinnedModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h4>📌 Pinned Messages</h4>
+      <button class="icon-btn" onclick="hidePinnedMessagesModal()">✕</button>
+    </div>
+    <div class="modal-body" id="pinnedModalBody">
+      <div style="color: var(--text-muted); font-size: 12px;">No pinned messages found.</div>
+    </div>
   </div>
-  
-  <div class="ai-chat-input-area">
-    <input type="text" id="ai-chat-input" placeholder="Describe any webpage/feature to generate...">
-    <label class="file-upload-label" for="ai-file-input">📁 Upload File</label>
-    <input type="file" id="ai-file-input" style="display:none;" onchange="handleFileUpload(event)">
-    <button class="send-btn" onclick="sendAIChat()">Generate / Chat</button>
+</div>
+
+<!-- CUSTOM ALERT MODAL -->
+<div class="modal-overlay" id="customAlertModal">
+  <div class="modal-card" style="max-width: 380px; text-align: center;">
+    <div class="modal-header" style="justify-content: center;">
+      <h4 id="customAlertTitle" style="color: var(--accent-gold);">GT-AnthoFix AI</h4>
+    </div>
+    <div class="modal-body" id="customAlertMessage" style="font-size: 13px; line-height: 1.4; padding: 16px;"></div>
+    <div style="padding: 12px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: center;">
+      <button id="customAlertCancelBtn" style="display:none; background: var(--surface-light); color: var(--text); border: 1px solid var(--border-light); padding: 6px 16px; border-radius: 16px; cursor: pointer; font-weight: 600;" onclick="closeCustomAlert(false)">Cancel</button>
+      <button id="customAlertConfirmBtn" style="background: var(--primary-accent); color: white; border: none; padding: 6px 20px; border-radius: 16px; cursor: pointer; font-weight: 600;" onclick="closeCustomAlert(true)">OK</button>
+    </div>
   </div>
 </div>
 
 <script>
-  // DOM Elements
-  const codeInput = document.getElementById('code-input');
-  const highlightContent = document.getElementById('highlight-content');
-  const highlightLayer = document.getElementById('highlight-layer');
-  const lineGutter = document.getElementById('line-gutter');
-  const previewViewport = document.getElementById('preview-viewport');
-  const aiStatus = document.getElementById('ai-status');
-  const customKeyboard = document.getElementById('custom-keyboard');
-  const workspace = document.getElementById('workspace');
-  const suggestBox = document.getElementById('suggest-box');
-  const tabBar = document.getElementById('tab-bar');
-  const consoleBox = document.getElementById('console-box');
-  const consoleLogs = document.getElementById('console-logs');
+let currentMode = 'customer';
+let activeReply = null;
+let searchQuery = '';
+let isRecording = false;
+let recognition = null;
+let currentToast = null;
+let chatMessages = [];
+let voiceSilenceTimer = null;
+let buttonState = 'voice';
+let customAlertResolver = null;
+let isTTSPaused = false;
+let cameraStreamObj = null;
+let onboardingTimer = null;
+let isVoiceTriggered = false;
+let globalAudioState = 'IDLE'; 
+let longPressTimer = null;
+let activeContextMsgId = null;
+let isUserScrollingUp = false;
+let sessionStartTime = Date.now();
+let cameraFacingMode = 'environment';
+let torchEnabled = false;
+let attachedFile = null;
+let hasGreetedInMode = {};
+let modeMismatchCount = 0; // Intelligent auto-switch counter
 
-  let isWordWrapped = false;
-  let updateScheduled = false;
-  let currentKeyTypeIndex = 0;
-  const keyTypeModes = ['ALL', 'HTML', 'JS', 'CSS', 'SYM'];
+const companyCoreKnowledge = `
+You are the official AI Assistant for G-Tech-Antho-Flock , also known as G'sTAF V3.0.3256 (Production Elite).
+Founder: Engineer Godfrey Anthony. Founded: 12th September 2026 in Asaba, Delta State, Nigeria.
 
-  // Multi-file Workspace Array
-  let files = [
-    { name: 'index.html', content: '<h1>Hello, G-Tech</h1>\n<p>Start coding...</p>' },
-    { name: 'style.css', content: 'body { background: #0d1117; color: #fff; font-family: sans-serif; }' },
-    { name: 'app.js', content: 'console.log("G-Tech Anto Flock Engine Active!");' }
-  ];
-  let activeFileIndex = 0;
+SAFETY & POLICY GUARDRAILS:
+- You must strictly refuse to generate violent, graphic, dangerous, illegal, or immoral language/content.
+- Medical Advice Policy: If providing medical or health-related information, append: "This is for informational purposes only and not a substitute for professional medical advice."
 
-  // Custom Toast Notification
-  function showAlert(msg) {
-    const box = document.getElementById('custom-alert-box');
-    document.getElementById('custom-alert-msg').textContent = msg;
-    box.classList.add('show');
-    setTimeout(() => { box.classList.remove('show'); }, 3500);
+AI SYSTEM CONTROL PROTOCOL:
+- You are a page co-pilot. You can trigger system commands silently by outputting exact bracket commands.
+- Include [CMD: THEME] in your text to toggle light/dark mode if the user requests it.
+- Include [CMD: TORCH] to toggle the user's camera flashlight.
+- Include [CMD: CLEAR] to clear the active chat. 
+(These commands are processed by the frontend and hidden from the user).
+
+OPERATIONAL PROTOCOLS & LOGICAL REASONING:
+- Apply rigorous Chain-of-Thought reasoning for complex technical, coding, or academic queries.
+- Structure responses with clear analogies, step-by-step breakdowns, and professional empathy.
+`;
+ 
+const modePrompts = {
+  customer: companyCoreKnowledge + "\nCURRENT ACTIVE MODE: Customer & General Support. Be extremely helpful, polite, and prompt.",
+  student: companyCoreKnowledge + "\nCURRENT ACTIVE MODE: Student / Learner Studio AI. Provide detailed step-by-step explanations, clear physics/math formulations (using \\frac{a}{b}, x^2, \\sqrt{x} syntax), and Socratic guidance.",
+  repair: companyCoreKnowledge + "\nCURRENT ACTIVE MODE: Employees & Repair Diagnostic Hub. Focus on precise hardware diagnostics, component testing, multimeter voltage ranges, and circuit pinout analysis."
+};
+
+function getSystemTelemetry() {
+  const now = new Date();
+  const pinnedCount = chatMessages.filter(m => m.pinned).length;
+  const tableCount = document.querySelectorAll('.table-container-card').length;
+  const codeCount = document.querySelectorAll('.code-container').length;
+  
+  return `[System Context: Date/Time=${now.toLocaleString()}, Location/TZ=${Intl.DateTimeFormat().resolvedOptions().timeZone}, Browser=${navigator.userAgent}, ActiveMode=${currentMode}, TotalMessages=${chatMessages.length}, PinnedMessages=${pinnedCount}]`;
+}
+
+function triggerHaptic(type = 'light') {
+  if ('vibrate' in navigator) {
+    if (type === 'light') navigator.vibrate(15);
+    else if (type === 'medium') navigator.vibrate(40);
+    else if (type === 'heavy') navigator.vibrate([30, 50, 30]);
   }
-  function dismissCustomAlert() {
-    document.getElementById('custom-alert-box').classList.remove('show');
+}
+
+function updateSessionStats() {
+  const diffMinutes = Math.floor((Date.now() - sessionStartTime) / 60000);
+  const badge = document.getElementById('sessionStatsBadge');
+  if (badge) {
+    badge.innerText = `Messages: ${chatMessages.length} | Time: ${diffMinutes}m`;
+  }
+}
+setInterval(updateSessionStats, 30000);
+
+function initNetworkMonitoring() {
+  const badge = document.getElementById('networkStatusBadge');
+  function updateNetStatus() {
+    if (navigator.onLine) {
+      if (badge) { badge.innerText = '🌐 Online'; badge.style.color = '#10B981'; }
+    } else {
+      if (badge) { badge.innerText = '⚠️ Offline'; badge.style.color = '#EF4444'; }
+      showToast('Network connection lost. please check your Internet connection.', 'warning');
+    }
+  }
+  window.addEventListener('online', updateNetStatus);
+  window.addEventListener('offline', updateNetStatus);
+  updateNetStatus();
+}
+
+async function checkAuthState() {
+  const badgeText = document.getElementById('authBadgeText');
+  const btnAction = document.getElementById('authBtnAction');
+
+  if (typeof puter === 'undefined' || !puter.auth) {
+    if (badgeText) badgeText.innerText = 'Session: Guest Mode';
+    if (btnAction) btnAction.innerText = 'Sign In';
+    return;
   }
 
-  // Completion Rules
-  const completions = {
-    html: ['<!DOCTYPE html>','html','head','body','title','meta','link','script','style','div','span','h1','h2','h3','p','a','button','input','img','ul','li','form','textarea','canvas','iframe','header','footer','section','nav','class=""','id=""','onclick=""','style=""','src=""','href=""'],
-    css: ['display: flex;','display: block;','display: grid;','position: absolute;','position: relative;','top:','left:','width:','height:','margin:','padding:','background:','color:','font-family:','font-size:','border:','border-radius:','box-shadow:','opacity:','z-index:','overflow:','justify-content: center;','align-items: center;','flex-direction: column;','gap:','cursor: pointer;'],
-    js: ['function','const','let','var','return','if','else','for','while','switch','case','break','try','catch','class','async','await','document.getElementById','document.querySelector','addEventListener','console.log','console.error','JSON.stringify','JSON.parse','fetch','setTimeout','setInterval']
+  try {
+    const authPromise = new Promise((resolve) => {
+      try {
+        if (puter.auth.isSignedIn()) {
+          puter.auth.getUser().then(user => {
+            resolve(user ? (user.username || 'Authenticated User') : 'Authenticated User');
+          }).catch(() => resolve(null));
+        } else {
+          resolve(null);
+        }
+      } catch (err) { resolve(null); }
+    });
+
+    const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(null), 2500));
+    const userName = await Promise.race([authPromise, timeoutPromise]);
+
+    if (userName) {
+      if (badgeText) badgeText.innerText = `Logged In: ${userName}`;
+      if (btnAction) btnAction.innerText = 'Sign Out';
+    } else {
+      if (badgeText) badgeText.innerText = 'Session: Guest Mode';
+      if (btnAction) btnAction.innerText = 'Sign In';
+    }
+  } catch (e) {
+    if (badgeText) badgeText.innerText = 'Session: Guest Mode';
+    if (btnAction) btnAction.innerText = 'Sign In';
+  }
+}
+
+async function handleAuthAction() {
+  triggerHaptic('light');
+  if (typeof puter === 'undefined' || !puter.auth) {
+    showToast('Puter SDK initializing. Please wait...', 'info');
+    return;
+  }
+  try {
+    if (puter.auth.isSignedIn()) {
+      await puter.auth.signOut();
+      showToast('Signed out successfully.', 'info');
+    } else {
+      showToast('Opening sign-in window...', 'info');
+      await puter.auth.signIn();
+      showToast('Signed in successfully!', 'success');
+    }
+  } catch (err) {
+    showToast('Session updated.', 'info');
+  }
+  checkAuthState();
+}
+
+function initBatteryMonitoring() {
+  if ('getBattery' in navigator) {
+    navigator.getBattery().then(battery => {
+      function checkBatteryStatus() {
+        const level = Math.round(battery.level * 100);
+        if (level <= 20 && !battery.charging) {
+          showToast(`⚠️ Low Battery Warning: Device at ${level}%. Please connect charger.`, 'warning', 5000);
+        }
+      }
+      checkBatteryStatus();
+      battery.addEventListener('levelchange', checkBatteryStatus);
+      battery.addEventListener('chargingchange', checkBatteryStatus);
+    });
+  }
+}
+
+async function triggerOnboardingFlow() {
+  const hasCompleted = sessionStorage.getItem('gstaf_onboarded_v3');
+  if (!hasCompleted) {
+    const overlay = document.getElementById('onboardingOverlay');
+    overlay.style.display = 'flex';
+    let dots = 1;
+    onboardingTimer = setInterval(() => {
+      dots = (dots % 3) + 1;
+      document.getElementById('onboardingText').innerText = 'G-Tech-Antho-Flock ' + '.'.repeat(dots);
+    }, 600);
+
+    setTimeout(() => { completeOnboarding(); }, 3500);
+  } else {
+    checkAuthState();
+  }
+}
+
+async function completeOnboarding() {
+  clearInterval(onboardingTimer);
+  document.getElementById('onboardingOverlay').style.display = 'none';
+  sessionStorage.setItem('gstaf_onboarded_v3', 'true');
+  checkAuthState();
+}
+
+function initAppState() {
+  document.documentElement.style.width = '100%';
+  document.body.style.width = '100%';
+
+  const savedTheme = localStorage.getItem('gt_theme') || 'dark';
+  document.body.setAttribute('data-theme', savedTheme);
+
+  const savedLogs = localStorage.getItem('gt_chat_logs_v3');
+  if (savedLogs) {
+    try { chatMessages = JSON.parse(savedLogs); } catch (e) { chatMessages = []; }
+  }
+
+  renderChatHistory();
+
+  if (chatMessages.length === 0) {
+    triggerInitialGreeting();
+  }
+
+  initBatteryMonitoring();
+  initNetworkMonitoring();
+  triggerOnboardingFlow();
+  updateSessionStats();
+}
+
+function saveState() {
+  localStorage.setItem('gt_chat_logs_v3', JSON.stringify(chatMessages));
+  updateSessionStats();
+}
+
+function showCustomAlert(message, title = "GT-AnthoFlock AI System", showCancel = false) {
+  return new Promise((resolve) => {
+    customAlertResolver = resolve;
+    document.getElementById('customAlertTitle').innerText = title;
+    document.getElementById('customAlertMessage').innerText = message;
+    document.getElementById('customAlertCancelBtn').style.display = showCancel ? 'inline-block' : 'none';
+    document.getElementById('customAlertModal').classList.add('active');
+  });
+}
+
+function closeCustomAlert(result) {
+  document.getElementById('customAlertModal').classList.remove('active');
+  if (customAlertResolver) {
+    customAlertResolver(result);
+    customAlertResolver = null;
+  }
+}
+
+function showToast(message, type = 'info', duration = 3000) {
+  if (currentToast) currentToast.remove();
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast-bubble toast-${type}`;
+  let icon = type === 'success' ? '✅' : type === 'warning' ? '⚠️' : type === 'error' ? '❌' : 'ℹ️';
+  toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+  container.appendChild(toast);
+  currentToast = toast;
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => { toast.remove(); if (currentToast === toast) currentToast = null; }, 300);
+  }, duration);
+}
+
+function toggleTheme() {
+  triggerHaptic('light');
+  const current = document.body.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', next);
+  localStorage.setItem('gt_theme', next);
+  showToast(`Theme switched to ${next.toUpperCase()} mode`, 'info');
+}
+
+function toggleMenu() {
+  triggerHaptic('light');
+  checkAuthState();
+  document.getElementById('menuDrawer').classList.toggle('open');
+  document.getElementById('drawerOverlay').classList.toggle('active');
+}
+
+function switchMode(mode, event) {
+  triggerHaptic('medium');
+  currentMode = mode;
+  document.querySelectorAll('.mode-pill').forEach(btn => btn.classList.remove('active'));
+  if (event && event.target) {
+    event.target.classList.add('active');
+  } else {
+    const pills = document.querySelectorAll('.mode-pill');
+    if (mode === 'customer' && pills[0]) pills[0].classList.add('active');
+    if (mode === 'student' && pills[1]) pills[1].classList.add('active');
+    if (mode === 'repair' && pills[2]) pills[2].classList.add('active');
+  }
+
+  if (!hasGreetedInMode[mode]) {
+    hasGreetedInMode[mode] = true;
+    triggerInitialGreeting();
+  }
+}
+
+function triggerInitialGreeting() {
+  const greetings = {
+    customer: "Hello! Welcome to G-Tech-AnthoFix (G'sTAF AI V3.0.3256 - Production Elite). How can I assist you with technology, repairs, or platform services today?",
+    student: "Hello Scholar! G'sTAF Learner Studio is active with enhanced Chain-of-Thought reasoning. What science, math, or coding topic are we solving today?",
+    repair: "Greetings Team! G'sTAF Repair & Employee Hub is ready. What circuit diagnostic, component pinout, or hardware repair can I analyze?"
   };
+  addBotMessage(greetings[currentMode] || greetings.customer, null, null, false);
+}
 
-  // Tabs System
-  function renderTabs() {
-    tabBar.innerHTML = '';
-    files.forEach((file, idx) => {
-      const tab = document.createElement('div');
-      tab.className = 'tab-item' + (idx === activeFileIndex ? ' active' : '');
-      tab.innerHTML = `<span>${file.name}</span><span class="tab-close" data-idx="${idx}">✕</span>`;
-      tab.addEventListener('click', (e) => {
-        if (e.target.classList.contains('tab-close')) { e.stopPropagation(); closeFile(idx); return; }
-        switchTab(idx);
-      });
-      tabBar.appendChild(tab);
-    });
-    const addBtn = document.createElement('button');
-    addBtn.className = 'btn-add-file';
-    addBtn.textContent = '+ New';
-    addBtn.onclick = addNewFile;
-    tabBar.appendChild(addBtn);
+function handleInputChange() {
+  const input = document.getElementById('userInput');
+  const btn = document.getElementById('actionBtn');
+  
+  // "im" Keyword Shortcut Feature
+  if (input.value === 'im') {
+    input.value = '';
+    document.getElementById('hiddenFileInput').click();
+    return;
   }
 
-  function switchTab(idx) {
-    if (idx === activeFileIndex) return;
-    files[activeFileIndex].content = codeInput.value;
-    activeFileIndex = idx;
-    codeInput.value = files[activeFileIndex].content;
-    renderTabs();
-    scheduleUpdate();
-    updatePreview();
+  // Auto-resize for textarea up to a limit
+  input.style.height = 'auto';
+  input.style.height = (input.scrollHeight < 80 ? input.scrollHeight : 80) + 'px';
+
+  if (input.value.trim().length > 0 || attachedFile) {
+    buttonState = 'send';
+    btn.innerHTML = 'Send';
+    btn.className = ''; 
+    btn.style.borderRadius = '24px';
+    btn.style.width = 'auto';
+    btn.style.height = 'auto';
+    btn.style.padding = '10px 18px';
+  } else {
+    buttonState = 'voice';
+    btn.innerHTML = '🎤';
+    btn.className = 'voice-btn' + (isRecording ? ' recording' : '');
+    btn.style.borderRadius = '50%';
+    btn.style.width = '40px';
+    btn.style.height = '40px';
+    btn.style.padding = '0';
+  }
+}
+
+function handleActionButtonClick() {
+  triggerHaptic('light');
+  if (buttonState === 'send') {
+    sendMsg();
+  } else {
+    toggleVoiceInput();
+  }
+}
+
+/* UNIVERSAL FILE ATTACHMENT & CONVERSION W/ SCAN STATE */
+function handleFileSelected(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  attachedFile = file;
+
+  const thumb = document.getElementById('fileThumbPreview');
+  if(file.type.startsWith('image/')) {
+     thumb.src = URL.createObjectURL(file);
+     thumb.style.display = 'block';
+  } else {
+     thumb.style.display = 'none';
   }
 
-  function closeFile(idx) {
-    if (files.length <= 1) return;
-    files.splice(idx, 1);
-    if (idx <= activeFileIndex) activeFileIndex = Math.max(0, activeFileIndex - 1);
-    codeInput.value = files[activeFileIndex].content;
-    renderTabs();
-    scheduleUpdate();
-    updatePreview();
-  }
+  document.getElementById('fileUploadName').innerText = `📎 AI Scanning: ${file.name}...`;
+  document.getElementById('fileUploadPreview').style.display = 'flex';
+  
+  // Lock Send State Feature
+  const btn = document.getElementById('actionBtn');
+  btn.disabled = true;
+  btn.style.opacity = '0.5';
 
-  function addNewFile() {
-    const name = prompt('Enter new file name:', 'script.js');
-    if (!name) return;
-    const ext = name.split('.').pop();
-    let content = ext === 'html' ? '<div>New Page</div>' : ext === 'css' ? '/* CSS */' : '// JS Code';
-    files.push({ name, content });
-    activeFileIndex = files.length - 1;
-    codeInput.value = content;
-    renderTabs();
-    scheduleUpdate();
-    updatePreview();
-  }
+  setTimeout(() => {
+     document.getElementById('fileUploadName').innerText = `📎 Attached: ${file.name} (${Math.round(file.size/1024)} KB)`;
+     btn.disabled = false;
+     btn.style.opacity = '1';
+     handleInputChange();
+     showToast(`AI Scan complete. File integrated.`, 'success');
+  }, 2000);
+}
 
-  // Update Schedules
-  function scheduleUpdate() {
-    if (!updateScheduled) {
-      updateScheduled = true;
-      requestAnimationFrame(() => {
-        updateScheduled = false;
-        updateEditor();
-        updatePreview();
-      });
+function cancelAttachment() {
+  attachedFile = null;
+  document.getElementById('fileUploadPreview').style.display = 'none';
+  document.getElementById('hiddenFileInput').value = '';
+  document.getElementById('fileThumbPreview').style.display = 'none';
+  handleInputChange();
+}
+
+async function processFileConversion(file, targetFormat) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const content = e.target.result;
+      let convertedName = `converted_${Date.now()}`;
+
+      if (targetFormat === 'pdf' && window.jspdf && window.jspdf.jsPDF) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("G'sTAF AI - Converted File Document", 14, 15);
+        doc.setFontSize(10);
+        doc.text(typeof content === 'string' ? content : "Binary file converted successfully.", 14, 25, { maxWidth: 180 });
+        const pdfOutput = doc.output('datauristring');
+        resolve({ name: `${convertedName}.pdf`, url: pdfOutput, type: 'pdf' });
+        return;
+      } else if (targetFormat === 'txt') {
+        const blob = new Blob([typeof content === 'string' ? content : JSON.stringify(content)], { type: 'text/plain' });
+        resolve({ name: `${convertedName}.txt`, url: URL.createObjectURL(blob), type: 'txt' });
+        return;
+      } else {
+        const blob = new Blob([content], { type: 'application/octet-stream' });
+        resolve({ name: `${convertedName}.${targetFormat}`, url: URL.createObjectURL(blob), type: targetFormat });
+        return;
+      }
+    };
+
+    if (file.type.includes('image') || file.type.includes('pdf')) {
+      reader.readAsDataURL(file);
+    } else {
+      reader.readAsText(file);
     }
-  }
+  });
+}
 
-  function updateEditor() {
-    const text = applyCustomVariableShorthands(codeInput.value);
-    files[activeFileIndex].content = text;
-    highlightContent.innerHTML = highlightSyntax(text);
-    syncScroll();
-    updateGutter();
-    updateAutocomplete();
-  }
+/* ADVANCED MARKDOWN, CODE, TABLE, & MATHEMATICAL PARSER */
+function parseCustomMarkdown(text) {
+  if (!text) return '';
 
-  function applyCustomVariableShorthands(code) {
-    if (files[activeFileIndex].name.endsWith('.js')) {
-      return code.replace(/\by\s+=/g, 'let =');
-    }
-    return code;
-  }
+  let codeBlocks = [];
+  let tableBlocks = [];
 
-  function updatePreview() {
-    let html = '', css = '', js = '';
-    files.forEach(f => {
-      if (f.name.endsWith('.html')) html += f.content + '\n';
-      else if (f.name.endsWith('.css')) css += f.content + '\n';
-      else if (f.name.endsWith('.js')) js += f.content + '\n';
+  // Isolate code blocks first so math regex doesn't alter code syntax
+  let processedText = text.replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => {
+    const id = 'code_block_' + Math.random().toString(36).substr(2, 9);
+    const language = lang || 'code';
+    codeBlocks.push({
+      id: id,
+      html: `
+        <div class="code-container">
+          <div class="code-header">
+            <span>${language.toUpperCase()}</span>
+            <div class="code-action-group">
+              <button class="code-copy-btn" onclick="copyRawCode('${id}')">Copy</button>
+              <a href="#" class="code-download-btn" onclick="downloadRawCode('${id}', '${language}'); return false;">Download</a>
+            </div>
+          </div>
+          <pre class="code-body" id="${id}">${escapeCodeHtml(code.trim())}</pre>
+        </div>`
     });
-    const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${css}</style></head><body>${html}<script>${js}<\/script></body></html>`;
-    const blob = new Blob([fullHtml], { type: 'text/html' });
-    previewViewport.src = URL.createObjectURL(blob);
-  }
+    return `___CODE_BLOCK_${codeBlocks.length - 1}___`;
+  });
 
-  // Color Token Syntax Highlighter
-  function highlightSyntax(text) {
-    let esc = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const rules = [
-      { regex: /\/\/.*/g, class: 'st-comment' },
-      { regex: /\/\*[\s\S]*?\*\//g, class: 'st-comment' },
-      { regex: /<!--[\s\S]*?-->/g, class: 'st-comment' },
-      { regex: /<!DOCTYPE[^>]*>/gi, class: 'st-meta-doctype' },
-      { regex: /'[^']*'/g, class: 'st-str' },
-      { regex: /"[^"]*"/g, class: 'st-str' },
-      { regex: /`[^`]*`/g, class: 'st-str' },
-      { regex: /\b\d+\b/g, class: 'st-num' },
-      { regex: /\b(true|false|null|undefined)\b/g, class: 'st-bool' },
-      { regex: /\b(const|let|var|function|return|if|else|for|while|switch|case|break|try|catch|class|async|await)\b/g, class: 'st-js-kw' },
-      { regex: /&lt;\/?(\w+)(?=[\s>])/g, class: 'st-html-tag' },
-      { regex: /\b(class|id|src|href|onclick|style|type|placeholder)\b(?=\s*=)/g, class: 'st-html-attr' },
-      { regex: /\b(display|position|top|left|right|bottom|width|height|margin|padding|background|color|font-family|font-size|border|border-radius|opacity|z-index)\b/g, class: 'st-css-prop' },
-      { regex: /[\{\}]/g, class: 'st-sym-brace' },
-      { regex: /[\(\)]/g, class: 'st-sym-paren' },
-      { regex: /[\[\]]/g, class: 'st-sym-bracket' },
-      { regex: /[=!<>]=?/g, class: 'st-sym-op-primary' },
-      { regex: /[+\-*\/%]/g, class: 'st-sym-op-secondary' },
-      { regex: /[;,.]/g, class: 'st-sym-term' },
-    ];
-    let matches = [];
-    for (const rule of rules) {
-      let m;
-      while ((m = rule.regex.exec(esc)) !== null) {
-        matches.push({ index: m.index, end: m.index + m[0].length, text: m[0], class: rule.class });
+  // Table Isolation
+  processedText = processedText.replace(/((?:\|(?:[^\n\r|]+\|)+[\r\n]*)+)/g, (match) => {
+    const lines = match.trim().split('\n').filter(l => l.trim().length > 0);
+    if (lines.length >= 2) {
+      const tableId = 'table_' + Math.random().toString(36).substr(2, 9);
+      let headers = [];
+      let rows = [];
+
+      lines.forEach((line, idx) => {
+        if (line.includes('---')) return;
+        const cells = line.split('|').map(c => c.trim()).filter((c, i, a) => i > 0 && i < a.length - 1);
+        if (idx === 0) headers = cells;
+        else if (cells.length > 0) rows.push(cells);
+      });
+
+      if (headers.length > 0) {
+        let tableHeaderHTML = headers.map(h => `<th>${h}</th>`).join('');
+        let tableRowsHTML = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('');
+        let tableMarkup = `
+          <div class="table-container-card" id="${tableId}_container">
+            <div class="table-toolbar">
+              <span>📊 DEDICATED DATA TABLE</span>
+              <div class="table-action-group">
+                <button class="tbl-btn" onclick="exportTableToPDF('${tableId}')">📕 Download PDF</button>
+                <button class="tbl-btn" onclick="exportTableToCSV('${tableId}')">📄 CSV</button>
+                <button class="tbl-btn" onclick="copyTableHTML('${tableId}')">📋 Copy</button>
+              </div>
+            </div>
+            <div class="table-scroll-wrapper">
+              <table class="custom-data-table" id="${tableId}">
+                <thead><tr>${tableHeaderHTML}</tr></thead>
+                <tbody>${tableRowsHTML}</tbody>
+              </table>
+            </div>
+          </div>`;
+        tableBlocks.push(tableMarkup);
+        return `___TABLE_BLOCK_${tableBlocks.length - 1}___`;
       }
     }
-    matches.sort((a,b) => a.index - b.index || b.end - a.end);
-    let merged = [];
-    for (const m of matches) {
-      if (merged.length === 0 || m.index >= merged[merged.length-1].end) merged.push(m);
+    return match;
+  });
+
+  let sanitized = processedText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  // Semantic Mathematical Formatting Feature
+  sanitized = sanitized.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '<span class="math-fraction"><span class="math-numerator">$1</span><span class="math-denominator">$2</span></span>');
+  sanitized = sanitized.replace(/\\sqrt\{([^}]+)\}/g, '<span class="math-sqrt">&radic;<span class="math-sqrt-content">$1</span></span>');
+  sanitized = sanitized.replace(/\^\{([^}]+)\}/g, '<sup>$1</sup>');
+  sanitized = sanitized.replace(/\^([a-zA-Z0-9]+)/g, '<sup>$1</sup>');
+
+  const urlRegex = /(https?:\/\/[^\s<]+)/g;
+  sanitized = sanitized.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer" class="chat-link">$1</a>');
+
+  sanitized = sanitized
+    .replace(/\*\*(.*?)\*\*/g, '<strong style="color:var(--text); font-weight:700;">$1</strong>')
+    .replace(/`(.*?)`/g, '<code style="background:var(--code-bg); padding:2px 6px; border-radius:4px; color:#38BDF8;">$1</code>')
+    .replace(/\n/g, '<br>');
+
+  codeBlocks.forEach((block, index) => {
+    sanitized = sanitized.replace(`___CODE_BLOCK_${index}___`, block.html);
+  });
+  tableBlocks.forEach((tableHtml, index) => {
+    sanitized = sanitized.replace(`___TABLE_BLOCK_${index}___`, tableHtml);
+  });
+
+  return sanitized;
+}
+
+function escapeCodeHtml(str) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function copyRawCode(containerId) {
+  triggerHaptic('light');
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const rawText = el.innerText || el.textContent;
+  navigator.clipboard.writeText(rawText).then(() => showToast('Code copied to clipboard!', 'success'));
+}
+
+function downloadRawCode(containerId, lang) {
+  triggerHaptic('light');
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const rawText = el.innerText || el.textContent;
+  const extension = lang === 'javascript' ? 'js' : lang === 'python' ? 'py' : lang === 'html' ? 'html' : 'txt';
+  const blob = new Blob([rawText], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `GSTAF_Code_${Date.now()}.${extension}`;
+  a.click();
+  showToast('Code downloaded successfully!', 'success');
+}
+
+function exportTableToPDF(tableId) {
+  triggerHaptic('light');
+  if (window.jspdf && window.jspdf.jsPDF) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.text("G'sTAF AI - Exported Data Table", 14, 15);
+    if (typeof doc.autoTable === 'function') {
+      doc.autoTable({ html: `#${tableId}`, startY: 20, theme: 'grid' });
     }
-    let out = '', pos = 0;
-    for (const m of merged) {
-      if (m.index > pos) out += `<span class="st-plain">${esc.substring(pos, m.index)}</span>`;
-      out += `<span class="${m.class}">${esc.substring(m.index, m.end)}</span>`;
-      pos = m.end;
-    }
-    if (pos < esc.length) out += `<span class="st-plain">${esc.substring(pos)}</span>`;
-    return out;
+    doc.save(`GSTAF_Table_${Date.now()}.pdf`);
+    showToast('Table downloaded as PDF!', 'success');
+  } else {
+    showToast('PDF generator library loading. Please retry...', 'warning');
+  }
+}
+
+function exportTableToCSV(tableId) {
+  triggerHaptic('light');
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  let csv = [];
+  for (let row of table.rows) {
+    let cols = Array.from(row.cells).map(cell => `"${cell.innerText.replace(/"/g, '""')}"`);
+    csv.push(cols.join(','));
+  }
+  const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `GSTAF_Table_${Date.now()}.csv`;
+  a.click();
+  showToast('Table downloaded as CSV!', 'success');
+}
+
+function copyTableHTML(tableId) {
+  triggerHaptic('light');
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  navigator.clipboard.writeText(table.outerHTML).then(() => showToast('Table HTML copied!', 'success'));
+}
+
+function extractVideoQuery(text) {
+  const match = text.match(/(?:show|play|find|get)\s+(?:me\s+)?(?:a\s+)?video\s+(?:about|on|of)?\s*(.*)/i);
+  return match ? match[1].trim() : null;
+}
+
+function extractImagePrompt(text) {
+  const match = text.match(/(?:generate|create|draw|make|show|picture|photo)\s+(?:an?\s+)?(?:image|picture|photo|drawing)\s+(?:of|about)?\s*(.*)/i);
+  return match ? match[1].trim() : null;
+}
+
+function checkModeContext(text) {
+  const lower = text.toLowerCase();
+  let detectedMode = currentMode;
+  
+  if (currentMode === 'customer') {
+     if (lower.includes('math') || lower.includes('physics') || lower.includes('equation') || lower.includes('code')) detectedMode = 'student';
+     if (lower.includes('repair') || lower.includes('voltage') || lower.includes('multimeter') || lower.includes('circuit')) detectedMode = 'repair';
+  } else if (currentMode === 'student' && (lower.includes('repair') || lower.includes('multimeter'))) {
+     detectedMode = 'repair';
   }
 
-  // Scroll Sync & Gutter Calculation
-  function updateGutter() {
-    const lines = codeInput.value.split('\n').length;
-    let html = '';
-    const cursorLine = getCursorLine();
-    for (let i = 1; i <= lines; i++) {
-      html += `<span class="line-num${i === cursorLine ? ' active-line' : ''}">${i}</span>`;
-    }
-    lineGutter.innerHTML = html;
+  if (detectedMode !== currentMode) {
+     modeMismatchCount++;
+     if (modeMismatchCount === 1) {
+        addBotMessage(`*Polite Notice:* Your query appears to be better suited for the **${detectedMode.toUpperCase()}** mode. If you continue on this topic, I will automatically switch modes for you to give you better results.`, null, null, null, null, false);
+     } else if (modeMismatchCount >= 2) {
+        modeMismatchCount = 0;
+        switchMode(detectedMode);
+        addBotMessage(`*Auto-Switch Executed:* I have transitioned us to **${detectedMode.toUpperCase()}** mode for optimal co-pilot assistance!`, null, null, null, null, false);
+     }
+  } else {
+     modeMismatchCount = Math.max(0, modeMismatchCount - 1);
+  }
+}
+
+async function sendMsg() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text && !attachedFile) return;
+
+  triggerHaptic('medium');
+  stopTTS();
+
+  let fileConversionResult = null;
+  if (attachedFile) {
+    const lowerText = text.toLowerCase();
+    let targetFmt = 'pdf';
+    if (lowerText.includes('txt') || lowerText.includes('text')) targetFmt = 'txt';
+    else if (lowerText.includes('csv')) targetFmt = 'csv';
+    
+    fileConversionResult = await processFileConversion(attachedFile, targetFmt);
   }
 
-  function getCursorLine() {
-    const val = codeInput.value;
-    const pos = codeInput.selectionStart;
-    return val.substring(0, pos).split('\n').length;
+  const videoSearchTerm = extractVideoQuery(text);
+  const imagePrompt = extractImagePrompt(text);
+
+  let formattedText = text;
+  if (activeReply) formattedText = `[Replying to: "${activeReply.text}"] ${text}`;
+  if (attachedFile) formattedText += ` [Attached File: ${attachedFile.name}]`;
+
+  const newMsg = {
+    id: 'msg_' + Date.now(),
+    sender: 'me',
+    text: formattedText,
+    replyTo: activeReply,
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    pinned: false
+  };
+
+  chatMessages.push(newMsg);
+  input.value = '';
+  input.style.height = 'auto'; // Reset text area height
+  cancelAttachment();
+  handleInputChange();
+  cancelReply();
+  saveState();
+  renderChatHistory();
+  showTypingIndicator();
+
+  // Mode auto-switching monitor execution
+  if(text.length > 3) checkModeContext(text);
+
+  if (fileConversionResult) {
+    removeTypingIndicator();
+    addBotMessage(`Here is your converted file ready for local download: **${fileConversionResult.name}**`, null, null, null, fileConversionResult, true);
+    return;
   }
 
-  function syncScroll() {
-    highlightLayer.scrollTop = codeInput.scrollTop;
-    highlightLayer.scrollLeft = codeInput.scrollLeft;
-    lineGutter.scrollTop = codeInput.scrollTop;
-  }
-
-  // Formatting & Utility Controls
-  function copyCode() {
-    navigator.clipboard.writeText(codeInput.value).then(() => {
-      showAlert('📋 Code copied to clipboard successfully!');
-      logToConsole('📋 Code copied to clipboard', 'success');
-    });
-  }
-
-  function formatCode() {
+  if (imagePrompt) {
     try {
-      let text = codeInput.value;
-      text = text.replace(/>/g, '>\n').replace(/</g, '\n<').replace(/\n+/g, '\n').trim();
-      codeInput.value = text;
-      scheduleUpdate();
-      showAlert('🧹 Code formatted successfully!');
-    } catch(e) {}
+      if (typeof puter !== 'undefined' && puter.ai && puter.ai.txt2img) {
+        let imgElement = await puter.ai.txt2img(imagePrompt);
+        removeTypingIndicator();
+        let imgSrc = imgElement ? imgElement.src : null;
+        addBotMessage(`Here is your dynamically generated visual asset for: "**${imagePrompt}**"`, null, imgSrc, null, null, true);
+      } else {
+        throw new Error("Puter AI unavailable");
+      }
+    } catch (err) {
+      removeTypingIndicator();
+      const fallbackUrl = `https://picsum.photos/seed/${encodeURIComponent(imagePrompt)}/800/600`;
+      addBotMessage(`Here is a generated graphic representation for: "**${imagePrompt}**"`, null, fallbackUrl, null, null, true);
+    }
+    return;
   }
 
-  function toggleWordWrap() {
-    isWordWrapped = !isWordWrapped;
-    codeInput.style.whiteSpace = isWordWrapped ? 'pre-wrap' : 'pre';
-    highlightLayer.style.whiteSpace = isWordWrapped ? 'pre-wrap' : 'pre';
-    document.getElementById('btn-wrap').style.color = isWordWrapped ? '#38bdf8' : '#8b949e';
-    scheduleUpdate();
+  try {
+    const pageDOMContext = getSystemTelemetry();
+    const systemPersona = modePrompts[currentMode] + "\n" + pageDOMContext;
+
+    const structuredHistory = chatMessages.slice(-20).map(m => ({
+      role: m.sender === 'me' ? 'user' : 'assistant',
+      content: m.text
+    }));
+
+    const fullPrompt = `${systemPersona}\n\n` + structuredHistory.map(h => `${h.role.toUpperCase()}: ${h.content}`).join('\n') + `\nUSER: ${text}`;
+
+    if (typeof puter !== 'undefined' && puter.ai && puter.ai.chat) {
+      let response = await puter.ai.chat(fullPrompt);
+      let botReplyText = typeof response === 'string' ? response : (response.message ? response.message.content : response.toString());
+      
+      removeTypingIndicator();
+      
+      // Page System Control execution block
+      if (botReplyText.includes('[CMD: THEME]')) { toggleTheme(); botReplyText = botReplyText.replace(/[CMD: THEME]/g, ''); }
+      if (botReplyText.includes('[CMD: TORCH]')) { toggleFlashlight(); botReplyText = botReplyText.replace(/[CMD: TORCH]/g, ''); }
+      if (botReplyText.includes('[CMD: CLEAR]')) { chatMessages = []; botReplyText = "Chat interface cleared successfully via System Control."; }
+
+      addBotMessage(botReplyText, videoSearchTerm, null, null, null, true);
+
+      if (isVoiceTriggered) {
+        speakText(botReplyText);
+        isVoiceTriggered = false;
+      }
+    } else {
+      throw new Error("Puter Chat SDK missing");
+    }
+  } catch (error) {
+    removeTypingIndicator();
+    addBotMessage("⚠️ Connection issue encountered. Please verify your network pipeline.", null, null, null, null, false);
+  }
+}
+
+function generateContextExactSuggestions(userText, botText) {
+  const lowerUser = (userText || '').toLowerCase();
+  const lowerBot = (botText || '').toLowerCase();
+  let suggestions = [];
+
+  if (lowerUser.includes('voltage') || lowerUser.includes('multimeter') || lowerUser.includes('drop')) {
+    suggestions = ["Test multimeter on 20V DC range", "Check continuous solder joints", "Verify power rail continuity"];
+  } else if (lowerUser.includes('math') || lowerUser.includes('equation') || lowerUser.includes('solve')) {
+    suggestions = ["Show step-by-step formula breakdown", "Apply formula to test case", "Provide secondary practice problem"];
+  } else if (lowerUser.includes('code') || lowerUser.includes('function') || lowerUser.includes('script')) {
+    suggestions = ["How do I debug this error?", "Optimize performance for mobile", "Explain line by line logic"];
+  } else if (lowerUser.includes('file') || lowerUser.includes('convert')) {
+    suggestions = ["Convert to PDF format", "Export extracted data as CSV", "Verify structural integrity"];
+  } else {
+    suggestions = ["Give me a direct practical example", "Summarize key technical points", "Provide deeper actionable steps"];
   }
 
-  function clearEditor() {
-    codeInput.value = '';
-    scheduleUpdate();
-    showAlert('Workspace cleared');
+  return suggestions.slice(0, 3);
+}
+
+function addBotMessage(text, videoQuery = null, generatedImageUrl = null, generatedAudioUrl = null, fileConversion = null, shouldStream = true) {
+  const lastUserMsg = chatMessages.slice().reverse().find(m => m.sender === 'me')?.text || "";
+  const botMsg = {
+    id: 'msg_' + Date.now(),
+    sender: 'bot',
+    text: text,
+    videoQuery: videoQuery,
+    generatedImageUrl: generatedImageUrl,
+    generatedAudioUrl: generatedAudioUrl,
+    fileConversion: fileConversion,
+    suggestions: generateContextExactSuggestions(lastUserMsg, text),
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    pinned: false,
+    shouldStream: shouldStream
+  };
+
+  chatMessages.push(botMsg);
+  saveState();
+  renderChatHistory();
+}
+
+function sendSuggestion(suggestionText) {
+  triggerHaptic('light');
+  document.getElementById('userInput').value = suggestionText;
+  handleInputChange();
+  sendMsg();
+}
+
+function handleTouchStart(msgId) {
+  longPressTimer = setTimeout(() => {
+    triggerHaptic('medium');
+    openContextMenu(msgId);
+  }, 3000); 
+}
+
+function handleTouchEnd() {
+  if (longPressTimer) {
+    clearTimeout(longPressTimer);
+    longPressTimer = null;
   }
+}
 
-  // Custom Virtual Keyboard Functions
-  function kbInsert(char) {
-    const start = codeInput.selectionStart, end = codeInput.selectionEnd;
-    const val = codeInput.value;
-    codeInput.value = val.substring(0, start) + char + val.substring(end);
-    codeInput.selectionStart = codeInput.selectionEnd = start + char.length;
-    scheduleUpdate();
-    codeInput.focus();
+function openContextMenu(msgId) {
+  activeContextMsgId = msgId;
+  document.getElementById('contextSheetOverlay').classList.add('active');
+}
+
+function closeContextMenu() {
+  document.getElementById('contextSheetOverlay').classList.remove('active');
+  activeContextMsgId = null;
+}
+
+function triggerContextAction(action) {
+  triggerHaptic('light');
+  if (!activeContextMsgId) return;
+  const targetId = activeContextMsgId;
+  closeContextMenu();
+
+  const msg = chatMessages.find(m => m.id === targetId);
+  if (!msg) return;
+
+  if (action === 'reply') setReply(targetId);
+  else if (action === 'copy') copyText(msg.text);
+  else if (action === 'tts') speakText(msg.text);
+  else if (action === 'pin') togglePin(targetId);
+}
+
+function handleChatScroll() {
+  const chatBox = document.getElementById('chatBox');
+  const threshold = 120;
+  const currentScrollBottom = chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight;
+  isUserScrollingUp = currentScrollBottom > threshold;
+
+  const scrollBtn = document.getElementById('scrollDownBtn');
+  if (isUserScrollingUp) {
+    scrollBtn.style.display = 'flex';
+  } else {
+    scrollBtn.style.display = 'none';
   }
+}
 
-  function kbBackspace() {
-    const start = codeInput.selectionStart;
-    if (start === 0) return;
-    const val = codeInput.value;
-    codeInput.value = val.substring(0, start-1) + val.substring(start);
-    codeInput.selectionStart = codeInput.selectionEnd = start-1;
-    scheduleUpdate();
-    codeInput.focus();
-  }
+function forceScrollToBottom() {
+  triggerHaptic('light');
+  const chatBox = document.getElementById('chatBox');
+  chatBox.scrollTop = chatBox.scrollHeight;
+  isUserScrollingUp = false;
+  document.getElementById('scrollDownBtn').style.display = 'none';
+}
 
-  function toggleKeyType() {
-    currentKeyTypeIndex = (currentKeyTypeIndex + 1) % keyTypeModes.length;
-    document.getElementById('kb-type-btn').textContent = 'MODE: ' + keyTypeModes[currentKeyTypeIndex];
-  }
+function renderChatHistory() {
+  const chatBox = document.getElementById('chatBox');
+  const scrollBtn = document.getElementById('scrollDownBtn');
+  
+  chatBox.innerHTML = '';
+  if (scrollBtn) chatBox.appendChild(scrollBtn);
 
-  // Console Drawer Panel
-  function toggleConsoleDrawer() {
-    consoleBox.classList.toggle('expanded');
-    const isExpanded = consoleBox.classList.contains('expanded');
-    document.getElementById('console-toggle-indicator').textContent = isExpanded ? '▼ Tap to Close' : '▲ Tap to Open';
-  }
+  const filtered = chatMessages.filter(m => m.text.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  function logToConsole(msg, type='info') {
-    const entry = document.createElement('div');
-    entry.className = `log-entry log-${type}`;
-    entry.textContent = `> ${msg}`;
-    consoleLogs.appendChild(entry);
-    consoleBox.scrollTop = consoleBox.scrollHeight;
-  }
+  filtered.forEach((m) => {
+    const row = document.createElement('div');
+    row.className = `msg-row ${m.sender === 'me' ? 'me-row' : 'bot-row'}`;
+    row.id = m.id;
 
-  // Autocomplete Engine
-  function updateAutocomplete() {
-    const text = codeInput.value;
-    const pos = codeInput.selectionStart;
-    let start = pos;
-    while (start > 0 && /[\w-]/.test(text[start-1])) start--;
-    const token = text.substring(start, pos);
-    if (token.length < 1) { suggestBox.style.display = 'none'; return; }
-    let suggestions = completions.js.filter(s => s.toLowerCase().startsWith(token.toLowerCase()));
-    if (suggestions.length === 0) { suggestBox.style.display = 'none'; return; }
-    suggestBox.style.left = '20px';
-    suggestBox.style.top = '30px';
-    suggestBox.style.display = 'block';
-    suggestBox.innerHTML = suggestions.map(s => `<div class="suggest-item" data-value="${s}">${s}</div>`).join('');
-    suggestBox.querySelectorAll('.suggest-item').forEach(el => {
-      el.addEventListener('click', () => {
-        const val = el.dataset.value;
-        codeInput.value = text.substring(0, start) + val + text.substring(pos);
-        codeInput.selectionStart = codeInput.selectionEnd = start + val.length;
-        suggestBox.style.display = 'none';
-        scheduleUpdate();
-      });
-    });
-  }
-
-  // Rapid Automatic AI Structure Repair
-  function triggerAIFix() {
-    aiStatus.textContent = '🧠 Fixing...';
-    setTimeout(() => {
-      let text = codeInput.value;
-      let openBraces = (text.match(/\{/g) || []).length;
-      let closeBraces = (text.match(/\}/g) || []).length;
-      while (closeBraces < openBraces) { text += '}'; closeBraces++; }
-      codeInput.value = text;
-      scheduleUpdate();
-      aiStatus.textContent = '🤖 AI Fix';
-      showAlert('✨ Brackets and code layout auto-adjusted');
-      logToConsole('✨ Fixed missing braces and formatted layout', 'success');
-    }, 300);
-  }
-
-  // Open & Close Overlay Face-to-Face AI Studio
-  function openAIChat() { document.getElementById('ai-chat-overlay').classList.add('active'); }
-  function closeAIChat() { document.getElementById('ai-chat-overlay').classList.remove('active'); }
-
-  // Face-to-Face Chat & Generation Handler
-  function sendAIChat() {
-    const input = document.getElementById('ai-chat-input');
-    const msg = input.value.trim();
-    if (!msg) return;
-    const messagesDiv = document.getElementById('ai-chat-messages');
-    const avatar = document.getElementById('ai-face-avatar');
-    
-    // Display prompt in conversation log
-    messagesDiv.innerHTML += `<div class="msg user">👤 ${msg}</div>`;
-    
-    // Automatically wipe away the input field immediately after prompting
-    input.value = '';
-    avatar.classList.add('speaking');
-    
-    setTimeout(() => {
-      avatar.classList.remove('speaking');
-      const result = processAIRequest(msg);
-      messagesDiv.innerHTML += `<div class="msg assistant">🤖 ${result.reply} ${result.code ? '<button class="ai-chat-code-btn" onclick="insertAICode()">📥 Import Code to IDE</button>' : ''}</div>`;
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-      if (result.code) window._aiGeneratedCode = result.code;
-    }, 400);
-  }
-
-  // Reader for File Ingestion
-  function handleFileUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const content = e.target.result;
-      const messagesDiv = document.getElementById('ai-chat-messages');
-      messagesDiv.innerHTML += `<div class="msg system">📄 Uploaded File: <b>${file.name}</b> (${content.length} chars)</div>`;
-      messagesDiv.innerHTML += `<div class="msg assistant">🤖 I have received <b>${file.name}</b>. Describe what you want me to generate or build using this document!</div>`;
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    row.ondblclick = (e) => {
+      e.preventDefault();
+      setReply(m.id);
     };
-    reader.readAsText(file);
+
+    let replyMarkup = m.replyTo ? `<div class="quoted-reply-box" onclick="scrollToMsg('${m.replyTo.id}')">
+      <strong>${m.replyTo.sender === 'me' ? 'You' : 'G\'sTAF'}:</strong> ${parseCustomMarkdown(m.replyTo.text)}
+    </div>` : '';
+
+    let pinnedMarkup = m.pinned ? `<span class="pinned-badge">📌 PINNED</span>` : '';
+
+    let videoMarkup = '';
+    if (m.videoQuery) {
+      const ytEmbedUrl = `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(m.videoQuery)}`;
+      const rawVideoDlURL = `https://example.com/download?v=${encodeURIComponent(m.videoQuery)}`; // Direct pipeline integration placeholder
+      videoMarkup = `
+      <div class="video-embed-card">
+        <iframe src="${ytEmbedUrl}" allowfullscreen></iframe>
+      </div>
+      <div class="video-fallback-actions">
+        <a href="${rawVideoDlURL}" target="_blank" download class="action-chip" style="border-color: #10B981; color: #10B981;">⬇️ Download Video (.mp4)</a>
+        <a href="https://www.tiktok.com/search?q=${encodeURIComponent(m.videoQuery)}" target="_blank" class="action-chip">🎵 Search TikTok</a>
+      </div>`;
+    }
+
+    let imageMarkup = '';
+    if (m.generatedImageUrl) {
+      imageMarkup = `
+      <div class="generated-image-card">
+        <img src="${m.generatedImageUrl}" alt="AI Result" />
+        <div class="media-download-bar">
+          <a href="${m.generatedImageUrl}" download="GSTAF_Image_${Date.now()}.png" class="code-download-btn" target="_blank" style="background:#10B981;">⬇️ Download Image (High-Res)</a>
+        </div>
+      </div>`;
+    }
+
+    let fileMarkup = '';
+    if (m.fileConversion) {
+      fileMarkup = `
+      <div class="audio-player-card">
+        <div style="font-size: 12px; font-weight: bold; color: var(--accent-gold);">📁 Converted File Ready</div>
+        <a href="${m.fileConversion.url}" download="${m.fileConversion.name}" class="code-download-btn" style="text-align:center; text-decoration:none;">Download ${m.fileConversion.name}</a>
+      </div>`;
+    }
+
+    let audioMarkup = '';
+    if (m.generatedAudioUrl) {
+      audioMarkup = `
+      <div class="audio-player-card">
+        <div style="font-size: 12px; font-weight: bold; color: var(--accent-gold);">🎵 Synthesized Audio Stream</div>
+        <audio controls src="${m.generatedAudioUrl}"></audio>
+        <a href="${m.generatedAudioUrl}" download="GSTAF_Audio_${Date.now()}.wav" class="code-download-btn" style="text-align:center; text-decoration:none; background:#10B981;">⬇️ Download Audio File (.wav)</a>
+      </div>`;
+    }
+
+    let suggestionsMarkup = '';
+    if (m.sender === 'bot' && m.suggestions && m.suggestions.length > 0) {
+      suggestionsMarkup = `<div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; border-top: 1px solid var(--border-light); padding-top: 6px;">
+        ${m.suggestions.map(s => `<button style="background: var(--surface-light); border: 1px solid var(--border-light); color: var(--accent-gold); padding: 3px 8px; border-radius: 10px; font-size: 11px; cursor: pointer;" onclick="sendSuggestion('${escapeQuotes(s)}')">💡 ${s}</button>`).join('')}
+      </div>`;
+    }
+
+    const msgContainer = document.createElement('div');
+    msgContainer.className = `msg ${m.sender}`;
+    msgContainer.addEventListener('touchstart', () => handleTouchStart(m.id), { passive: true });
+    msgContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
+    msgContainer.addEventListener('touchmove', handleTouchEnd, { passive: true });
+    msgContainer.addEventListener('contextmenu', (e) => { e.preventDefault(); openContextMenu(m.id); });
+
+    msgContainer.innerHTML = `${replyMarkup}<div class="msg-content-body"></div>${videoMarkup}${imageMarkup}${fileMarkup}${audioMarkup}${suggestionsMarkup}
+      <div class="msg-footer">
+        <span>${pinnedMarkup}${m.timestamp}</span>
+      </div>
+    `;
+
+    row.appendChild(msgContainer);
+    chatBox.appendChild(row);
+
+    const bodyContainer = msgContainer.querySelector('.msg-content-body');
+
+    if (m.sender === 'bot' && m.shouldStream) {
+      m.shouldStream = false;
+      streamTextToElement(bodyContainer, m.text);
+    } else {
+      bodyContainer.innerHTML = parseCustomMarkdown(m.text);
+    }
+  });
+
+  if (!isUserScrollingUp) {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+}
+
+function streamTextToElement(container, fullText) {
+  const cleanedText = fullText.replace(/[\#\*\_\~]/g, ''); 
+  const parsedHTML = parseCustomMarkdown(cleanedText);
+  if (parsedHTML.includes('code-container') || parsedHTML.includes('table-container-card')) {
+    container.innerHTML = parsedHTML;
+    return;
   }
 
-  // Processing AI Prompts and Theme Variations
-  function processAIRequest(prompt) {
-    const lower = prompt.toLowerCase();
+  const words = cleanedText.split(' ');
+  container.innerHTML = '';
+  let index = 0;
+
+  function streamNextWord() {
+    if (index < words.length) {
+      const wordSpan = document.createElement('span');
+      wordSpan.className = 'word-span';
+      wordSpan.innerHTML = parseCustomMarkdown(words[index]) + ' ';
+      container.appendChild(wordSpan);
+      index++;
+      if (!isUserScrollingUp) {
+        const chatBox = document.getElementById('chatBox');
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+      setTimeout(streamNextWord, 28);
+    } else {
+      container.innerHTML = parseCustomMarkdown(cleanedText);
+    }
+  }
+
+  streamNextWord();
+}
+
+function escapeQuotes(str) { return str.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' '); }
+
+function showTypingIndicator() {
+  const chatBox = document.getElementById('chatBox');
+  const indicator = document.createElement('div');
+  indicator.id = 'typingIndicator';
+  indicator.className = 'msg-row bot-row';
+  indicator.innerHTML = `
+    <div class="msg bot" style="padding: 10px 14px;">
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+    </div>
+  `;
+  chatBox.appendChild(indicator);
+  if (!isUserScrollingUp) chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function removeTypingIndicator() {
+  const el = document.getElementById('typingIndicator');
+  if (el) el.remove();
+}
+
+function copyText(text) {
+  triggerHaptic('light');
+  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard!', 'success'));
+}
+
+function prepareTextForSpeech(rawText) {
+  if (!rawText) return '';
+  let cleaned = rawText.replace(/```[\s\S]*?```/g, ' Code snippet omitted. ');
+  cleaned = cleaned.replace(/<[^>]*>?/gm, '');
+  cleaned = cleaned.replace(/[\#\*\_\~\`\|]/g, '');
+  cleaned = cleaned.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  return cleaned;
+}
+
+function speakText(text) {
+  triggerHaptic('light');
+  if (!('speechSynthesis' in window)) return;
+  
+  if (globalAudioState === 'LISTENING') {
+    if (recognition) recognition.stop();
+    isRecording = false;
+  }
+
+  window.speechSynthesis.cancel();
+  globalAudioState = 'SPEAKING';
+  
+  let speakableContent = prepareTextForSpeech(text);
+  if (!speakableContent) return;
+
+  const sentences = speakableContent.match(/[^.!?]+[.!?]+/g) || [speakableContent];
+  let currentSentenceIndex = 0;
+
+  function speakNextChunk() {
+    if (currentSentenceIndex < sentences.length && globalAudioState === 'SPEAKING') {
+      const utterance = new SpeechSynthesisUtterance(sentences[currentSentenceIndex].trim());
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      utterance.onstart = () => {
+        document.getElementById('ttsControlBar').style.display = 'flex';
+        document.getElementById('ttsStatusText').innerText = "🔊 Speaking response...";
+      };
+      utterance.onend = () => {
+        currentSentenceIndex++;
+        if (currentSentenceIndex < sentences.length) speakNextChunk();
+        else { document.getElementById('ttsControlBar').style.display = 'none'; globalAudioState = 'IDLE'; }
+      };
+      utterance.onerror = () => {
+        document.getElementById('ttsControlBar').style.display = 'none';
+        globalAudioState = 'IDLE';
+      };
+      window.speechSynthesis.speak(utterance);
+    }
+  }
+  speakNextChunk();
+}
+
+function toggleTTSPause() {
+  triggerHaptic('light');
+  if (window.speechSynthesis.speaking) {
+    if (isTTSPaused) {
+      window.speechSynthesis.resume();
+      isTTSPaused = false;
+      document.getElementById('ttsPauseBtn').innerText = "Pause";
+    } else {
+      window.speechSynthesis.pause();
+      isTTSPaused = true;
+      document.getElementById('ttsPauseBtn').innerText = "Play";
+    }
+  }
+}
+
+function stopTTS() {
+  window.speechSynthesis.cancel();
+  document.getElementById('ttsControlBar').style.display = 'none';
+  globalAudioState = 'IDLE';
+}
+
+function togglePin(msgId) {
+  triggerHaptic('light');
+  const msg = chatMessages.find(m => m.id === msgId);
+  if (!msg) return;
+
+  const currentPinned = chatMessages.filter(m => m.pinned);
+  if (!msg.pinned && currentPinned.length >= 1) {
+    showToast("Active pin switched to selected item.", "warning");
+    chatMessages.forEach(m => m.pinned = false);
+  }
+
+  msg.pinned = !msg.pinned;
+  saveState();
+  renderChatHistory();
+}
+
+function setReply(msgId) {
+  triggerHaptic('light');
+  const msg = chatMessages.find(m => m.id === msgId);
+  if (!msg) return;
+  activeReply = { id: msg.id, sender: msg.sender, text: msg.text };
+  document.getElementById('replyPreviewText').innerText = `Replying to (${msg.sender === 'me' ? 'You' : 'G\'sTAF'}): ${msg.text}`;
+  document.getElementById('replyPreview').style.display = 'flex';
+  document.getElementById('userInput').focus();
+}
+
+function cancelReply() {
+  activeReply = null;
+  document.getElementById('replyPreview').style.display = 'none';
+}
+
+function scrollToMsg(msgId) {
+  triggerHaptic('light');
+  const target = document.getElementById(msgId);
+  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function filterChatMessages() {
+  searchQuery = document.getElementById('chatSearchInput').value.trim();
+  const status = document.getElementById('filterStatus');
+  if (!searchQuery) { status.innerText = ''; } else {
+    const count = chatMessages.filter(m => m.text.toLowerCase().includes(searchQuery.toLowerCase())).length;
+    status.innerText = `${count} matches`;
+  }
+  renderChatHistory();
+}
+
+function toggleVoiceInput() {
+  triggerHaptic('medium');
+  const actionBtn = document.getElementById('actionBtn');
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) { showToast('Speech recognition not supported on this browser.', 'error'); return; }
+  stopTTS();
+
+  if (isRecording) {
+    if (recognition) recognition.stop();
+    isRecording = false;
+    globalAudioState = 'IDLE';
+    actionBtn.classList.remove('recording');
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.onstart = () => { 
+    isRecording = true; 
+    globalAudioState = 'LISTENING';
+    isVoiceTriggered = true;
+    actionBtn.classList.add('recording'); 
+  };
+  recognition.onresult = (e) => { 
+    let transcript = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) transcript += e.results[i][0].transcript;
     
-    if (lower.includes('background') || lower.includes('color') || lower.includes('theme')) {
-      const match = lower.match(/(?:color|background|theme)\s+(?:to\s+)?([#\w]+)/);
-      const colorVal = match ? match[1] : '#0d1117';
-      document.documentElement.style.setProperty('--bg', colorVal);
-      return { reply: `Updated primary panel theme to: <b>${colorVal}</b>` };
-    }
+    const inputEl = document.getElementById('userInput');
+    inputEl.style.color = '#10B981';
+    inputEl.value = transcript;
+    handleInputChange();
 
-    let generatedHTML = `<div class="card"><h2>${prompt.toUpperCase()}</h2><p>Designed and compiled via G-Tech Face-to-Face AI Studio.</p><button onclick="action()">Run Application</button></div>`;
-    let generatedCSS = `body { background: #090d16; color: #38bdf8; font-family: sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; } .card { background:#161b22; border:1px solid #38bdf8; padding:30px; border-radius:12px; text-align:center; box-shadow:0 8px 24px rgba(0,0,0,0.5); } button { background:#238636; color:#fff; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:15px; }`;
-    let generatedJS = `function action() { alert('Application trigger executed!'); }`;
+    clearTimeout(voiceSilenceTimer);
+    voiceSilenceTimer = setTimeout(() => {
+      if (document.getElementById('userInput').value.trim().length > 0) {
+        if (recognition) recognition.stop();
+        inputEl.style.color = 'var(--text)';
+        sendMsg();
+      }
+    }, 2000); 
+  };
+  recognition.onerror = () => { actionBtn.classList.remove('recording'); isRecording = false; globalAudioState = 'IDLE'; };
+  recognition.onend = () => { actionBtn.classList.remove('recording'); isRecording = false; globalAudioState = 'IDLE'; };
+  recognition.start();
+}
 
-    const code = `<!DOCTYPE html>\n<html>\n<head>\n<style>\n${generatedCSS}\n</style>\n</head>\n<body>\n${generatedHTML}\n<script>\n${generatedJS}\n<\/script>\n</body>\n</html>`;
-    return { reply: `Compiled dynamic page for "${prompt}". Click below to inject it directly into your active workspace.`, code: code };
+/* STUDENT MODE CAMERA VALIDATION */
+function openStudentCameraScanner() {
+  triggerHaptic('light');
+  toggleMenu();
+  if (currentMode !== 'student') {
+     showToast('Exclusive Feature: OCR Camera scanner is exclusively active in Student / Learner Mode.', 'warning');
+     return;
   }
+  document.getElementById('cameraModal').classList.add('active');
+  startCameraStream();
+}
 
-  function insertAICode() {
-    if (window._aiGeneratedCode) {
-      codeInput.value = window._aiGeneratedCode;
-      files[activeFileIndex].content = window._aiGeneratedCode;
-      scheduleUpdate();
-      showAlert('📥 Code injected into workspace!');
-      logToConsole('📥 AI Code injected into active file', 'info');
-      closeAIChat();
-    }
+function startCameraStream() {
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: cameraFacingMode } })
+      .then(stream => {
+        cameraStreamObj = stream;
+        document.getElementById('cameraStream').srcObject = stream;
+      })
+      .catch(err => { showToast('Camera access denied or unavailable.', 'error'); });
   }
+}
 
-  // App Initialization
-  function init() {
-    codeInput.value = files[activeFileIndex].content;
-    renderTabs();
-    scheduleUpdate();
+function switchCameraLens() {
+  triggerHaptic('light');
+  cameraFacingMode = cameraFacingMode === 'environment' ? 'user' : 'environment';
+  if (cameraStreamObj) cameraStreamObj.getTracks().forEach(track => track.stop());
+  startCameraStream();
+  showToast(`Switched to ${cameraFacingMode === 'environment' ? 'Rear' : 'Front'} lens`, 'info');
+}
 
-    // System Log Wrappers
-    const originalLog = console.log;
-    console.log = function(...args) { originalLog(...args); logToConsole(args.join(' '), 'info'); };
-    console.error = function(...args) { originalLog(...args); logToConsole(args.join(' '), 'error'); };
-    console.warn = function(...args) { originalLog(...args); logToConsole(args.join(' '), 'warn'); };
+function toggleFlashlight() {
+  triggerHaptic('light');
+  if (!cameraStreamObj) { showToast('Camera stream not active.', 'warning'); return; }
+  const track = cameraStreamObj.getVideoTracks()[0];
+  if (track && track.getCapabilities && track.getCapabilities().torch) {
+    torchEnabled = !torchEnabled;
+    track.applyConstraints({ advanced: [{ torch: torchEnabled }] })
+      .then(() => showToast(`Torch ${torchEnabled ? 'Enabled' : 'Disabled'}`, 'success'))
+      .catch(() => showToast('Torch hardware control not supported.', 'warning'));
+  } else { showToast('Flashlight not supported on this device.', 'warning'); }
+}
 
-    // Customized Keyboard Always Visible
-    customKeyboard.classList.remove('hidden');
-
-    logToConsole('G-Tech Engine Fully Active', 'success');
+function closeStudentCameraScanner() {
+  if (cameraStreamObj) {
+    cameraStreamObj.getTracks().forEach(track => track.stop());
+    cameraStreamObj = null;
   }
+  document.getElementById('cameraModal').classList.remove('active');
+}
 
-  init();
+function captureAndScanImage() {
+  triggerHaptic('medium');
+  const video = document.getElementById('cameraStream');
+  const canvas = document.getElementById('cameraCanvas');
+  const status = document.getElementById('ocrStatus');
+
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  status.innerText = "Analyzing text, formulas & diagrams...";
+
+  if (!window.Tesseract) showToast('OCR engine loading...', 'info');
+  else runOCR(canvas, status);
+}
+
+function runOCR(canvas, status) {
+  Tesseract.recognize(canvas, 'eng')
+    .then(({ data: { text } }) => {
+      closeStudentCameraScanner();
+      const extracted = text.trim();
+      const promptText = extracted.length > 0 ? extracted : "Visual diagram or chart captured.";
+      document.getElementById('userInput').value = "Analyze and solve this scanned material: " + promptText;
+      handleInputChange();
+      sendMsg();
+    })
+    .catch(err => { status.innerText = "Scan failed. Retry."; });
+}
+
+function openExportModal() {
+  triggerHaptic('light');
+  toggleMenu();
+  document.getElementById('exportModal').classList.add('active');
+}
+
+function closeExportModal() { document.getElementById('exportModal').classList.remove('active'); }
+
+function processExport(type) {
+  triggerHaptic('light');
+  closeExportModal();
+  const pinned = chatMessages.filter(m => m.pinned);
+  
+  if (pinned.length === 0) { showToast("Error: Pin the target message first before exporting!", "error"); return; }
+  const rawText = pinned.map(m => `[${m.timestamp}] ${m.sender === 'me' ? 'User' : 'G\'sTAF'}:\n${m.text}`).join('\n\n---\n\n');
+
+  if (type === 'text') {
+    const blob = new Blob([rawText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `GSTAF_Export_${Date.now()}.txt`; a.click();
+    showToast('Downloaded .txt file!', 'success');
+  } else if (type === 'pdf') {
+    if (window.jspdf && window.jspdf.jsPDF) {
+      const { jsPDF } = window.jspdf; const doc = new jsPDF();
+      doc.text("G'sTAF AI - Exported Document", 14, 15); doc.setFontSize(10); doc.text(rawText, 14, 25, { maxWidth: 180 });
+      doc.save(`GSTAF_Document_${Date.now()}.pdf`); showToast('Downloaded PDF document!', 'success');
+    } else showToast('PDF library loading. Please retry...', 'warning');
+  } else if (type === 'table') {
+    let rows = pinned.map(m => `<tr><td style="border:1px solid #ccc;padding:8px;">${m.timestamp}</td><td style="border:1px solid #ccc;padding:8px;">${m.sender}</td><td style="border:1px solid #ccc;padding:8px;">${m.text}</td></tr>`).join('');
+    const tableHTML = `<div class="table-container-card"><table class="custom-data-table"><thead><tr><th>Time</th><th>Sender</th><th>Content</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    const blob = new Blob([tableHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `GSTAF_Table_${Date.now()}.html`; a.click();
+    showToast('Downloaded HTML Data Table!', 'success');
+  } else if (type === 'audio') {
+    speakText(pinned.map(m => m.text).join('. '));
+    showToast('Synthesizing audio export via TTS engine...', 'info');
+  }
+}
+
+function showUpdatesModal() {
+  triggerHaptic('light');
+  toggleMenu();
+  document.getElementById('updatesModal').classList.add('active');
+}
+function closeUpdatesModal() { document.getElementById('updatesModal').classList.remove('active'); }
+
+async function clearCurrentChat() {
+  triggerHaptic('medium');
+  const confirmed = await showCustomAlert('Are you sure you want to clear the active chat log?', 'Clear Active Chat', true);
+  if (confirmed) {
+    chatMessages = []; saveState(); renderChatHistory(); toggleMenu();
+  }
+}
+
+function showPinnedMessagesModal(){
+  triggerHaptic('light');
+  const modal = document.getElementById('pinnedModal');
+  const body = document.getElementById('pinnedModalBody');
+  const pinned = chatMessages.filter(m => m.pinned);
+
+  body.innerHTML = pinned.length === 0 
+    ? '<div style="color: var(--text-muted); font-size: 12px;">No pinned messages found.</div>'
+    : pinned.map(m => `
+      <div style="background: var(--bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-light);">
+        <div style="font-size: 11px; color: var(--accent-gold); font-weight: bold; margin-bottom: 4px;">
+          ${m.sender === 'me' ? 'You' : 'G\'sTAF'} • ${m.timestamp}
+        </div>
+        <div style="font-size: 12.5px;">${parseCustomMarkdown(m.text)}</div>
+      </div>
+    `).join('');
+
+  modal.classList.add('active');
+  toggleMenu();
+ }
+
+function hidePinnedMessagesModal() { document.getElementById('pinnedModal').classList.remove('active'); }
+
+// Exclusive Input Rules feature: Allow Enter key to naturally add newline without firing sendMsg
+document.getElementById('userInput').addEventListener('keydown', (e) => {
+   // The default action of "Enter" in a <textarea> is now permitted.
+});
+
+document.addEventListener('DOMContentLoaded', initAppState);
 </script>
 </body>
 </html>
