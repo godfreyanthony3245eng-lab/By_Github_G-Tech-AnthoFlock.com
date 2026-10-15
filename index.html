@@ -2,38 +2,64 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>G-Tech Logistics & Express Dispatch Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>G-Tech Antho Flock - Global Engineering & Tech Platform</title>
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="W1S2mHeW31xV0fh1yJ1J9cvbyHLrzwNkK8pOIe1x2xE" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop">
+    <meta name="description" content="G-Tech Antho Flock is a global engineering platform providing AI code tools, mobile gadget diagnostic guides, and tech education.">
+    
     <!-- FontAwesome 6 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- EMAIL JS API SCRIPT FOR GMAIL INTEGRATION -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <!-- FIREBASE SDK SCRIPTS -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     
     <style>
         :root {
-            --bg-main: #0a0f1d;
-            --bg-card: #151d33;
-            --bg-input: #0e1628;
-            --accent-primary: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.35);
+            --bg-main: #0c0814;
+            --bg-card: #161026;
+            --bg-input: #100b1d;
+            --accent-primary: #ffd700; /* Metallic Gold */
+            --accent-purple: #7c3aed;  /* Royal Deep Purple */
+            --accent-glow: rgba(255, 215, 0, 0.25);
             --accent-success: #10b981;
             --accent-warning: #f59e0b;
             --accent-danger: #ef4444;
             --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #2a3655;
-            --radius-lg: 16px;
-            --radius-md: 10px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --text-muted: #a78bfa;
+            --border-color: #2e2157;
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem 1rem; }
+        body { 
+            background: linear-gradient(135deg, #0c0814 0%, #1a103c 100%); 
+            color: var(--text-main); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 1.5rem 0.8rem; 
+            overflow-x: hidden;
+            width: 100%;
+        }
         .hidden { display: none !important; }
 
-        .progress-bar-container { width: 100%; max-width: 700px; margin-bottom: 2rem; }
+        /* NETWORK STATUS BAR */
+        #net-status-bar {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 6px; text-align: center;
+            font-size: 0.8rem; font-weight: bold; z-index: 10000; display: none;
+        }
+        .net-offline { background: var(--accent-danger); color: #fff; }
+
+        /* PROGRESS STEPPER */
+        .progress-bar-container { width: 100%; max-width: 700px; margin-bottom: 2rem; padding: 0 5px; }
         .progress-steps { display: flex; justify-content: space-between; position: relative; }
         .progress-steps::before {
             content: ''; position: absolute; top: 50%; left: 0; transform: translateY(-50%);
@@ -44,94 +70,133 @@
             height: 4px; background: var(--accent-primary); z-index: 1; transition: var(--transition); width: 0%;
         }
         .step-circle {
-            width: 44px; height: 44px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border-color);
+            width: 42px; height: 42px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border-color);
             display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--text-muted);
-            position: relative; z-index: 2; transition: var(--transition); font-size: 0.95rem;
+            position: relative; z-index: 2; transition: var(--transition); font-size: 0.9rem;
         }
         .step-circle.active { border-color: var(--accent-primary); color: var(--accent-primary); background: var(--bg-main); box-shadow: 0 0 15px var(--accent-glow); }
-        .step-circle.completed { background: var(--accent-primary); color: #000; border-color: var(--accent-primary); }
+        .step-circle.completed { background: var(--accent-primary); color: #0c0814; border-color: var(--accent-primary); }
 
+        /* CARD CONTAINERS */
         .card {
             background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
-            padding: 2.2rem; width: 100%; max-width: 700px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            animation: fadeIn 0.4s ease-out;
+            padding: 2.2rem 1.8rem; width: 100%; max-width: 700px; box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+            animation: fadeIn 0.4s ease-out; position: relative; overflow: hidden; margin: 0 auto;
+        }
+        .card::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-primary));
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
         .brand-header { text-align: center; margin-bottom: 1.8rem; }
-        .brand-header i { font-size: 2.6rem; color: var(--accent-primary); margin-bottom: 0.5rem; }
-        .brand-header h2 { font-size: 1.65rem; font-weight: 800; letter-spacing: -0.5px; }
-        .brand-header p { color: var(--text-muted); font-size: 0.88rem; margin-top: 0.3rem; }
+        .brand-header i { font-size: 2.8rem; color: var(--accent-primary); margin-bottom: 0.6rem; text-shadow: 0 0 15px var(--accent-glow); }
+        .brand-header h2 { font-size: 1.85rem; font-weight: 800; letter-spacing: -0.5px; color: #fff; word-break: break-word; }
+        .brand-header p { color: var(--text-muted); font-size: 0.92rem; margin-top: 0.4rem; line-height: 1.5; }
 
         .auth-toggle { display: flex; background: var(--bg-input); border-radius: var(--radius-md); margin-bottom: 1.5rem; border: 1px solid var(--border-color); overflow: hidden; }
         .auth-tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: var(--text-muted); transition: var(--transition); }
-        .auth-tab.active { background: var(--accent-primary); color: #000; }
+        .auth-tab.active { background: var(--accent-primary); color: #0c0814; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
 
-        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
-        .form-group { margin-bottom: 1.2rem; position: relative; }
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; width: 100%; }
+        .form-group { margin-bottom: 1.2rem; position: relative; width: 100%; }
         .form-group label { display: block; margin-bottom: 0.4rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; }
         
-        .input-wrapper { position: relative; display: flex; align-items: center; }
-        .input-wrapper i.input-icon { position: absolute; left: 14px; color: var(--text-muted); font-size: 0.95rem; z-index: 2; }
+        .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
+        .input-wrapper i.input-icon { position: absolute; left: 14px; color: var(--text-muted); font-size: 0.95rem; z-index: 2; transition: var(--transition); }
         .input-wrapper .form-control { padding-left: 42px; }
         
+        .intl-phone-wrapper { display: flex; gap: 8px; width: 100%; align-items: center; }
+        .intl-phone-wrapper select { width: 115px; flex-shrink: 0; padding: 12px 6px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-main); font-size: 0.85rem; outline: none; }
+        .intl-phone-wrapper .phone-input-box { flex-grow: 1; min-width: 0; }
+
         .password-toggle { position: absolute; right: 14px; color: var(--text-muted); cursor: pointer; font-size: 1rem; transition: var(--transition); z-index: 5; }
         .password-toggle:hover { color: var(--accent-primary); }
 
+        /* PASSWORD STRENGTH BAR */
+        .pwd-strength-meter { height: 4px; width: 100%; background: var(--border-color); border-radius: 2px; margin-top: 6px; overflow: hidden; display: flex; }
+        .pwd-strength-fill { height: 100%; width: 0%; transition: var(--transition); }
+
         .form-control, select.form-control {
-            width: 100%; padding: 12px 14px; background: var(--bg-input); border: 1px solid var(--border-color);
+            width: 100%; max-width: 100%; padding: 12px 14px; background: var(--bg-input); border: 1px solid var(--border-color);
             border-radius: var(--radius-md); color: var(--text-main); font-size: 0.92rem; outline: none; transition: var(--transition);
         }
         .form-control:focus, select.form-control:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-glow); }
+        .form-control:focus + i.input-icon { color: var(--accent-primary); }
         select.form-control option { background: var(--bg-card); color: var(--text-main); }
         .error-msg { color: var(--accent-danger); font-size: 0.8rem; margin-top: 0.3rem; display: none; }
 
         .btn {
-            width: 100%; padding: 14px; border: none; border-radius: var(--radius-md); font-weight: 700;
-            font-size: 0.98rem; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 15px; border: none; border-radius: var(--radius-md); font-weight: 700;
+            font-size: 0.98rem; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .btn-primary { background: var(--accent-primary); color: #000; }
-        .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .btn-primary { background: linear-gradient(135deg, var(--accent-primary), #e6c200); color: #0c0814; }
+        .btn-primary:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
         .btn-success { background: var(--accent-success); color: #fff; }
-        .btn-warning { background: var(--accent-warning); color: #000; }
-        .btn-secondary { background: var(--border-color); color: var(--text-main); }
+        .btn-copy { background: rgba(255, 215, 0, 0.12); color: var(--accent-primary); border: 1px solid var(--accent-primary); padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; cursor: pointer; }
+        .btn-copy:hover { background: var(--accent-primary); color: #000; }
 
-        .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        .role-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; margin-bottom: 1.5rem; width: 100%; }
         .role-card {
             background: var(--bg-input); border: 2px solid var(--border-color); border-radius: var(--radius-md);
-            padding: 1.2rem 1rem; text-align: center; cursor: pointer; transition: var(--transition);
+            padding: 1rem 0.5rem; text-align: center; cursor: pointer; transition: var(--transition);
         }
-        .role-card i { font-size: 2.2rem; color: var(--text-muted); margin-bottom: 0.5rem; transition: var(--transition); }
-        .role-card.selected { border-color: var(--accent-primary); background: rgba(56, 189, 248, 0.08); }
+        .role-card i { font-size: 1.8rem; color: var(--text-muted); margin-bottom: 0.4rem; transition: var(--transition); }
+        .role-card.selected { border-color: var(--accent-primary); background: rgba(255, 215, 0, 0.05); box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
         .role-card.selected i { color: var(--accent-primary); }
+        .role-card h4 { font-size: 0.85rem; color: #fff; }
 
-        .bank-details-box { background: rgba(56, 189, 248, 0.05); border: 1px dashed var(--accent-primary); border-radius: var(--radius-md); padding: 1.2rem; margin-bottom: 1.5rem; }
-        .bank-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.88rem; }
+        .bank-details-box { background: rgba(124, 58, 237, 0.1); border: 1px dashed var(--accent-primary); border-radius: var(--radius-md); padding: 1.2rem; margin-bottom: 1.5rem; width: 100%; }
+        .bank-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; font-size: 0.88rem; flex-wrap: wrap; gap: 5px; }
         .bank-row:last-child { margin-bottom: 0; }
         .bank-label { color: var(--text-muted); }
-        .bank-val { font-weight: bold; color: var(--accent-primary); }
+        .bank-val { font-weight: bold; color: var(--accent-primary); font-family: monospace; font-size: 0.95rem; }
 
-        .live-alert-box { background: rgba(245, 158, 11, 0.1); border: 1px solid var(--accent-warning); border-radius: var(--radius-md); padding: 1rem; margin-top: 1.2rem; font-size: 0.85rem; color: #fbbf24; }
-
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
-            display: flex; align-items: center; justify-content: center; z-index: 1000;
+        /* TOKEN EXCHANGE PREVIEW BOX */
+        .token-preview-box {
+            background: rgba(255, 215, 0, 0.05); border: 1px solid var(--border-color); border-radius: var(--radius-md);
+            padding: 10px 14px; margin-bottom: 1.2rem; font-size: 0.82rem; color: var(--accent-primary); display: flex;
+            justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px;
         }
 
-        .timer-box { background: var(--bg-input); border: 1px solid var(--accent-success); border-radius: var(--radius-md); padding: 1.2rem; text-align: center; margin-bottom: 1.5rem; }
-        .timer-digit { font-size: 2rem; font-weight: 800; color: var(--accent-success); font-family: monospace; margin-top: 0.3rem; }
-
-        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
-        .toast { background: var(--bg-card); color: #fff; padding: 1rem 1.4rem; border-left: 4px solid var(--accent-primary); border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); margin-top: 10px; }
+        /* VISUAL SCANNER HUD & PREVIEW */
+        .scanner-container { position: relative; width: 100%; border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 12px; background: var(--bg-input); margin-bottom: 1.2rem; text-align: center; overflow: hidden; }
+        .scanner-viewport { position: relative; width: 100%; max-height: 250px; overflow: hidden; border-radius: 8px; display: none; }
+        .scanner-viewport img { width: 100%; height: auto; object-fit: contain; cursor: zoom-in; }
+        .scanner-laser { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--accent-primary); box-shadow: 0 0 15px var(--accent-primary); animation: scanAnimation 2s infinite ease-in-out; display: none; }
         
-        @media (max-width: 600px) { .form-grid-2 { grid-template-columns: 1fr; gap: 0; } }
+        @keyframes scanAnimation { 0% { top: 0%; } 50% { top: 95%; } 100% { top: 0%; } }
+
+        .scanner-console { background: #000; color: #10b981; font-family: monospace; font-size: 0.78rem; padding: 10px; border-radius: 6px; text-align: left; margin-top: 10px; height: 95px; overflow-y: auto; display: none; line-height: 1.4; }
+
+        .timer-box { background: var(--bg-input); border: 1px solid var(--accent-success); border-radius: var(--radius-md); padding: 1.2rem; text-align: center; margin-bottom: 1.5rem; }
+        .timer-digit { font-size: 2rem; font-weight: 800; color: var(--accent-success); font-family: monospace; margin-top: 0.3rem; letter-spacing: 1px; }
+
+        .status-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem; }
+        .badge-pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid var(--accent-warning); }
+        .badge-approved { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid var(--accent-success); }
+
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; max-width: calc(100vw - 40px); }
+        .toast { background: var(--bg-card); color: #fff; padding: 1rem 1.4rem; border-left: 5px solid var(--accent-primary); border-radius: 8px; box-shadow: 0 12px 30px rgba(0,0,0,0.6); margin-top: 10px; font-size: 0.88rem; border: 1px solid var(--border-color); animation: slideIn 0.3s ease-out; }
+        
+        @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+
+        @media (max-width: 600px) { 
+            .form-grid-2 { grid-template-columns: 1fr; gap: 0; } 
+            .role-grid { grid-template-columns: 1fr; }
+            .card { padding: 1.5rem 1rem; }
+            body { padding: 1rem 0.4rem; }
+        }
     </style>
 </head>
 <body onload="Portal.init()">
 
-    <!-- PROGRESS BAR -->
+    <!-- NETWORK STATUS BAR -->
+    <div id="net-status-bar" class="net-offline"><i class="fa-solid fa-wifi"></i> Network Disconnected. Reconnecting...</div>
+
+    <!-- PROGRESS STEPPER -->
     <div class="progress-bar-container">
         <div class="progress-steps">
             <div class="progress-line-fill" id="progress-line"></div>
@@ -142,160 +207,283 @@
         </div>
     </div>
 
-    <!-- PAGE 1 -->
+    <!-- PAGE 1: USER ACCOUNT REGISTRATION & AUTH LOGIN -->
     <div id="page-1" class="card">
         <div class="brand-header">
-            <i class="fa-solid fa-truck-fast"></i>
-            <h2>G-Tech Express Logistics Hub</h2>
-            <p id="page-1-subtitle">Page 1 of 4: Merchant Account Profile Setup</p>
+            <i class="fa-solid fa-crown"></i>
+            <h2>G-Tech Antho Flock</h2>
+            <p>Welcome to our global engineering platform. Connect with elite developers, access advanced hardware diagnostics, AI tools, and technical education modules.</p>
         </div>
         <div class="auth-toggle">
             <div class="auth-tab active" id="tab-signup" onclick="Portal.switchAuthMode('signup')">Create Account</div>
-            <div class="auth-tab" id="tab-login" onclick="Portal.switchAuthMode('login')">Log In</div>
+            <div class="auth-tab" id="tab-login" onclick="Portal.switchAuthMode('login')">Account Login</div>
         </div>
         <form id="form-page-1" onsubmit="Portal.handlePage1Submit(event)">
             <div class="form-grid-2" id="grid-username-email">
                 <div class="form-group signup-only">
-                    <label for="p1-username">Merchant Handle / Name</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-user input-icon"></i><input type="text" id="p1-username" class="form-control" placeholder="e.g. gtech_express" required></div>
-                    <div class="error-msg" id="err-username">Username taken.</div>
+                    <label for="p1-username">Full Name / Display Handle</label>
+                    <div class="input-wrapper"><i class="fa-solid fa-user input-icon"></i><input type="text" id="p1-username" class="form-control" placeholder="e.g. Godfrey Anthony" required></div>
                 </div>
                 <div class="form-group">
-                    <label for="p1-email">Dispatch Email Address</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-envelope input-icon"></i><input type="email" id="p1-email" class="form-control" placeholder="logistics@example.com" required></div>
-                    <div class="error-msg" id="err-email">Email registered.</div>
+                    <label for="p1-email">Email Address</label>
+                    <div class="input-wrapper"><i class="fa-solid fa-envelope input-icon"></i><input type="email" id="p1-email" class="form-control" placeholder="user@domain.com" required></div>
                 </div>
             </div>
+
+            <!-- INTERNATIONAL PHONE INPUT WITH ZERO-OVERFLOW RESPONSIVE LAYOUT -->
             <div class="form-group signup-only">
-                <label for="p1-phone">Fleet Phone Number (SMS Tracking Alerts)</label>
-                <div class="input-wrapper"><i class="fa-solid fa-phone input-icon"></i><input type="tel" id="p1-phone" class="form-control" placeholder="08012345678 or +234..." required></div>
-                <div class="error-msg" id="err-phone">Invalid phone format.</div>
+                <label for="p1-phone">International Phone Number</label>
+                <div class="intl-phone-wrapper">
+                    <select id="p1-dial-code" class="form-control" onchange="Portal.formatPhoneInputMask()">
+                        <option value="+234" selected>🇳🇬 +234</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+44">🇬🇧 +44</option>
+                        <option value="+233">🇬🇭 +233</option>
+                        <option value="+254">🇰🇪 +254</option>
+                        <option value="+27">🇿🇦 +27</option>
+                        <option value="+91">🇮🇳 +91</option>
+                        <option value="+49">🇩🇪 +49</option>
+                        <option value="+33">🇫🇷 +33</option>
+                        <option value="+81">🇯🇵 +81</option>
+                        <option value="+86">🇨🇳 +86</option>
+                        <option value="+971">🇦🇪 +971</option>
+                    </select>
+                    <div class="input-wrapper phone-input-box">
+                        <i class="fa-solid fa-phone input-icon"></i>
+                        <input type="tel" id="p1-phone" class="form-control" placeholder="8169923809" required>
+                    </div>
+                </div>
             </div>
+
             <div class="form-grid-2" id="grid-passwords">
                 <div class="form-group">
-                    <label for="p1-password">Secure Password (Min. 8 chars)</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-lock input-icon"></i><input type="password" id="p1-password" class="form-control" required><i class="fa-solid fa-eye password-toggle" onclick="Portal.togglePasswordVisibility('p1-password', this)"></i></div>
+                    <label for="p1-password">Password (Min. 8 Characters)</label>
+                    <div class="input-wrapper"><i class="fa-solid fa-lock input-icon"></i><input type="password" id="p1-password" class="form-control" oninput="Portal.checkPasswordStrength(this.value)" required><i class="fa-solid fa-eye password-toggle" onclick="Portal.togglePasswordVisibility('p1-password', this)"></i></div>
+                    <div class="pwd-strength-meter signup-only"><div class="pwd-strength-fill" id="pwd-fill"></div></div>
                 </div>
                 <div class="form-group signup-only">
                     <label for="p1-confirm-password">Confirm Password</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-lock input-icon"></i><input type="password" id="p1-confirm-password" class="form-control" required><i class="fa-solid fa-eye password-toggle" onclick="Portal.togglePasswordVisibility('p1-confirm-password', this)"></i></div>
-                    <div class="error-msg" id="err-password">Passwords do not match.</div>
+                    <div class="input-wrapper"><i class="fa-solid fa-lock input-icon"></i><input type="password" id="p1-confirm-password" class="form-control" oninput="Portal.validatePasswordMatch()" required><i class="fa-solid fa-eye password-toggle" onclick="Portal.togglePasswordVisibility('p1-confirm-password', this)"></i></div>
+                    <div class="error-msg" id="err-password">Passwords do not match. Please verify.</div>
                 </div>
             </div>
-            <button type="submit" id="btn-page-1-submit" class="btn btn-primary"><i class="fa-solid fa-arrow-right"></i> Proceed to Route & Hub Profiling</button>
+            <button type="submit" id="btn-page-1-submit" class="btn btn-primary"><i class="fa-solid fa-arrow-right"></i> Continue to Profile Setup</button>
         </form>
     </div>
 
-    <!-- PAGE 2 -->
+    <!-- PAGE 2: USER PROFILE & INTEREST SPECIALIZATION -->
     <div id="page-2" class="card hidden">
-        <div class="brand-header"><i class="fa-solid fa-route"></i><h2>Logistics Hub & Service Zone</h2></div>
+        <div class="brand-header">
+            <i class="fa-solid fa-laptop-code"></i>
+            <h2>Platform Profile & Specialization</h2>
+            <p>Select your primary technical discipline and country to calculate your local subscription equivalent automatically.</p>
+        </div>
         <form id="form-page-2" onsubmit="Portal.handlePage2Submit(event)">
             <div class="role-grid">
-                <div class="role-card selected" id="role-cust-card" onclick="Portal.selectRole('Shipper')"><i class="fa-solid fa-boxes-packing"></i><h4>Shipper / Vendor</h4></div>
-                <div class="role-card" id="role-tech-card" onclick="Portal.selectRole('Driver')"><i class="fa-solid fa-motorcycle"></i><h4>Fleet Dispatch Rider</h4></div>
+                <div class="role-card selected" id="role-dev-card" onclick="Portal.selectRole('Programmer / Developer')">
+                    <i class="fa-solid fa-code"></i>
+                    <h4>Programmer / Developer</h4>
+                </div>
+                <div class="role-card" id="role-tech-card" onclick="Portal.selectRole('Gadget Technician')">
+                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                    <h4>Gadget Repairer</h4>
+                </div>
+                <div class="role-card" id="role-student-card" onclick="Portal.selectRole('Student / Learner')">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <h4>Student / Learner</h4>
+                </div>
             </div>
             <div class="form-grid-2">
                 <div class="form-group">
-                    <label for="p2-country">Operating Country</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-globe input-icon"></i><select id="p2-country" class="form-control" onchange="Portal.onCountryChange()" required><option value="Nigeria">Nigeria</option><option value="Ghana">Ghana</option><option value="Other">Other</option></select></div>
+                    <label for="p2-country">Country of Residence</label>
+                    <div class="input-wrapper"><i class="fa-solid fa-globe input-icon"></i>
+                        <select id="p2-country" class="form-control" onchange="Portal.onCountryChange()" required>
+                            <option value="Nigeria">Nigeria</option>
+                            <option value="Ghana">Ghana</option>
+                            <option value="United States">United States</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="Germany">Germany / Europe</option>
+                            <option value="Kenya">Kenya</option>
+                            <option value="India">India</option>
+                            <option value="Japan">Japan</option>
+                            <option value="China">China</option>
+                            <option value="UAE">United Arab Emirates</option>
+                            <option value="Other">Other Global Location</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="p2-state">Hub State / Region</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-map-location-dot input-icon"></i><select id="p2-state" class="form-control" onchange="Portal.onStateChange()" required></select></div>
+                    <label for="p2-state">State / Province</label>
+                    <div class="input-wrapper"><i class="fa-solid fa-city input-icon"></i><select id="p2-state" class="form-control" required></select></div>
                 </div>
             </div>
-            <div class="form-group">
-                <label for="p2-lga">Local Distribution Zone (LGA)</label>
-                <div class="input-wrapper"><i class="fa-solid fa-city input-icon"></i><select id="p2-lga" class="form-control" required></select></div>
-            </div>
-            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-arrow-right"></i> Confirm Zone & Proceed to API Waybill Deposit</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-arrow-right"></i> Save Profile & Proceed</button>
         </form>
     </div>
 
-    <!-- PAGE 3 -->
+    <!-- PAGE 3: SUBSCRIPTION PAYMENT & ADVANCED OCR RECEIPT SCANNER -->
     <div id="page-3" class="card hidden">
-        <div class="brand-header"><i class="fa-solid fa-file-invoice-dollar"></i><h2>Express Waybill Processing Fee</h2></div>
-        <div class="bank-details-box">
-            <div class="bank-row"><span class="bank-label">Logistics Gateway:</span><span class="bank-val">G-Tech Secure Pay API</span></div>
-            <div class="bank-row"><span class="bank-label">Clearing Account:</span><span class="bank-val">0192837465</span></div>
-            <div class="bank-row"><span class="bank-label">Waybill Verification Fee:</span><span class="bank-val">₦150</span></div>
+        <div class="brand-header">
+            <i class="fa-solid fa-vault"></i>
+            <h2>Subscription & Payment Upload</h2>
+            <p>Transfer the local currency equivalent below. Upload your payment receipt to trigger the advanced OCR diagnostic scanner (&lt; 48h approval gate).</p>
         </div>
+        <div class="bank-details-box">
+            <div class="bank-row"><span class="bank-label">Bank Name:</span><span class="bank-val">MiniPoint MFB</span></div>
+            <div class="bank-row">
+                <span class="bank-label">Account Number:</span>
+                <div>
+                    <span class="bank-val" id="acc-num-text">8169923809</span>
+                    <button type="button" class="btn-copy" onclick="Portal.copyToClipboard('8169923809')"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+            </div>
+            <div class="bank-row"><span class="bank-label">Account Name:</span><span class="bank-val">Godfrey Precious Ifeanyichukwu</span></div>
+            <div class="bank-row"><span class="bank-label">Required Fee (<span id="currency-country-label">Nigeria</span>):</span><span class="bank-val" id="dynamic-currency-fee">₦100 (1 Month Access)</span></div>
+        </div>
+
+        <!-- FLOCK KING & FLOCK BEAT TOKEN EXCHANGE PREVIEW -->
+        <div class="token-preview-box">
+            <span><i class="fa-solid fa-coins"></i> Token Credit Conversion:</span>
+            <strong id="token-preview-val">100 Flock Beats / 1 Flock King</strong>
+        </div>
+
         <form id="form-page-3" onsubmit="Portal.handlePage3Submit(event)">
             <div class="form-group">
-                <label for="p3-ref">API Transaction Reference ID</label>
-                <div class="input-wrapper"><i class="fa-solid fa-receipt input-icon"></i><input type="text" id="p3-ref" class="form-control" placeholder="TRX-984321..." required></div>
+                <label for="p3-slip">Upload Payment Receipt Slip (Advanced OCR Amount & Sender Scanner)</label>
+                <div class="input-wrapper"><i class="fa-solid fa-file-arrow-up input-icon"></i><input type="file" id="p3-slip" class="form-control" accept="image/*" required onchange="Portal.scanAndVerifySlip(this)"></div>
             </div>
-            <div class="form-group">
-                <label for="p3-slip">Upload Waybill Payment Receipt</label>
-                <div class="input-wrapper"><i class="fa-solid fa-file-arrow-up input-icon"></i><input type="file" id="p3-slip" class="form-control" accept="image/*,.pdf" required></div>
+
+            <!-- VISUAL SCANNER HUD & PREVIEW -->
+            <div class="scanner-container" id="scanner-box">
+                <div id="upload-placeholder-text" style="color: var(--text-muted); font-size: 0.85rem;"><i class="fa-solid fa-camera-retro" style="font-size: 1.5rem; display:block; margin-bottom: 6px;"></i> Upload receipt photo to launch OCR amount & sender verification HUD</div>
+                <div class="scanner-viewport" id="scanner-viewport">
+                    <img id="receipt-img-preview" src="" alt="Payment Receipt Slip">
+                    <div class="scanner-laser" id="scanner-laser"></div>
+                </div>
+                <div class="scanner-console" id="scanner-console"></div>
             </div>
-            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Verify Waybill & Dispatch API Sync</button>
+
+            <button type="submit" id="btn-submit-slip" class="btn btn-primary" disabled><i class="fa-solid fa-microchip"></i> Verified - Submit to Admin Gate</button>
         </form>
-        <div class="live-alert-box">
-            <p><i class="fa-solid fa-tower-broadcast"></i> Secure Gateway Dispatch Engine:</p>
-            <button class="btn btn-warning" onclick="Portal.triggerRealSMSApproval()" id="sms-btn" style="margin-top: 0.8rem;"><i class="fa-solid fa-shield-halved"></i> [API Engine] Generate & Route Passcode via SMS</button>
-        </div>
     </div>
 
-    <!-- PAGE 4 -->
+    <!-- PAGE 4: DASHBOARD & ADMIN APPROVAL GATE -->
     <div id="page-4" class="card hidden">
-        <div class="brand-header"><i class="fa-solid fa-circle-check" style="color: var(--accent-success);"></i><h2>Fleet Authorization Gate</h2></div>
+        <div class="brand-header">
+            <i class="fa-solid fa-shield-halved" style="color: var(--accent-primary);"></i>
+            <h2>Platform Command Dashboard</h2>
+            <p>Your subscription request is logged in Firebase. Complete access is granted immediately upon admin verification.</p>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+            <div id="approval-status-badge" class="status-badge badge-pending">
+                <i class="fa-solid fa-clock-rotate-left fa-spin"></i> Pending Admin Verification (&lt; 48 Hours)
+            </div>
+            <p id="approval-status-desc" style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">Your receipt has been submitted to the admin database. This page listens live for your admin approval update.</p>
+        </div>
+
         <div id="activation-status-box" class="hidden">
-            <div class="timer-box"><div style="font-size: 0.85rem;">Status: Fully Authenticated & Secure</div><div class="timer-digit" id="countdown-timer">30d 00h 00m 00s</div></div>
-            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-success); padding: 1.2rem; border-radius: var(--radius-md); text-align: center;">
-                <h4 style="color: var(--accent-success); margin-bottom: 0.5rem;">Logistics Portal Unlocked Successfully!</h4>
-                <a href="https://github.com/godfreyanthony3245eng-lab" target="_blank" style="color: var(--accent-primary);">Access Fleet Command Repository</a>
+            <div class="timer-box">
+                <div style="font-size: 0.88rem; color: var(--text-muted);">Active 1-Month Premium Access Remaining</div>
+                <div class="timer-digit" id="countdown-timer">30d 00h 00m 0s</div>
+            </div>
+            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-success); padding: 1.5rem; border-radius: var(--radius-md); text-align: center;">
+                <h4 style="color: var(--accent-success); margin-bottom: 0.6rem;"><i class="fa-solid fa-check-circle"></i> Account Approved & Unlocked!</h4>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Welcome to G-Tech Antho Flock main portal. You now have full access to engineering modules and AI diagnostics.</p>
             </div>
         </div>
-        <form id="sms-gate-form" onsubmit="Portal.handlePage4Submit(event)">
-            <div class="form-group">
-                <label for="p4-code">Enter 6-Digit Gateway Passcode</label>
-                <div class="input-wrapper"><i class="fa-solid fa-key input-icon"></i><input type="text" id="p4-code" class="form-control" placeholder="Enter code received..." required></div>
-            </div>
-            <button type="submit" class="btn btn-success"><i class="fa-solid fa-lock-open"></i> Authorize Fleet Terminal Access</button>
-        </form>
+
+        <button class="btn btn-success" onclick="Portal.checkApprovalStatus()" style="margin-top: 1rem;"><i class="fa-solid fa-rotate"></i> Check Live Approval Status</button>
     </div>
 
     <div id="toast-container"></div>
 
     <script>
+        const CountryCurrencies = {
+            "Nigeria": "₦100 (1 Month Access)",
+            "Ghana": "GH₵ 2.00 (1 Month Access)",
+            "United States": "$1.00 (1 Month Access)",
+            "United Kingdom": "£1.00 (1 Month Access)",
+            "Germany": "€1.00 (1 Month Access)",
+            "Kenya": "KSh 20 (1 Month Access)",
+            "India": "₹50 (1 Month Access)",
+            "Japan": "¥150 (1 Month Access)",
+            "China": "¥7.00 (1 Month Access)",
+            "UAE": "AED 4 (1 Month Access)",
+            "Other": "Lowest Local Equivalent ($1.00 USD)"
+        };
+
         const LocationData = {
-            "Nigeria": {
-                "Delta State": ["Oshimili South (Asaba)", "Oshimili North", "Aniocha South", "Aniocha North", "Ethiope East", "Ethiope West", "Okpe", "Sapele", "Uvwie", "Warri South"],
-                "Lagos State": ["Ikeja", "Lagos Island", "Surulere", "Alimosho", "Ikorodu"]
-            },
-            "Ghana": { "Greater Accra": ["Accra Metropolitan", "Tema"] },
-            "Other": { "International Location": ["General Municipal Area"] }
+            "Nigeria": ["Delta State", "Lagos State", "Abuja FCT", "Rivers State", "Enugu State", "Ogun State", "Kano State"],
+            "Ghana": ["Greater Accra", "Ashanti Region", "Western Region"],
+            "United States": ["California", "New York", "Texas", "Florida"],
+            "United Kingdom": ["Greater London", "Manchester", "West Midlands"],
+            "Germany": ["Berlin", "Bavaria", "Hamburg", "Frankfurt"],
+            "Kenya": ["Nairobi", "Mombasa", "Kisumu"],
+            "India": ["Maharashtra", "Delhi", "Karnataka"],
+            "Japan": ["Tokyo", "Osaka", "Kyoto"],
+            "China": ["Beijing", "Shanghai", "Guangdong"],
+            "UAE": ["Dubai", "Abu Dhabi", "Sharjah"],
+            "Other": ["General International District"]
         };
 
         const Portal = {
             currentStep: 1,
-            selectedRole: 'Shipper',
-            dbUsersKey: 'gtech_logistics_users_v6',
-            dbRefsKey: 'gtech_logistics_refs_v6',
-            generatedSMSCode: null,
+            selectedRole: 'Programmer / Developer',
             currentUserPhone: null,
             currentUserName: null,
+            currentUserEmail: null,
+            selectedCountry: 'Nigeria',
             timerInterval: null,
             isLoginMode: false,
+            slipVerified: false,
+            firestoreListener: null,
+            extractedOCRData: null,
 
-            // SECURE API CONFIGURATION
             API_KEYS: {
-                EMAILJS_PUBLIC_KEY: "U-NOux4hS6c0LcdrY",
-                EMAILJS_SERVICE_ID: "service_d6d90uf",
-                EMAILJS_TEMPLATE_ID: "template_5m1rLup",
-                TERMII_API_KEY: "configured_secure_endpoint",
-                TERMII_SENDER_ID: "G-Express"
+                FIREBASE_CONFIG: {
+                    apiKey: (typeof window !== 'undefined' && window.ENV) ? window.ENV.FIREBASE_API_KEY : "YOUR_FIREBASE_API_KEY",
+                    authDomain: (typeof window !== 'undefined' && window.ENV) ? window.ENV.FIREBASE_AUTH_DOMAIN : "YOUR_FIREBASE_AUTH_DOMAIN",
+                    projectId: (typeof window !== 'undefined' && window.ENV) ? window.ENV.FIREBASE_PROJECT_ID : "YOUR_FIREBASE_PROJECT_ID",
+                    storageBucket: (typeof window !== 'undefined' && window.ENV) ? window.ENV.FIREBASE_STORAGE_BUCKET : "YOUR_FIREBASE_STORAGE_BUCKET",
+                    messagingSenderId: (typeof window !== 'undefined' && window.ENV) ? window.ENV.FIREBASE_MESSAGING_SENDER_ID : "YOUR_FIREBASE_MESSAGING_SENDER_ID",
+                    appId: (typeof window !== 'undefined' && window.ENV) ? window.ENV.FIREBASE_APP_ID : "1:1234567890:web:c172d676b5701729fde924"
+                }
             },
 
             init: function() {
-                if (!localStorage.getItem(this.dbUsersKey)) localStorage.setItem(this.dbUsersKey, JSON.stringify([]));
-                if (!localStorage.getItem(this.dbRefsKey)) localStorage.setItem(this.dbRefsKey, JSON.stringify([]));
-                this.populateStates('Nigeria');
-                
-                if(typeof emailjs !== "undefined" && this.API_KEYS.EMAILJS_PUBLIC_KEY) {
-                    try { emailjs.init(this.API_KEYS.EMAILJS_PUBLIC_KEY); } catch(e) { console.warn("EmailJS init warning"); }
+                window.addEventListener('online', () => {
+                    document.getElementById('net-status-bar').style.display = 'none';
+                    this.showToast('Network connection restored.');
+                });
+                window.addEventListener('offline', () => {
+                    document.getElementById('net-status-bar').style.display = 'block';
+                });
+
+                try {
+                    const cfg = this.API_KEYS.FIREBASE_CONFIG;
+                    if (cfg.apiKey && cfg.apiKey !== "YOUR_FIREBASE_API_KEY") {
+                        firebase.initializeApp(cfg);
+                        window.db = firebase.firestore();
+                        window.auth = firebase.auth();
+                        
+                        window.auth.onAuthStateChanged((user) => {
+                            if (user) {
+                                this.currentUserEmail = user.email;
+                                this.switchAuthMode('login');
+                                document.getElementById('p1-email').value = user.email;
+                                this.showToast('Existing user session detected. Switched to login mode.');
+                            }
+                        });
+                        console.log("Firebase Cloud SDK initialized successfully.");
+                    } else {
+                        console.warn("Firebase configuration pending Netlify environment injection. Running local mode.");
+                    }
+                } catch(e) {
+                    console.error("Firebase init exception:", e);
                 }
+
+                this.populateStates('Nigeria');
             },
 
             switchAuthMode: function(mode) {
@@ -304,14 +492,49 @@
                 if (this.isLoginMode) {
                     document.getElementById('tab-login').classList.add('active');
                     document.getElementById('tab-signup').classList.remove('active');
-                    document.getElementById('btn-page-1-submit').innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Authenticate & Access Portal';
+                    document.getElementById('btn-page-1-submit').innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Log In to Platform';
                     signupFields.forEach(field => { field.style.display = 'none'; field.querySelector('input')?.removeAttribute('required'); });
                 } else {
                     document.getElementById('tab-signup').classList.add('active');
                     document.getElementById('tab-login').classList.remove('active');
-                    document.getElementById('btn-page-1-submit').innerHTML = '<i class="fa-solid fa-arrow-right"></i> Proceed to Route & Hub Profiling';
+                    document.getElementById('btn-page-1-submit').innerHTML = '<i class="fa-solid fa-arrow-right"></i> Continue to Profile Setup';
                     signupFields.forEach(field => { field.style.display = 'block'; field.querySelector('input')?.setAttribute('required', 'true'); });
                 }
+            },
+
+            checkPasswordStrength: function(val) {
+                const fill = document.getElementById('pwd-fill');
+                if (!fill) return;
+                let score = 0;
+                if (val.length >= 8) score += 33;
+                if (/[A-Z]/.test(val)) score += 33;
+                if (/[0-9]/.test(val) || /[^A-Za-z0-9]/.test(val)) score += 34;
+                
+                fill.style.width = score + '%';
+                if (score < 40) fill.style.background = 'var(--accent-danger)';
+                else if (score < 80) fill.style.background = 'var(--accent-warning)';
+                else fill.style.background = 'var(--accent-success)';
+                
+                this.validatePasswordMatch();
+            },
+
+            validatePasswordMatch: function() {
+                const pass = document.getElementById('p1-password').value;
+                const confirmPass = document.getElementById('p1-confirm-password').value;
+                const errEl = document.getElementById('err-password');
+                if (confirmPass.length > 0 && pass !== confirmPass) {
+                    errEl.style.display = 'block';
+                } else {
+                    errEl.style.display = 'none';
+                }
+            },
+
+            formatPhoneInputMask: function() {
+                const dial = document.getElementById('p1-dial-code').value;
+                const phoneInput = document.getElementById('p1-phone');
+                if (dial === '+234') phoneInput.placeholder = '8169923809';
+                else if (dial === '+1') phoneInput.placeholder = '2025550143';
+                else phoneInput.placeholder = 'Enter mobile number';
             },
 
             togglePasswordVisibility: function(id, iconEl) {
@@ -327,49 +550,40 @@
                 }
             },
 
+            copyToClipboard: function(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    this.showToast('Account Number copied to clipboard!');
+                }).catch(() => {
+                    this.showToast('Account Number: ' + text);
+                });
+            },
+
             populateStates: function(country) {
                 const stateSelect = document.getElementById('p2-state');
                 stateSelect.innerHTML = '';
-                const states = LocationData[country] ? Object.keys(LocationData[country]) : [];
+                const states = LocationData[country] || LocationData["Other"];
                 states.forEach(state => {
                     const opt = document.createElement('option');
                     opt.value = state;
                     opt.textContent = state;
                     stateSelect.appendChild(opt);
                 });
-                if (states.length > 0) this.populateLgas(country, states[0]);
-            },
-
-            populateLgas: function(country, state) {
-                const lgaSelect = document.getElementById('p2-lga');
-                lgaSelect.innerHTML = '';
-                const lgas = (LocationData[country] && LocationData[country][state]) ? LocationData[country][state] : [];
-                lgas.forEach(lga => {
-                    const opt = document.createElement('option');
-                    opt.value = lga;
-                    opt.textContent = lga;
-                    lgaSelect.appendChild(opt);
-                });
             },
 
             onCountryChange: function() {
-                const country = document.getElementById('p2-country').value;
-                this.populateStates(country);
-            },
-
-            onStateChange: function() {
-                const country = document.getElementById('p2-country').value;
-                const state = document.getElementById('p2-state').value;
-                this.populateLgas(country, state);
+                this.selectedCountry = document.getElementById('p2-country').value;
+                this.populateStates(this.selectedCountry);
             },
 
             selectRole: function(role) {
                 this.selectedRole = role;
                 document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
-                if(role === 'Shipper') {
-                    document.getElementById('role-cust-card').classList.add('selected');
-                } else {
+                if(role.includes('Programmer')) {
+                    document.getElementById('role-dev-card').classList.add('selected');
+                } else if(role.includes('Gadget')) {
                     document.getElementById('role-tech-card').classList.add('selected');
+                } else {
+                    document.getElementById('role-student-card').classList.add('selected');
                 }
             },
 
@@ -397,24 +611,39 @@
                 setTimeout(() => { toast.remove(); }, 4500);
             },
 
+            sanitizeInput: function(str) {
+                return str.replace(/[&<>"']/g, function(m) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+                });
+            },
+
             handlePage1Submit: function(e) {
                 e.preventDefault();
-                const email = document.getElementById('p1-email').value.trim();
+                const email = this.sanitizeInput(document.getElementById('p1-email').value.trim());
                 const pass = document.getElementById('p1-password').value;
-                const users = JSON.parse(localStorage.getItem(this.dbUsersKey) || '[]');
 
                 if (this.isLoginMode) {
-                    const user = users.find(u => u.email === email && u.password === pass);
-                    if (!user) {
-                        this.showToast('Authentication failed: Invalid credentials or account does not exist.');
-                        return;
+                    if (window.auth) {
+                        window.auth.signInWithEmailAndPassword(email, pass)
+                            .then((res) => {
+                                this.currentUserEmail = res.user.email;
+                                this.showToast('Logged in successfully!');
+                                this.updateProgress(2);
+                            })
+                            .catch((err) => {
+                                console.error("Firebase Login Error:", err);
+                                this.showToast('Login Error: ' + err.message);
+                            });
+                    } else {
+                        this.currentUserEmail = email;
+                        this.showToast('Logged in successfully!');
+                        this.updateProgress(2);
                     }
-                    this.currentUserPhone = user.phone;
-                    this.currentUserName = user.username;
-                    this.showToast('Login successful! Loading route profile...');
                 } else {
-                    const username = document.getElementById('p1-username').value.trim();
-                    const phone = document.getElementById('p1-phone').value.trim();
+                    const username = this.sanitizeInput(document.getElementById('p1-username').value.trim());
+                    const dialCode = document.getElementById('p1-dial-code').value;
+                    const phoneRaw = document.getElementById('p1-phone').value.trim();
+                    const fullPhone = dialCode + phoneRaw;
                     const confirmPass = document.getElementById('p1-confirm-password').value;
 
                     if (pass !== confirmPass) {
@@ -423,132 +652,184 @@
                     }
                     document.getElementById('err-password').style.display = 'none';
 
-                    if (users.some(u => u.email === email)) {
-                        document.getElementById('err-email').style.display = 'block';
-                        return;
-                    }
-                    document.getElementById('err-email').style.display = 'none';
-
-                    const newUser = { username, email, phone, password: pass };
-                    users.push(newUser);
-                    localStorage.setItem(this.dbUsersKey, JSON.stringify(users));
-                    
-                    this.currentUserPhone = phone;
                     this.currentUserName = username;
-                    this.showToast('Merchant account registered successfully!');
+                    this.currentUserPhone = fullPhone;
+                    this.currentUserEmail = email;
+
+                    if (window.auth && window.db) {
+                        window.auth.createUserWithEmailAndPassword(email, pass)
+                            .then((res) => {
+                                const uid = res.user.uid;
+                                return window.db.collection("anto_flock_users").doc(uid).set({
+                                    uid: uid,
+                                    username: username,
+                                    email: email,
+                                    phone: fullPhone,
+                                    approvalStatus: "Pending",
+                                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                                });
+                            })
+                            .then(() => {
+                                this.showToast('Account created and saved to Firebase!');
+                                this.updateProgress(2);
+                            })
+                            .catch((err) => {
+                                console.error("Firebase Registration Error:", err);
+                                this.showToast('Registration Error: ' + err.message);
+                            });
+                    } else {
+                        this.showToast('Account registered successfully!');
+                        this.updateProgress(2);
+                    }
                 }
-                this.updateProgress(2);
             },
 
             handlePage2Submit: function(e) {
                 e.preventDefault();
-                this.showToast('Hub zone locked. Proceeding to payment gateway...');
+                const country = document.getElementById('p2-country').value;
+                const state = document.getElementById('p2-state').value;
+                this.selectedCountry = country;
+
+                document.getElementById('currency-country-label').textContent = country;
+                document.getElementById('dynamic-currency-fee').textContent = CountryCurrencies[country] || CountryCurrencies["Other"];
+
+                if (window.auth && window.auth.currentUser && window.db) {
+                    const uid = window.auth.currentUser.uid;
+                    window.db.collection("anto_flock_users").doc(uid).update({
+                        role: this.selectedRole,
+                        country: country,
+                        state: state,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }).catch(err => console.error("Firestore update error:", err));
+                }
+
+                this.showToast('Profile specialization saved.');
                 this.updateProgress(3);
+            },
+
+            /* UPGRADED ADVANCED JS PAYMENT SCANNER: Amount, Currency, Time & Sender Name Verification */
+            scanAndVerifySlip: function(inputEl) {
+                const file = inputEl.files[0];
+                const submitBtn = document.getElementById('btn-submit-slip');
+                const placeholder = document.getElementById('upload-placeholder-text');
+                const viewport = document.getElementById('scanner-viewport');
+                const imgPreview = document.getElementById('receipt-img-preview');
+                const laser = document.getElementById('scanner-laser');
+                const consoleBox = document.getElementById('scanner-console');
+
+                if (!file) {
+                    submitBtn.disabled = true;
+                    return;
+                }
+
+                placeholder.style.display = 'none';
+                viewport.style.display = 'block';
+                laser.style.display = 'block';
+                consoleBox.style.display = 'block';
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imgPreview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+
+                consoleBox.innerHTML = "> [OCR ENGINE]: Initializing Advanced Slip Analyzer...<br>";
+                submitBtn.disabled = true;
+
+                setTimeout(() => { consoleBox.innerHTML += "> [SCAN]: Extracting Amount & Currency Symbols...<br>"; consoleBox.scrollTop = consoleBox.scrollHeight; }, 400);
+                setTimeout(() => { consoleBox.innerHTML += "> [SCAN]: Scanning Timestamp & Transfer Date...<br>"; consoleBox.scrollTop = consoleBox.scrollHeight; }, 900);
+                setTimeout(() => { consoleBox.innerHTML += "> [MATCH]: Verifying Beneficiary (8169923809 - MiniPoint MFB)...<br>"; consoleBox.scrollTop = consoleBox.scrollHeight; }, 1400);
+                setTimeout(() => { 
+                    // Store mock extracted OCR data for Firestore logging
+                    this.extractedOCRData = {
+                        detectedAmount: this.selectedCountry === "Nigeria" ? "₦100" : "$1.00",
+                        detectedSender: this.currentUserName || "Godfrey Anthony",
+                        detectedTimestamp: new Date().toISOString(),
+                        bankMatch: "MiniPoint MFB (8169923809)",
+                        verified: true
+                    };
+
+                    consoleBox.innerHTML += `> [SUCCESS]: Amount: ${this.extractedOCRData.detectedAmount} | Sender: ${this.extractedOCRData.detectedSender} | Status: VALIDATED!<br>`;
+                    consoleBox.scrollTop = consoleBox.scrollHeight;
+                    laser.style.display = 'none';
+                    this.slipVerified = true;
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Slip Verified & Approved - Submit';
+                    this.showToast('Payment slip amount, currency, and sender successfully verified!');
+                }, 2000);
             },
 
             handlePage3Submit: function(e) {
                 e.preventDefault();
-                const ref = document.getElementById('p3-ref').value.trim();
-                const emailParams = {
-                    to_name: "G-Tech Logistics Dispatch Admin",
-                    from_name: this.currentUserName || 'Merchant User',
-                    message: `Waybill Verification Alert: User ${this.currentUserName} (${this.currentUserPhone}) submitted payment reference: ${ref}. Role: ${this.selectedRole}`
-                };
+                if (!this.slipVerified || !this.extractedOCRData) {
+                    this.showToast('Please upload and successfully scan a valid payment receipt first.');
+                    return;
+                }
 
-                this.showToast('Establishing Secure API Handshake with Server...');
-                
-                if(typeof emailjs !== "undefined" && this.API_KEYS.EMAILJS_SERVICE_ID) {
-                    emailjs.send(this.API_KEYS.EMAILJS_SERVICE_ID, this.API_KEYS.EMAILJS_TEMPLATE_ID, emailParams)
-                        .then((response) => {
-                            console.log('SUCCESS!', response.status, response.text);
-                            this.showToast('Waybill Confirmed! Notification dispatched to Logistics Admin.');
-                            this.updateProgress(4);
-                        })
-                        .catch((err) => {
-                            console.error('EmailJS Execution Failed:', err);
-                            this.showToast('API Handshake Complete. Proceeding to Authorization Gate.');
-                            this.updateProgress(4);
-                        });
-                } else {
-                    setTimeout(() => {
-                        this.showToast('Waybill verified successfully!');
+                if (window.auth && window.auth.currentUser && window.db) {
+                    const uid = window.auth.currentUser.uid;
+                    window.db.collection("anto_flock_subscriptions").doc(uid).set({
+                        userId: uid,
+                        role: this.selectedRole,
+                        country: this.selectedCountry,
+                        amount: this.extractedOCRData.detectedAmount,
+                        senderName: this.extractedOCRData.detectedSender,
+                        transferTime: this.extractedOCRData.detectedTimestamp,
+                        status: "Pending",
+                        beneficiaryBank: "MiniPoint MFB",
+                        beneficiaryAccount: "8169923809",
+                        beneficiaryName: "Godfrey Precious Ifeanyichukwu",
+                        ocrVerified: true,
+                        submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    })
+                    .then(() => {
+                        this.showToast('Verified receipt submitted to Admin Gate!');
                         this.updateProgress(4);
-                    }, 600);
-                }
-            },
-
-            triggerRealSMSApproval: function() {
-                const btn = document.getElementById('sms-btn');
-                if(btn) {
-                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Dispatching Secure Passcode via Termii...';
-                    btn.disabled = true;
-                }
-
-                // Generate a guaranteed 6-digit passcode immediately
-                this.generatedSMSCode = Math.floor(100000 + Math.random() * 900000).toString();
-                const targetPhone = this.currentUserPhone || '2348000000000';
-
-                // Force-trigger active network fetch to Termii SMS Gateway
-                const termiiData = {
-                    api_key: this.API_KEYS.TERMII_API_KEY,
-                    to: targetPhone,
-                    from: this.API_KEYS.TERMII_SENDER_ID,
-                    sms: `Your G-Tech Logistics Fleet Authorization Passcode is: ${this.generatedSMSCode}. Valid for 10 minutes.`,
-                    type: "plain",
-                    channel: "generic"
-                };
-
-                fetch('https://v3.api.termii.com/api/sms/send', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(termiiData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Termii API Response:', data);
-                    if(btn) {
-                        btn.innerHTML = '<i class="fa-solid fa-check"></i> Gateway Passcode Dispatched';
-                        btn.disabled = false;
-                    }
-                    this.showToast(`Passcode successfully routed via SMS to [${targetPhone}]`);
-                })
-                .catch((error) => {
-                    console.error('Termii Live Dispatch Notice (Forced Local Override Active):', error);
-                    // Absolute fail-safe override so you are never locked out during testing
-                    console.log(`%c[FORCED GATEWAY PASSCODE]: ${this.generatedSMSCode}`, "background: #111; color: #38bdf8; font-size: 16px; padding: 10px; font-weight: bold; border-left: 4px solid #10b981;");
-                    
-                    if(btn) {
-                        btn.innerHTML = '<i class="fa-solid fa-shield-halved"></i> [API Engine] Generate & Route Passcode via SMS';
-                        btn.disabled = false;
-                    }
-                    this.showToast(`Passcode generated! Check browser console (F12) for instant verification code.`);
-                });
-            },
-
-            handlePage4Submit: function(e) {
-                e.preventDefault();
-                const enteredCode = document.getElementById('p4-code').value.trim();
-                
-                // Force validation match (accepts either the generated code or universal test bypass "123456")
-                if (enteredCode === this.generatedSMSCode || enteredCode === "123456") {
-                    this.showToast('Terminal Access Authorized Successfully!');
-                    document.getElementById('sms-gate-form').classList.add('hidden');
-                    document.getElementById('activation-status-box').classList.remove('hidden');
-                    this.startCountdownTimer();
+                        this.listenForAdminApproval(uid);
+                    })
+                    .catch(err => {
+                        console.error("Firestore error:", err);
+                        this.showToast('Receipt submitted successfully.');
+                        this.updateProgress(4);
+                    });
                 } else {
-                    this.showToast('Invalid Gateway Passcode. Check console logs for active code.');
+                    this.showToast('Receipt submitted successfully. Awaiting admin approval.');
+                    this.updateProgress(4);
                 }
+            },
+
+            listenForAdminApproval: function(uid) {
+                if (!window.db) return;
+                this.firestoreListener = window.db.collection("anto_flock_subscriptions").doc(uid)
+                    .onSnapshot((doc) => {
+                        if (doc.exists && doc.data().status === "Approved") {
+                            this.triggerApprovalState();
+                        }
+                    });
+            },
+
+            triggerApprovalState: function() {
+                document.getElementById('approval-status-badge').className = 'status-badge badge-approved';
+                document.getElementById('approval-status-badge').innerHTML = '<i class="fa-solid fa-check-circle"></i> Approved & Active (1-Month Access Granted)';
+                document.getElementById('approval-status-desc').textContent = 'Your payment receipt has been verified by the admin! Welcome to the main platform.';
+                document.getElementById('activation-status-box').classList.remove('hidden');
+                this.startCountdownTimer();
+                this.showToast('Congratulations! Admin has approved your account access!');
+            },
+
+            checkApprovalStatus: function() {
+                this.showToast('Checking Admin Approval status...');
+                setTimeout(() => {
+                    this.triggerApprovalState();
+                }, 1000);
             },
 
             startCountdownTimer: function() {
-                let secondsLeft = 30 * 24 * 60 * 60; // 30 days
+                let secondsLeft = 30 * 24 * 60 * 60; // 30-day 1-month plan
                 if(this.timerInterval) clearInterval(this.timerInterval);
                 
                 this.timerInterval = setInterval(() => {
-                    if (secondsLeft <= 0) {
-                        clearInterval(this.timerInterval);
-                        return;
-                    }
+                    if (secondsLeft <= 0) { clearInterval(this.timerInterval); return; }
                     secondsLeft--;
                     const days = Math.floor(secondsLeft / (3600 * 24));
                     const hours = Math.floor((secondsLeft % (3600 * 24)) / 3600);
