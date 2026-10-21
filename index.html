@@ -3,846 +3,1734 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>G-Tech Antho Flock - Global Engineering & Tech Platform</title>
-    <!-- Google Search Console Verification -->
-    <meta name="google-site-verification" content="W1S2mHeW31xV0fh1yJ1J9cvbyHLrzwNkK8pOIe1x2xE" />
-    <meta property="og:image" content="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop">
-    <meta name="description" content="G-Tech Antho Flock is a global engineering platform providing AI code tools, mobile gadget diagnostic guides, and tech education.">
+    <title>GT-AnthoFlock | Engineering Workspace & STEM Ecosystem</title>
     
-    <!-- FontAwesome 6 Icons -->
+    <meta name="author" content="GT-AnthoFlock Web Developer Team">
+    <meta name="description" content="GT-AnthoFlock is a premier technical ecosystem engineered by Godfrey Anthony & the GT-AnthoFlock Web Developer Team. Built for real-time live coding, secondary school STEM curricula, AI assistance, and circuit hardware diagnostics.">
+    <meta property="og:title" content="GT-AnthoFlock - Official Technical Workspace">
+    <meta property="og:description" content="Empowering developers, students, hardware technicians, and clients with custom software solutions, secondary STEM study guides, and micro-circuit diagnostics.">
+
+    <!-- Third-Party Assets: FontAwesome, Google Fonts, Firebase Compat SDKs -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- FIREBASE SDK SCRIPTS -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-    
+
     <style>
         :root {
-            --bg-main: #0c0814;
-            --bg-card: #161026;
-            --bg-input: #100b1d;
-            --accent-primary: #ffd700; /* Metallic Gold */
-            --accent-purple: #7c3aed;  /* Royal Deep Purple */
-            --accent-glow: rgba(255, 215, 0, 0.25);
-            --accent-success: #10b981;
-            --accent-warning: #f59e0b;
-            --accent-danger: #ef4444;
+            /* GT-AnthoFlock Palette: Royal Purple & Metallic Gold */
+            --bg-color: #08050e;
+            --card-bg: rgba(20, 12, 34, 0.92);
+            --card-solid: #150b26;
+            --bg-input: #1e1038;
+            --primary-color: #a855f7;
+            --primary-hover: #9333ea;
+            --brand-purple: #7e22ce;
+            --accent-gold: #f59e0b;
+            --accent-gold-hover: #d97706;
+            --gold-bright: #fbbf24;
+            --accent-glow: rgba(168, 85, 247, 0.35);
+            --gold-glow: rgba(245, 158, 11, 0.35);
+            --success-color: #10b981;
+            --danger-color: #ef4444;
             --text-main: #f8fafc;
-            --text-muted: #a78bfa;
-            --border-color: #2e2157;
-            --radius-lg: 18px;
-            --radius-md: 12px;
-            --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --text-sub: #a79bbd;
+            --border-color: rgba(245, 158, 11, 0.18);
+            --border-hover: rgba(168, 85, 247, 0.65);
+            --border-radius: 18px;
+            --radius-md: 10px;
+            --shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+            --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            --gt-gradient: linear-gradient(135deg, #7e22ce, #a855f7, #f59e0b);
+            --gold-gradient: linear-gradient(135deg, #f59e0b, #fbbf24, #d97706);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
-        body { 
-            background: linear-gradient(135deg, #0c0814 0%, #1a103c 100%); 
-            color: var(--text-main); 
-            min-height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 1.5rem 0.8rem; 
-            overflow-x: hidden;
-            width: 100%;
+        [data-theme="light"] {
+            --bg-color: #f7f3fb;
+            --card-bg: rgba(255, 255, 255, 0.94);
+            --card-solid: #ffffff;
+            --bg-input: #f1e8f8;
+            --primary-color: #7e22ce;
+            --primary-hover: #6b21a8;
+            --brand-purple: #6b21a8;
+            --accent-gold: #d97706;
+            --accent-gold-hover: #b45309;
+            --gold-bright: #d97706;
+            --accent-glow: rgba(126, 34, 206, 0.2);
+            --gold-glow: rgba(217, 119, 6, 0.2);
+            --success-color: #059669;
+            --danger-color: #dc2626;
+            --text-main: #1a0f28;
+            --text-sub: #574670;
+            --border-color: rgba(126, 34, 206, 0.18);
+            --border-hover: rgba(217, 119, 6, 0.55);
+            --shadow: 0 8px 20px rgba(126, 34, 206, 0.08);
         }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        html, body {
+            width: 100%;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        /* STICKY HEADER */
+        header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            background-color: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .brand {
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            user-select: none;
+        }
+
+        .brand-icon-wrapper {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--gt-gradient);
+            padding: 2px;
+            box-shadow: 0 4px 12px var(--accent-glow);
+            transition: var(--transition);
+        }
+
+        .brand-icon-wrapper:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        .brand-icon-inner {
+            width: 100%;
+            height: 100%;
+            background: var(--card-solid);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-gold);
+        }
+
+        .brand-title-text {
+            background: var(--gt-gradient);
+            -webkit-background-clip: text;
+            color: transparent;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+
+        .brand-subtitle-text {
+            font-size: 8.5px;
+            display: block;
+            font-family: 'Fira Code', monospace;
+            color: var(--accent-gold);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-top: -3px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-action {
+            background: var(--card-solid);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 7px 14px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-action:hover {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+            box-shadow: 0 0 10px var(--gold-glow);
+        }
+
+        .btn-primary-head {
+            background: var(--gt-gradient);
+            border: none;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: 700;
+            box-shadow: 0 4px 12px var(--accent-glow);
+            transition: var(--transition);
+        }
+
+        .btn-primary-head:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px var(--accent-glow);
+        }
+
+        /* MAIN LAYOUT */
+        main {
+            width: 100%;
+            max-width: 1060px;
+            margin: 0 auto;
+            padding: 80px 16px 30px;
+            flex: 1;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding: 42px 18px;
+            border-radius: var(--border-radius);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .svg-bg-watermark {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 380px; height: 380px;
+            pointer-events: none;
+            z-index: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .svg-bg-layer-1 { position: absolute; width: 100%; height: 100%; opacity: 0.55; animation: watermarkCycle1 38s infinite linear; }
+        .svg-bg-layer-2 { position: absolute; width: 85%; height: 85%; opacity: 0.55; animation: watermarkCycle2 32s infinite linear; }
+        .svg-bg-layer-3 { position: absolute; width: 70%; height: 70%; opacity: 0.55; animation: watermarkCycle3 26s infinite linear; }
+
+        @keyframes watermarkCycle1 { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.03); } 100% { transform: rotate(360deg) scale(1); } }
+        @keyframes watermarkCycle2 { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(-180deg) scale(0.97); } 100% { transform: rotate(-360deg) scale(1); } }
+        @keyframes watermarkCycle3 { 0% { transform: rotate(0deg) scale(1); } 33% { transform: rotate(120deg) scale(1.04); } 66% { transform: rotate(240deg) scale(0.96); } 100% { transform: rotate(360deg) scale(1); } }
+
+        .hero-content { position: relative; z-index: 1; }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            background: rgba(168, 85, 247, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            color: var(--accent-gold);
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+        }
+
+        .hero h1 span {
+            background: var(--gt-gradient);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            font-size: 0.88rem;
+            color: var(--text-sub);
+            max-width: 680px;
+            margin: 0 auto 20px;
+            line-height: 1.65;
+        }
+
+        /* SEARCH CONTAINER */
+        .search-container {
+            max-width: 440px;
+            margin: 0 auto 24px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 11px 14px 11px 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            font-size: 0.85rem;
+            outline: none;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 14px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-gold);
+            font-size: 0.85rem;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+            background-color: var(--card-solid);
+        }
+
+        .search-count {
+            font-size: 0.72rem;
+            color: var(--text-sub);
+            margin-top: 6px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* MODULES GRID */
+        .grid-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+            text-align: center;
+            color: var(--text-main);
+        }
+
+        .grid-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 3px;
+            background: var(--gt-gradient);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: var(--border-hover);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45);
+            background-color: var(--card-solid);
+        }
+
+        .card:hover::before { opacity: 1; }
+
+        .card-icon {
+            font-size: 1.15rem;
+            margin-bottom: 12px;
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            background: var(--bg-input);
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--border-color);
+            color: var(--accent-gold);
+            transition: var(--transition);
+        }
+
+        .card:hover .card-icon {
+            transform: scale(1.05);
+            background: var(--primary-color);
+            color: #ffffff;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .card-title { font-size: 1rem; font-weight: 700; margin-bottom: 6px; color: var(--text-main); }
+        .card-desc { font-size: 0.78rem; color: var(--text-sub); margin-bottom: 16px; line-height: 1.55; }
+
+        .card-btn {
+            width: 100%;
+            background: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 9px 14px;
+            border-radius: 9px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .card:hover .card-btn {
+            background: var(--gt-gradient);
+            border-color: transparent;
+            color: #ffffff;
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        /* ADVANTAGES SECTION */
+        .advantages-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 26px 18px;
+            margin-bottom: 36px;
+            box-shadow: var(--shadow);
+        }
+
+        .advantages-header { text-align: center; margin-bottom: 18px; }
+        .advantages-header h3 { font-size: 1.2rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
+        .advantages-header p { font-size: 0.78rem; color: var(--text-sub); }
+
+        .advantages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .adv-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px;
+            transition: var(--transition);
+        }
+
+        .adv-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .adv-card i { font-size: 1.1rem; color: var(--accent-gold); margin-bottom: 8px; display: inline-block; }
+        .adv-card h4 { font-size: 0.88rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+        .adv-card p { font-size: 0.75rem; color: var(--text-sub); line-height: 1.45; }
+
+        /* MODAL OVERLAY & CONTAINER */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(8, 5, 14, 0.88);
+            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: var(--transition);
+            padding: 14px;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .modal-container {
+            background-color: var(--card-solid);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            width: 100%; max-width: 500px; max-height: 90vh;
+            display: flex; flex-direction: column;
+            box-shadow: var(--shadow);
+            transform: scale(0.96); transition: var(--transition);
+            overflow: visible;
+        }
+        .modal-overlay.active .modal-container { transform: scale(1); }
+
+        .modal-header {
+            padding: 14px 18px; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--card-bg);
+            border-top-left-radius: var(--border-radius);
+            border-top-right-radius: var(--border-radius);
+        }
+        .modal-title { font-size: 1.05rem; font-weight: 700; color: var(--text-main); }
+        .modal-close {
+            background: var(--bg-input); border: 1px solid var(--border-color);
+            color: var(--text-sub); width: 28px; height: 28px; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: var(--transition); font-size: 0.8rem;
+        }
+        .modal-close:hover { background: var(--danger-color); color: #ffffff; border-color: transparent; }
+        .modal-body { padding: 18px; overflow-y: auto; flex: 1; position: relative; }
+
+        /* STEP INDICATOR */
+        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 18px; position: relative; }
+        .step-indicator::before {
+            content: ''; position: absolute; top: 50%; left: 0; transform: translateY(-50%);
+            width: 100%; height: 2px; background: var(--border-color); z-index: 1;
+        }
+        .step-bullet {
+            width: 28px; height: 28px; border-radius: 50%; background: var(--card-solid);
+            border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; font-weight: 700; color: var(--text-sub); position: relative; z-index: 2;
+            transition: var(--transition);
+        }
+        .step-bullet.active { border-color: var(--primary-color); color: var(--primary-color); background: var(--card-solid); box-shadow: 0 0 10px var(--accent-glow); transform: scale(1.05); }
+        .step-bullet.completed { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
+
+        /* AUTH TOGGLE */
+        .auth-toggle {
+            display: flex; background: var(--bg-input); border-radius: var(--radius-md);
+            margin-bottom: 18px; border: 1px solid var(--border-color); overflow: hidden; padding: 2px;
+        }
+        .auth-tab {
+            flex: 1; text-align: center; padding: 7px; cursor: pointer; font-size: 0.78rem;
+            font-weight: 600; color: var(--text-sub); border-radius: calc(var(--radius-md) - 2px); transition: var(--transition);
+        }
+        .auth-tab.active { background: var(--card-solid); color: var(--text-main); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); }
+
+        /* ENHANCED FORM STYLING */
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+        .form-group { margin-bottom: 0.95rem; position: relative; width: 100%; }
+        .form-group label { display: block; margin-bottom: 0.35rem; color: var(--text-sub); font-size: 0.72rem; font-weight: 600; }
+        .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
+        .input-wrapper i.input-icon { position: absolute; left: 12px; color: var(--accent-gold); font-size: 0.8rem; z-index: 2; transition: var(--transition); }
+        .input-wrapper i.toggle-password {
+            position: absolute; right: 12px; color: var(--text-sub); font-size: 0.85rem; z-index: 2;
+            cursor: pointer; transition: var(--transition);
+        }
+        .input-wrapper i.toggle-password:hover { color: var(--accent-gold); }
+
+        .form-control {
+            width: 100%; padding: 10px 12px 10px 36px; background: var(--bg-input);
+            border: 1px solid var(--border-color); border-radius: var(--radius-md);
+            color: var(--text-main); font-size: 0.82rem; outline: none; transition: var(--transition);
+        }
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+            background-color: var(--card-solid);
+        }
+
+        /* FULLY CUSTOM JAVASCRIPT DROPDOWN ENGINE */
+        .custom-select-container {
+            position: relative;
+            width: 100%;
+            user-select: none;
+        }
+
+        .custom-select-trigger {
+            width: 100%;
+            padding: 10px 32px 10px 36px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--gold-bright);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: var(--transition);
+        }
+
+        .custom-select-trigger:hover, .custom-select-container.open .custom-select-trigger {
+            border-color: var(--accent-gold);
+            background-color: var(--card-solid);
+            box-shadow: 0 0 10px var(--gold-glow);
+        }
+
+        .custom-select-arrow {
+            position: absolute;
+            right: 12px;
+            color: var(--accent-gold);
+            font-size: 0.75rem;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+
+        .custom-select-container.open .custom-select-arrow {
+            transform: rotate(180deg);
+        }
+
+        .custom-select-options {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: #120921;
+            border: 1px solid var(--border-hover);
+            border-radius: var(--radius-md);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.8);
+            z-index: 99;
+            max-height: 200px;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .custom-select-container.open .custom-select-options {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .custom-option {
+            padding: 9px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .custom-option:hover {
+            background: rgba(168, 85, 247, 0.2);
+            color: #ffffff;
+            padding-left: 18px;
+        }
+
+        .custom-option.selected {
+            background: rgba(245, 158, 11, 0.18);
+            color: var(--gold-bright);
+            font-weight: 700;
+        }
+
+        /* Option Theme Accents */
+        .option-accent-emerald { border-left: 3px solid #34d399; }
+        .option-accent-amber { border-left: 3px solid #fbbf24; }
+        .option-accent-purple { border-left: 3px solid #c084fc; }
+
+        /* ROLE SELECTION CARDS */
+        .role-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 0.95rem; }
+        .role-card {
+            background: var(--bg-input); border: 1px solid var(--border-color);
+            border-radius: var(--radius-md); padding: 10px 4px; text-align: center; cursor: pointer; transition: var(--transition);
+        }
+        .role-card i { font-size: 1rem; color: var(--text-sub); margin-bottom: 4px; transition: var(--transition); }
+        .role-card.selected { border-color: var(--accent-gold); background: rgba(245, 158, 11, 0.12); }
+        .role-card.selected i, .role-card.selected h4 { color: var(--accent-gold); }
+        .role-card h4 { font-size: 0.75rem; color: var(--text-sub); transition: var(--transition); }
+
+        /* BUTTONS */
+        .btn-auth-action {
+            width: 100%; background: var(--gt-gradient); color: #ffffff; border: none;
+            padding: 10px; border-radius: var(--radius-md); font-size: 0.82rem; font-weight: 700;
+            cursor: pointer; transition: var(--transition); margin-top: 4px; box-shadow: 0 4px 12px var(--accent-glow);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-auth-action:hover { transform: translateY(-2px); box-shadow: 0 6px 16px var(--accent-glow); }
+        .btn-secondary-action { background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: none; }
+        .btn-secondary-action:hover { background: var(--card-solid); border-color: var(--primary-color); color: var(--primary-color); }
+
         .hidden { display: none !important; }
 
-        /* NETWORK STATUS BAR */
-        #net-status-bar {
-            position: fixed; top: 0; left: 0; width: 100%; padding: 6px; text-align: center;
-            font-size: 0.8rem; font-weight: bold; z-index: 10000; display: none;
-        }
-        .net-offline { background: var(--accent-danger); color: #fff; }
-
-        /* PROGRESS STEPPER */
-        .progress-bar-container { width: 100%; max-width: 700px; margin-bottom: 2rem; padding: 0 5px; }
-        .progress-steps { display: flex; justify-content: space-between; position: relative; }
-        .progress-steps::before {
-            content: ''; position: absolute; top: 50%; left: 0; transform: translateY(-50%);
-            width: 100%; height: 4px; background: var(--border-color); z-index: 1;
-        }
-        .progress-line-fill {
-            position: absolute; top: 50%; left: 0; transform: translateY(-50%);
-            height: 4px; background: var(--accent-primary); z-index: 1; transition: var(--transition); width: 0%;
-        }
-        .step-circle {
-            width: 42px; height: 42px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border-color);
-            display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--text-muted);
-            position: relative; z-index: 2; transition: var(--transition); font-size: 0.9rem;
-        }
-        .step-circle.active { border-color: var(--accent-primary); color: var(--accent-primary); background: var(--bg-main); box-shadow: 0 0 15px var(--accent-glow); }
-        .step-circle.completed { background: var(--accent-primary); color: #0c0814; border-color: var(--accent-primary); }
-
-        /* CARD CONTAINERS */
-        .card {
-            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
-            padding: 2.2rem 1.8rem; width: 100%; max-width: 700px; box-shadow: 0 25px 50px rgba(0,0,0,0.7);
-            animation: fadeIn 0.4s ease-out; position: relative; overflow: hidden; margin: 0 auto;
-        }
-        .card::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
-            background: linear-gradient(90deg, var(--accent-purple), var(--accent-primary));
+        /* ADMIN TERMINAL MODAL */
+        .admin-modal-box {
+            background: var(--card-solid);
+            border: 1px solid var(--accent-gold);
+            box-shadow: 0 0 25px var(--gold-glow);
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-
-        .brand-header { text-align: center; margin-bottom: 1.8rem; }
-        .brand-header i { font-size: 2.8rem; color: var(--accent-primary); margin-bottom: 0.6rem; text-shadow: 0 0 15px var(--accent-glow); }
-        .brand-header h2 { font-size: 1.85rem; font-weight: 800; letter-spacing: -0.5px; color: #fff; word-break: break-word; }
-        .brand-header p { color: var(--text-muted); font-size: 0.92rem; margin-top: 0.4rem; line-height: 1.5; }
-
-        .auth-toggle { display: flex; background: var(--bg-input); border-radius: var(--radius-md); margin-bottom: 1.5rem; border: 1px solid var(--border-color); overflow: hidden; }
-        .auth-tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: var(--text-muted); transition: var(--transition); }
-        .auth-tab.active { background: var(--accent-primary); color: #0c0814; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
-
-        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; width: 100%; }
-        .form-group { margin-bottom: 1.2rem; position: relative; width: 100%; }
-        .form-group label { display: block; margin-bottom: 0.4rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; }
-        
-        .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
-        .input-wrapper i.input-icon { position: absolute; left: 14px; color: var(--text-muted); font-size: 0.95rem; z-index: 2; transition: var(--transition); }
-        .input-wrapper .form-control { padding-left: 42px; }
-        
-        .intl-phone-wrapper { display: flex; gap: 8px; width: 100%; align-items: center; }
-        .intl-phone-wrapper select { width: 115px; flex-shrink: 0; padding: 12px 6px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-main); font-size: 0.85rem; outline: none; }
-        .intl-phone-wrapper .phone-input-box { flex-grow: 1; min-width: 0; }
-
-        .password-toggle { position: absolute; right: 14px; color: var(--text-muted); cursor: pointer; font-size: 1rem; transition: var(--transition); z-index: 5; }
-        .password-toggle:hover { color: var(--accent-primary); }
-
-        /* PASSWORD STRENGTH BAR */
-        .pwd-strength-meter { height: 4px; width: 100%; background: var(--border-color); border-radius: 2px; margin-top: 6px; overflow: hidden; display: flex; }
-        .pwd-strength-fill { height: 100%; width: 0%; transition: var(--transition); }
-
-        .form-control, select.form-control {
-            width: 100%; max-width: 100%; padding: 12px 14px; background: var(--bg-input); border: 1px solid var(--border-color);
-            border-radius: var(--radius-md); color: var(--text-main); font-size: 0.92rem; outline: none; transition: var(--transition);
+        /* TOAST NOTIFICATIONS */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
+        .toast {
+            background: var(--card-solid); color: var(--text-main); padding: 10px 14px;
+            border-left: 4px solid var(--accent-gold); border-radius: var(--radius-md);
+            box-shadow: var(--shadow); font-size: 0.82rem; border: 1px solid var(--border-color);
+            display: flex; align-items: center; gap: 8px;
+            animation: slideIn 0.3s ease-out;
+            max-width: 340px;
         }
-        .form-control:focus, select.form-control:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-glow); }
-        .form-control:focus + i.input-icon { color: var(--accent-primary); }
-        select.form-control option { background: var(--bg-card); color: var(--text-main); }
-        .error-msg { color: var(--accent-danger); font-size: 0.8rem; margin-top: 0.3rem; display: none; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        .btn {
-            width: 100%; padding: 15px; border: none; border-radius: var(--radius-md); font-weight: 700;
-            font-size: 0.98rem; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .btn-primary { background: linear-gradient(135deg, var(--accent-primary), #e6c200); color: #0c0814; }
-        .btn-primary:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
-        .btn-success { background: var(--accent-success); color: #fff; }
-        .btn-copy { background: rgba(255, 215, 0, 0.12); color: var(--accent-primary); border: 1px solid var(--accent-primary); padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; cursor: pointer; }
-        .btn-copy:hover { background: var(--accent-primary); color: #000; }
-
-        .role-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; margin-bottom: 1.5rem; width: 100%; }
-        .role-card {
-            background: var(--bg-input); border: 2px solid var(--border-color); border-radius: var(--radius-md);
-            padding: 1rem 0.5rem; text-align: center; cursor: pointer; transition: var(--transition);
-        }
-        .role-card i { font-size: 1.8rem; color: var(--text-muted); margin-bottom: 0.4rem; transition: var(--transition); }
-        .role-card.selected { border-color: var(--accent-primary); background: rgba(255, 215, 0, 0.05); box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
-        .role-card.selected i { color: var(--accent-primary); }
-        .role-card h4 { font-size: 0.85rem; color: #fff; }
-
-        .bank-details-box { background: rgba(124, 58, 237, 0.1); border: 1px dashed var(--accent-primary); border-radius: var(--radius-md); padding: 1.2rem; margin-bottom: 1.5rem; width: 100%; }
-        .bank-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; font-size: 0.88rem; flex-wrap: wrap; gap: 5px; }
-        .bank-row:last-child { margin-bottom: 0; }
-        .bank-label { color: var(--text-muted); }
-        .bank-val { font-weight: bold; color: var(--accent-primary); font-family: monospace; font-size: 0.95rem; }
-
-        /* TOKEN EXCHANGE PREVIEW BOX */
-        .token-preview-box {
-            background: rgba(255, 215, 0, 0.05); border: 1px solid var(--border-color); border-radius: var(--radius-md);
-            padding: 10px 14px; margin-bottom: 1.2rem; font-size: 0.82rem; color: var(--accent-primary); display: flex;
-            justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px;
+        /* COMPACT FOOTER */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 8px 16px;
+            text-align: center;
+            font-size: 0.72rem;
+            color: var(--text-sub);
+            background-color: var(--card-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 500;
+            min-height: 38px;
         }
 
-        /* VISUAL SCANNER HUD & PREVIEW */
-        .scanner-container { position: relative; width: 100%; border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 12px; background: var(--bg-input); margin-bottom: 1.2rem; text-align: center; overflow: hidden; }
-        .scanner-viewport { position: relative; width: 100%; max-height: 250px; overflow: hidden; border-radius: 8px; display: none; }
-        .scanner-viewport img { width: 100%; height: auto; object-fit: contain; cursor: zoom-in; }
-        .scanner-laser { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--accent-primary); box-shadow: 0 0 15px var(--accent-primary); animation: scanAnimation 2s infinite ease-in-out; display: none; }
-        
-        @keyframes scanAnimation { 0% { top: 0%; } 50% { top: 95%; } 100% { top: 0%; } }
+        footer p { margin: 0; line-height: 1.2; }
+        .footer-highlight { color: var(--accent-gold); font-weight: 700; }
 
-        .scanner-console { background: #000; color: #10b981; font-family: monospace; font-size: 0.78rem; padding: 10px; border-radius: 6px; text-align: left; margin-top: 10px; height: 95px; overflow-y: auto; display: none; line-height: 1.4; }
-
-        .timer-box { background: var(--bg-input); border: 1px solid var(--accent-success); border-radius: var(--radius-md); padding: 1.2rem; text-align: center; margin-bottom: 1.5rem; }
-        .timer-digit { font-size: 2rem; font-weight: 800; color: var(--accent-success); font-family: monospace; margin-top: 0.3rem; letter-spacing: 1px; }
-
-        .status-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem; }
-        .badge-pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid var(--accent-warning); }
-        .badge-approved { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid var(--accent-success); }
-
-        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; max-width: calc(100vw - 40px); }
-        .toast { background: var(--bg-card); color: #fff; padding: 1rem 1.4rem; border-left: 5px solid var(--accent-primary); border-radius: 8px; box-shadow: 0 12px 30px rgba(0,0,0,0.6); margin-top: 10px; font-size: 0.88rem; border: 1px solid var(--border-color); animation: slideIn 0.3s ease-out; }
-        
-        @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
-
-        @media (max-width: 600px) { 
-            .form-grid-2 { grid-template-columns: 1fr; gap: 0; } 
-            .role-grid { grid-template-columns: 1fr; }
-            .card { padding: 1.5rem 1rem; }
-            body { padding: 1rem 0.4rem; }
+        @media (max-width: 600px) {
+            .form-grid-2 { grid-template-columns: 1fr; gap: 0; }
+            header { padding: 8px 14px; }
+            main { padding: 72px 12px 24px; }
+            .hero { padding: 32px 12px; }
         }
     </style>
 </head>
-<body onload="Portal.init()">
+<body data-theme="dark" onload="GTApp.init()">
 
-    <!-- NETWORK STATUS BAR -->
-    <div id="net-status-bar" class="net-offline"><i class="fa-solid fa-wifi"></i> Network Disconnected. Reconnecting...</div>
-
-    <!-- PROGRESS STEPPER -->
-    <div class="progress-bar-container">
-        <div class="progress-steps">
-            <div class="progress-line-fill" id="progress-line"></div>
-            <div class="step-circle active" id="step-dot-1">1</div>
-            <div class="step-circle" id="step-dot-2">2</div>
-            <div class="step-circle" id="step-dot-3">3</div>
-            <div class="step-circle" id="step-dot-4">4</div>
-        </div>
-    </div>
-
-    <!-- PAGE 1: USER ACCOUNT REGISTRATION & AUTH LOGIN -->
-    <div id="page-1" class="card">
-        <div class="brand-header">
-            <i class="fa-solid fa-crown"></i>
-            <h2>G-Tech Antho Flock</h2>
-            <p>Welcome to our global engineering platform. Connect with elite developers, access advanced hardware diagnostics, AI tools, and technical education modules.</p>
-        </div>
-        <div class="auth-toggle">
-            <div class="auth-tab active" id="tab-signup" onclick="Portal.switchAuthMode('signup')">Create Account</div>
-            <div class="auth-tab" id="tab-login" onclick="Portal.switchAuthMode('login')">Account Login</div>
-        </div>
-        <form id="form-page-1" onsubmit="Portal.handlePage1Submit(event)">
-            <div class="form-grid-2" id="grid-username-email">
-                <div class="form-group signup-only">
-                    <label for="p1-username">Full Name / Display Handle</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-user input-icon"></i><input type="text" id="p1-username" class="form-control" placeholder="e.g. Godfrey Anthony" required></div>
-                </div>
-                <div class="form-group">
-                    <label for="p1-email">Email Address</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-envelope input-icon"></i><input type="email" id="p1-email" class="form-control" placeholder="user@domain.com" required></div>
+    <!-- STICKY HEADER NAVBAR -->
+    <header>
+        <div class="brand" id="brandLogoTrigger" title="GT-AnthoFlock Ecosystem (Triple Tap for Admin)">
+            <div class="brand-icon-wrapper">
+                <div class="brand-icon-inner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px; height:18px;">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                 </div>
             </div>
-
-            <!-- INTERNATIONAL PHONE INPUT WITH ZERO-OVERFLOW RESPONSIVE LAYOUT -->
-            <div class="form-group signup-only">
-                <label for="p1-phone">International Phone Number</label>
-                <div class="intl-phone-wrapper">
-                    <select id="p1-dial-code" class="form-control" onchange="Portal.formatPhoneInputMask()">
-                        <option value="+234" selected>🇳🇬 +234</option>
-                        <option value="+1">🇺🇸 +1</option>
-                        <option value="+44">🇬🇧 +44</option>
-                        <option value="+233">🇬🇭 +233</option>
-                        <option value="+254">🇰🇪 +254</option>
-                        <option value="+27">🇿🇦 +27</option>
-                        <option value="+91">🇮🇳 +91</option>
-                        <option value="+49">🇩🇪 +49</option>
-                        <option value="+33">🇫🇷 +33</option>
-                        <option value="+81">🇯🇵 +81</option>
-                        <option value="+86">🇨🇳 +86</option>
-                        <option value="+971">🇦🇪 +971</option>
-                    </select>
-                    <div class="input-wrapper phone-input-box">
-                        <i class="fa-solid fa-phone input-icon"></i>
-                        <input type="tel" id="p1-phone" class="form-control" placeholder="8169923809" required>
-                    </div>
-                </div>
+            <div>
+                <span class="brand-title-text">GT-AnthoFlock</span>
+                <span class="brand-subtitle-text">Ecosystem</span>
             </div>
-
-            <div class="form-grid-2" id="grid-passwords">
-                <div class="form-group">
-                    <label for="p1-password">Password (Min. 8 Characters)</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-lock input-icon"></i><input type="password" id="p1-password" class="form-control" oninput="Portal.checkPasswordStrength(this.value)" required><i class="fa-solid fa-eye password-toggle" onclick="Portal.togglePasswordVisibility('p1-password', this)"></i></div>
-                    <div class="pwd-strength-meter signup-only"><div class="pwd-strength-fill" id="pwd-fill"></div></div>
-                </div>
-                <div class="form-group signup-only">
-                    <label for="p1-confirm-password">Confirm Password</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-lock input-icon"></i><input type="password" id="p1-confirm-password" class="form-control" oninput="Portal.validatePasswordMatch()" required><i class="fa-solid fa-eye password-toggle" onclick="Portal.togglePasswordVisibility('p1-confirm-password', this)"></i></div>
-                    <div class="error-msg" id="err-password">Passwords do not match. Please verify.</div>
-                </div>
-            </div>
-            <button type="submit" id="btn-page-1-submit" class="btn btn-primary"><i class="fa-solid fa-arrow-right"></i> Continue to Profile Setup</button>
-        </form>
-    </div>
-
-    <!-- PAGE 2: USER PROFILE & INTEREST SPECIALIZATION -->
-    <div id="page-2" class="card hidden">
-        <div class="brand-header">
-            <i class="fa-solid fa-laptop-code"></i>
-            <h2>Platform Profile & Specialization</h2>
-            <p>Select your primary technical discipline and country to calculate your local subscription equivalent automatically.</p>
         </div>
-        <form id="form-page-2" onsubmit="Portal.handlePage2Submit(event)">
-            <div class="role-grid">
-                <div class="role-card selected" id="role-dev-card" onclick="Portal.selectRole('Programmer / Developer')">
-                    <i class="fa-solid fa-code"></i>
-                    <h4>Programmer / Developer</h4>
-                </div>
-                <div class="role-card" id="role-tech-card" onclick="Portal.selectRole('Gadget Technician')">
-                    <i class="fa-solid fa-screwdriver-wrench"></i>
-                    <h4>Gadget Repairer</h4>
-                </div>
-                <div class="role-card" id="role-student-card" onclick="Portal.selectRole('Student / Learner')">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                    <h4>Student / Learner</h4>
-                </div>
-            </div>
-            <div class="form-grid-2">
-                <div class="form-group">
-                    <label for="p2-country">Country of Residence</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-globe input-icon"></i>
-                        <select id="p2-country" class="form-control" onchange="Portal.onCountryChange()" required>
-                            <option value="Nigeria">Nigeria</option>
-                            <option value="Ghana">Ghana</option>
-                            <option value="United States">United States</option>
-                            <option value="United Kingdom">United Kingdom</option>
-                            <option value="Germany">Germany / Europe</option>
-                            <option value="Kenya">Kenya</option>
-                            <option value="India">India</option>
-                            <option value="Japan">Japan</option>
-                            <option value="China">China</option>
-                            <option value="UAE">United Arab Emirates</option>
-                            <option value="Other">Other Global Location</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="p2-state">State / Province</label>
-                    <div class="input-wrapper"><i class="fa-solid fa-city input-icon"></i><select id="p2-state" class="form-control" required></select></div>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-arrow-right"></i> Save Profile & Proceed</button>
-        </form>
-    </div>
-
-    <!-- PAGE 3: SUBSCRIPTION PAYMENT & ADVANCED OCR RECEIPT SCANNER -->
-    <div id="page-3" class="card hidden">
-        <div class="brand-header">
-            <i class="fa-solid fa-vault"></i>
-            <h2>Subscription & Payment Upload</h2>
-            <p>Transfer the local currency equivalent below. Upload your payment receipt to trigger the advanced OCR diagnostic scanner (&lt; 48h approval gate).</p>
+        <div class="header-actions">
+            <button class="btn-action" onclick="GTApp.toggleTheme()" id="themeBtn">
+                <i class="fa-solid fa-moon" style="color:var(--primary-color);"></i> <span>Dark Mode</span>
+            </button>
+            <button class="btn-primary-head" onclick="GTApp.openAuthModal('signup')">
+                <i class="fa-solid fa-user-plus" style="margin-right: 4px;"></i> Get Started
+            </button>
         </div>
-        <div class="bank-details-box">
-            <div class="bank-row"><span class="bank-label">Bank Name:</span><span class="bank-val">MiniPoint MFB</span></div>
-            <div class="bank-row">
-                <span class="bank-label">Account Number:</span>
+    </header>
+
+    <main>
+        <!-- HERO SECTION WITH ROTATING SVG WATERMARKS -->
+        <section class="hero">
+            <div class="svg-bg-watermark">
+                <svg class="svg-bg-layer-1" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="gtGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#7e22ce" />
+                            <stop offset="50%" stop-color="#a855f7" />
+                            <stop offset="100%" stop-color="#f59e0b" />
+                        </linearGradient>
+                    </defs>
+                    <polygon points="100,15 180,57 180,143 100,185 20,143 20,57" fill="none" stroke="url(#gtGrad1)" stroke-width="2.5" stroke-linejoin="round"/>
+                    <polygon points="100,35 155,65 155,135 100,165 45,135 45,65" fill="none" stroke="url(#gtGrad1)" stroke-width="1.2" stroke-dasharray="4 4"/>
+                </svg>
+                <svg class="svg-bg-layer-2" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="gtGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#f59e0b" />
+                            <stop offset="100%" stop-color="#a855f7" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="100" cy="100" r="62" fill="none" stroke="url(#gtGrad2)" stroke-width="2" stroke-dasharray="7 5"/>
+                    <path d="M70 115 Q100 85 130 115 T160 85" fill="none" stroke="url(#gtGrad2)" stroke-width="1.8" stroke-linecap="round"/>
+                    <circle cx="70" cy="115" r="2.5" fill="#f59e0b"/>
+                    <circle cx="130" cy="115" r="2.5" fill="#a855f7"/>
+                </svg>
+                <svg class="svg-bg-layer-3" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="gtGrad3" x1="0%" y1="100%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#a855f7" />
+                            <stop offset="100%" stop-color="#f59e0b" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M75 75 L125 75 L150 115 L125 155 L75 155 L50 115 Z" fill="none" stroke="url(#gtGrad3)" stroke-width="2.8" stroke-linejoin="round"/>
+                    <path d="M100 50 L100 150" fill="none" stroke="url(#gtGrad3)" stroke-width="1.2" stroke-dasharray="4 3"/>
+                </svg>
+            </div>
+
+            <div class="hero-content">
+                <div class="badge"><i class="fa-solid fa-bolt"></i> PREMIER PLATFORM BY GT-ANTHOFLOCK</div>
+                <h1>Empowering Your Digital Future with <span>Smart Tools & STEM</span></h1>
+                <p>GT-AnthoFlock is a high-performance technical ecosystem engineered by Godfrey Anthony and our web developer team. We deliver interactive developer sandboxes, secondary STEM education portals, hardware repair diagnostics, and expert client solutions.</p>
+            </div>
+        </section>
+
+        <!-- SEARCH BAR -->
+        <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search workspace modules or features..." oninput="GTApp.filterModules(this.value)">
+            <div class="search-count" id="searchCount">Showing all 4 core modules</div>
+        </div>
+
+        <!-- MODULES GRID -->
+        <h2 class="grid-title">Explore Core Platforms</h2>
+        <p class="grid-subtitle">Select a platform below to begin your technical workflow transformation.</p>
+
+        <section class="modules-grid" id="modulesGrid">
+            <div class="card" data-keywords="ai assistant suite chat intelligence debugging python code math calculation">
                 <div>
-                    <span class="bank-val" id="acc-num-text">8169923809</span>
-                    <button type="button" class="btn-copy" onclick="Portal.copyToClipboard('8169923809')"><i class="fa-regular fa-copy"></i> Copy</button>
+                    <div class="card-icon"><i class="fa-solid fa-robot"></i></div>
+                    <h3 class="card-title">1. AI Assistant Suite</h3>
+                    <p class="card-desc">Experience next-generation intelligent conversational assistance built for deep debugging, algorithm evaluation, and step-by-step problem solving. Our AI suite delivers instant code refactoring recommendations, multi-language context tracking, and continuous developer workflow optimization.</p>
+                </div>
+                <button class="card-btn" onclick="GTApp.openAuthModal('signup', 'ai-suite')">
+                    <span>Explore AI Suite</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <div class="card" data-keywords="student academic portal stem physics chemistry calculus computer science igbo study mock exam">
+                <div>
+                    <div class="card-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <h3 class="card-title">2. Student STEM Portal</h3>
+                    <p class="card-desc">Access comprehensive, structured secondary school learning materials covering Physics, Chemistry, Calculus, Cell Biology, Computer Studies, and Economics. Built specifically for JSS 1 through SSS 3 students, this portal provides interactive lesson modules and diagnostic exams.</p>
+                </div>
+                <button class="card-btn" onclick="GTApp.openAuthModal('signup', 'stem-portal')">
+                    <span>Access Academy</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <div class="card" data-keywords="live code sandbox editor javascript html css programming micro-scripts browser testing">
+                <div>
+                    <div class="card-icon"><i class="fa-solid fa-code"></i></div>
+                    <h3 class="card-title">3. Live Code Sandbox</h3>
+                    <p class="card-desc">Write, evaluate, and preview single-page web applications directly within your mobile or desktop browser without setting up local runtime dependencies. Featuring a virtual multi-file explorer, real-time syntax token highlighting, and live execution previews.</p>
+                </div>
+                <button class="card-btn" onclick="GTApp.openAuthModal('signup', 'code-sandbox')">
+                    <span>Launch Sandbox</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <div class="card" data-keywords="hardware diagnostics repair multimeter soldering micro mobile phone schematic voltage transistor">
+                <div>
+                    <div class="card-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                    <h3 class="card-title">4. Repair & Diagnostics</h3>
+                    <p class="card-desc">Master electronic circuit troubleshooting with step-by-step digital multimeter testing guides, component schematic pinouts, micro-soldering instructions, and power module evaluations targeting power bank ICs, voltage regulators, and salvaged component restoration.</p>
+                </div>
+                <button class="card-btn" onclick="GTApp.openAuthModal('signup', 'repair-diagnostics')">
+                    <span>View Repair Guides</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- ADVANTAGES COMPARISON -->
+        <section class="advantages-section">
+            <div class="advantages-header">
+                <h3>Our Platform Advantages</h3>
+                <p>Engineered to deliver exceptional technical superiority.</p>
+            </div>
+            <div class="advantages-grid">
+                <div class="adv-card">
+                    <i class="fa-solid fa-bolt"></i>
+                    <h4>Zero-Setup IDE Engine</h4>
+                    <p>Execute and prototype web code blocks directly in browser environments without local dependencies.</p>
+                </div>
+                <div class="adv-card">
+                    <i class="fa-solid fa-microchip"></i>
+                    <h4>Real-World Circuit Repairs</h4>
+                    <p>Acquire applied diagnostic techniques via salvaged component pinout maps and micro-soldering guides.</p>
+                </div>
+                <div class="adv-card">
+                    <i class="fa-solid fa-book-bookmark"></i>
+                    <h4>SSS Division Prep</h4>
+                    <p>Targeted exam learning structures for Science, Commercial, and Arts faculties with interactive assessments.</p>
+                </div>
+                <div class="adv-card">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <h4>Intelligent Access Control</h4>
+                    <p>Dynamic registration profiles ensuring content personalization for students, clients, and internal teams.</p>
                 </div>
             </div>
-            <div class="bank-row"><span class="bank-label">Account Name:</span><span class="bank-val">Godfrey Precious Ifeanyichukwu</span></div>
-            <div class="bank-row"><span class="bank-label">Required Fee (<span id="currency-country-label">Nigeria</span>):</span><span class="bank-val" id="dynamic-currency-fee">₦100 (1 Month Access)</span></div>
-        </div>
+        </section>
+    </main>
 
-        <!-- FLOCK KING & FLOCK BEAT TOKEN EXCHANGE PREVIEW -->
-        <div class="token-preview-box">
-            <span><i class="fa-solid fa-coins"></i> Token Credit Conversion:</span>
-            <strong id="token-preview-val">100 Flock Beats / 1 Flock King</strong>
-        </div>
-
-        <form id="form-page-3" onsubmit="Portal.handlePage3Submit(event)">
-            <div class="form-group">
-                <label for="p3-slip">Upload Payment Receipt Slip (Advanced OCR Amount & Sender Scanner)</label>
-                <div class="input-wrapper"><i class="fa-solid fa-file-arrow-up input-icon"></i><input type="file" id="p3-slip" class="form-control" accept="image/*" required onchange="Portal.scanAndVerifySlip(this)"></div>
+    <!-- AUTHENTICATION MODAL WIZARD -->
+    <div class="modal-overlay" id="authModal" onclick="GTApp.closeModalOnOutside(event)">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-title" id="authModalTitle">Create Your Account</div>
+                <button class="modal-close" onclick="GTApp.closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-
-            <!-- VISUAL SCANNER HUD & PREVIEW -->
-            <div class="scanner-container" id="scanner-box">
-                <div id="upload-placeholder-text" style="color: var(--text-muted); font-size: 0.85rem;"><i class="fa-solid fa-camera-retro" style="font-size: 1.5rem; display:block; margin-bottom: 6px;"></i> Upload receipt photo to launch OCR amount & sender verification HUD</div>
-                <div class="scanner-viewport" id="scanner-viewport">
-                    <img id="receipt-img-preview" src="" alt="Payment Receipt Slip">
-                    <div class="scanner-laser" id="scanner-laser"></div>
+            <div class="modal-body">
+                <div class="auth-toggle">
+                    <div class="auth-tab active" id="tab-signup" onclick="GTApp.switchAuthMode('signup')">Sign Up</div>
+                    <div class="auth-tab" id="tab-login" onclick="GTApp.switchAuthMode('login')">Login</div>
                 </div>
-                <div class="scanner-console" id="scanner-console"></div>
-            </div>
 
-            <button type="submit" id="btn-submit-slip" class="btn btn-primary" disabled><i class="fa-solid fa-microchip"></i> Verified - Submit to Admin Gate</button>
-        </form>
+                <div class="step-indicator" id="stepIndicatorContainer">
+                    <div class="step-bullet active" id="bullet-1"><i class="fa-solid fa-user"></i></div>
+                    <div class="step-bullet" id="bullet-2"><i class="fa-solid fa-id-badge"></i></div>
+                    <div class="step-bullet" id="bullet-3"><i class="fa-solid fa-lock"></i></div>
+                    <div class="step-bullet" id="bullet-4"><i class="fa-solid fa-check"></i></div>
+                </div>
+
+                <form id="authForm" onsubmit="GTApp.handleFormSubmit(event)">
+                    
+                    <!-- STEP 1: IDENTITY & CONTACT -->
+                    <div class="auth-step-panel" id="reg-step-1">
+                        <div class="form-group">
+                            <label for="authName">Full Name (Human First & Last Name)</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-user input-icon"></i>
+                                <input type="text" id="authName" class="form-control" placeholder="Godfrey Anthony" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="authEmail">Email Address</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-envelope input-icon"></i>
+                                <input type="email" id="authEmail" class="form-control" placeholder="user@domain.com" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="authPhone">Phone Number with Country Code</label>
+                            <div class="form-grid-2" style="grid-template-columns: 130px 1fr; gap: 6px;">
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-globe input-icon"></i>
+                                    <!-- Custom UI Dropdown for Country Code -->
+                                    <div class="custom-select-container" id="container-authCountryCode">
+                                        <div class="custom-select-trigger" onclick="GTApp.toggleCustomDropdown('container-authCountryCode')">
+                                            <span id="label-authCountryCode">+234 (NG)</span>
+                                            <i class="fa-solid fa-chevron-down custom-select-arrow"></i>
+                                        </div>
+                                        <div class="custom-select-options">
+                                            <div class="custom-option selected option-accent-emerald" onclick="GTApp.selectCustomOption('container-authCountryCode', '+234', '+234 (NG)')">+234 (NG)</div>
+                                            <div class="custom-option option-accent-amber" onclick="GTApp.selectCustomOption('container-authCountryCode', '+1', '+1 (US)')">+1 (US)</div>
+                                            <div class="custom-option option-accent-purple" onclick="GTApp.selectCustomOption('container-authCountryCode', '+44', '+44 (UK)')">+44 (UK)</div>
+                                            <div class="custom-option option-accent-emerald" onclick="GTApp.selectCustomOption('container-authCountryCode', '+233', '+233 (GH)')">+233 (GH)</div>
+                                            <div class="custom-option option-accent-amber" onclick="GTApp.selectCustomOption('container-authCountryCode', '+254', '+254 (KE)')">+254 (KE)</div>
+                                            <div class="custom-option option-accent-purple" onclick="GTApp.selectCustomOption('container-authCountryCode', '+27', '+27 (ZA)')">+27 (ZA)</div>
+                                        </div>
+                                        <input type="hidden" id="authCountryCode" value="+234">
+                                    </div>
+                                </div>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-phone input-icon"></i>
+                                    <input type="tel" id="authPhone" class="form-control" placeholder="8012345678" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-auth-action" onclick="GTApp.validateStep1()">Continue to Profile</button>
+                    </div>
+
+                    <!-- STEP 2: PROFILE & ROLE DETAILS -->
+                    <div class="auth-step-panel hidden" id="reg-step-2">
+                        <div class="form-group">
+                            <label>Select Profile Type</label>
+                            <div class="role-grid-3">
+                                <div class="role-card selected" id="role-student" onclick="GTApp.selectRole('Student')">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                    <h4>Student</h4>
+                                </div>
+                                <div class="role-card" id="role-customer" onclick="GTApp.selectRole('Customer')">
+                                    <i class="fa-solid fa-user-tag"></i>
+                                    <h4>Customer</h4>
+                                </div>
+                                <div class="role-card" id="role-employee" onclick="GTApp.selectRole('Employee')">
+                                    <i class="fa-solid fa-user-tie"></i>
+                                    <h4>Employee</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="dynamicRoleFields"></div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 14px;">
+                            <button type="button" class="btn-auth-action btn-secondary-action" onclick="GTApp.nextRegistrationStep(1)">Back</button>
+                            <button type="button" class="btn-auth-action" onclick="GTApp.nextRegistrationStep(3)">Continue to Security</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: SECURITY & STRICT PASSWORDS -->
+                    <div class="auth-step-panel hidden" id="reg-step-3">
+                        <div class="form-group">
+                            <label for="authPass">Create Password (Min. 8 Chars)</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock input-icon"></i>
+                                <input type="password" id="authPass" class="form-control" placeholder="••••••••" required>
+                                <i class="fa-solid fa-eye-slash toggle-password" id="togglePass1" onclick="GTApp.togglePassVisibility('authPass', 'togglePass1')"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="authPassConfirm">Confirm Password</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-shield-halved input-icon"></i>
+                                <input type="password" id="authPassConfirm" class="form-control" placeholder="••••••••" required>
+                                <i class="fa-solid fa-eye-slash toggle-password" id="togglePass2" onclick="GTApp.togglePassVisibility('authPassConfirm', 'togglePass2')"></i>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 14px;">
+                            <button type="button" class="btn-auth-action btn-secondary-action" onclick="GTApp.nextRegistrationStep(2)">Back</button>
+                            <button type="button" class="btn-auth-action" onclick="GTApp.validateStep3()">Review Setup</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: REVIEW & SUBMIT TO FIREBASE -->
+                    <div class="auth-step-panel hidden" id="reg-step-4">
+                        <div style="background: var(--bg-input); border: 1px solid var(--border-color); padding: 16px; border-radius: var(--radius-md); margin-bottom: 16px; text-align: center;">
+                            <i class="fa-solid fa-circle-check" style="font-size: 2rem; color: var(--accent-gold); margin-bottom: 8px; display: block;"></i>
+                            <h4 style="color: var(--text-main); margin-bottom: 4px;">Credentials Verified</h4>
+                            <p style="font-size: 0.78rem; color: var(--text-sub);">All profile specifications are formatted for Firebase database synchronization.</p>
+                        </div>
+
+                        <div style="display: flex; gap: 10px;">
+                            <button type="button" class="btn-auth-action btn-secondary-action" onclick="GTApp.nextRegistrationStep(3)">Back</button>
+                            <button type="submit" class="btn-auth-action" id="btnCompleteRegister">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Complete Registration
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- LOGIN PANEL -->
+                    <div class="auth-step-panel hidden" id="login-panel">
+                        <div class="form-group">
+                            <label for="loginEmail">Email Address</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-envelope input-icon"></i>
+                                <input type="email" id="loginEmail" class="form-control" placeholder="user@domain.com">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="loginPass">Password</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock input-icon"></i>
+                                <input type="password" id="loginPass" class="form-control" placeholder="••••••••">
+                                <i class="fa-solid fa-eye-slash toggle-password" id="toggleLoginPass" onclick="GTApp.togglePassVisibility('loginPass', 'toggleLoginPass')"></i>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-auth-action" id="btnLoginSubmit">
+                            <i class="fa-solid fa-right-to-bracket"></i> Account Login
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
     </div>
 
-    <!-- PAGE 4: DASHBOARD & ADMIN APPROVAL GATE -->
-    <div id="page-4" class="card hidden">
-        <div class="brand-header">
-            <i class="fa-solid fa-shield-halved" style="color: var(--accent-primary);"></i>
-            <h2>Platform Command Dashboard</h2>
-            <p>Your subscription request is logged in Firebase. Complete access is granted immediately upon admin verification.</p>
-        </div>
-        
-        <div style="text-align: center; margin-bottom: 1.5rem;">
-            <div id="approval-status-badge" class="status-badge badge-pending">
-                <i class="fa-solid fa-clock-rotate-left fa-spin"></i> Pending Admin Verification (&lt; 48 Hours)
+    <!-- SECRET ADMIN MODAL TERMINAL -->
+    <div class="modal-overlay" id="adminTerminalModal">
+        <div class="modal-container admin-modal-box" style="max-width: 420px;">
+            <div class="modal-header">
+                <div class="modal-title" style="color: var(--accent-gold);"><i class="fa-solid fa-shield-halved mr-2"></i> Master Admin Terminal</div>
+                <button class="modal-close" onclick="GTApp.closeAdminModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p id="approval-status-desc" style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">Your receipt has been submitted to the admin database. This page listens live for your admin approval update.</p>
-        </div>
+            <div class="modal-body" style="text-align: center;">
+                <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 16px;">
+                    Provide the 3 Developer Authorization Prerequisites to enter ecosystem admin mode:
+                </p>
+                
+                <div class="form-group">
+                    <label style="text-align: left;">1. Master Security Secret Key</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-key input-icon"></i>
+                        <input type="password" id="adminReq1" class="form-control" placeholder="Enter Master Secret Key">
+                    </div>
+                </div>
 
-        <div id="activation-status-box" class="hidden">
-            <div class="timer-box">
-                <div style="font-size: 0.88rem; color: var(--text-muted);">Active 1-Month Premium Access Remaining</div>
-                <div class="timer-digit" id="countdown-timer">30d 00h 00m 0s</div>
-            </div>
-            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-success); padding: 1.5rem; border-radius: var(--radius-md); text-align: center;">
-                <h4 style="color: var(--accent-success); margin-bottom: 0.6rem;"><i class="fa-solid fa-check-circle"></i> Account Approved & Unlocked!</h4>
-                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Welcome to G-Tech Antho Flock main portal. You now have full access to engineering modules and AI diagnostics.</p>
+                <div class="form-group">
+                    <label style="text-align: left;">2. Developer Security PIN</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock-open input-icon"></i>
+                        <input type="password" id="adminReq2" class="form-control" placeholder="Enter 4-Digit Security PIN">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="text-align: left;">3. Developer Identity Name</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user-gear input-icon"></i>
+                        <input type="text" id="adminReq3" class="form-control" placeholder="Godfrey Anthony">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 14px;">
+                    <button class="btn-auth-action btn-secondary-action" onclick="GTApp.closeAdminModal()">Cancel</button>
+                    <button class="btn-auth-action" onclick="GTApp.verifyAdminMasterKey()">Authenticate Admin</button>
+                </div>
             </div>
         </div>
-
-        <button class="btn btn-success" onclick="Portal.checkApprovalStatus()" style="margin-top: 1rem;"><i class="fa-solid fa-rotate"></i> Check Live Approval Status</button>
     </div>
 
     <div id="toast-container"></div>
 
+    <!-- COMPACT FOOTER -->
+    <footer>
+        <p>© 2026 <span class="footer-highlight">GT-AnthoFlock</span>. Engineered by GT-AnthoFlock Web Developer Team.</p>
+    </footer>
+
     <script>
-        const CountryCurrencies = {
-            "Nigeria": "₦100 (1 Month Access)",
-            "Ghana": "GH₵ 2.00 (1 Month Access)",
-            "United States": "$1.00 (1 Month Access)",
-            "United Kingdom": "£1.00 (1 Month Access)",
-            "Germany": "€1.00 (1 Month Access)",
-            "Kenya": "KSh 20 (1 Month Access)",
-            "India": "₹50 (1 Month Access)",
-            "Japan": "¥150 (1 Month Access)",
-            "China": "¥7.00 (1 Month Access)",
-            "UAE": "AED 4 (1 Month Access)",
-            "Other": "Lowest Local Equivalent ($1.00 USD)"
-        };
-
-        const LocationData = {
-            "Nigeria": ["Delta State", "Lagos State", "Abuja FCT", "Rivers State", "Enugu State", "Ogun State", "Kano State"],
-            "Ghana": ["Greater Accra", "Ashanti Region", "Western Region"],
-            "United States": ["California", "New York", "Texas", "Florida"],
-            "United Kingdom": ["Greater London", "Manchester", "West Midlands"],
-            "Germany": ["Berlin", "Bavaria", "Hamburg", "Frankfurt"],
-            "Kenya": ["Nairobi", "Mombasa", "Kisumu"],
-            "India": ["Maharashtra", "Delhi", "Karnataka"],
-            "Japan": ["Tokyo", "Osaka", "Kyoto"],
-            "China": ["Beijing", "Shanghai", "Guangdong"],
-            "UAE": ["Dubai", "Abu Dhabi", "Sharjah"],
-            "Other": ["General International District"]
-        };
-
-        const Portal = {
-            currentStep: 1,
-            selectedRole: 'Programmer / Developer',
-            currentUserPhone: null,
-            currentUserName: null,
-            currentUserEmail: null,
-            selectedCountry: 'Nigeria',
-            timerInterval: null,
+        const GTApp = {
             isLoginMode: false,
-            slipVerified: false,
-            firestoreListener: null,
-            extractedOCRData: null,
+            currentRegStep: 1,
+            selectedRole: 'Student',
+            targetModule: 'dashboard.html',
+            secretTapCount: 0,
+            secretTapTimer: null,
+            db: null,
+            auth: null,
 
-            API_KEYS: {
-                FIREBASE_CONFIG: {
-                    apiKey: (typeof window !== 'undefined' && window.ENV) ? window.ENV.FIREBASE_API_KEY : "YOUR_FIREBASE_API_KEY",
-                    authDomain: (typeof window !== 'undefined' && window.ENV) ? window.ENV.FIREBASE_AUTH_DOMAIN : "YOUR_FIREBASE_AUTH_DOMAIN",
-                    projectId: (typeof window !== 'undefined' && window.ENV) ? window.ENV.FIREBASE_PROJECT_ID : "YOUR_FIREBASE_PROJECT_ID",
-                    storageBucket: (typeof window !== 'undefined' && window.ENV) ? window.ENV.FIREBASE_STORAGE_BUCKET : "YOUR_FIREBASE_STORAGE_BUCKET",
-                    messagingSenderId: (typeof window !== 'undefined' && window.ENV) ? window.ENV.FIREBASE_MESSAGING_SENDER_ID : "YOUR_FIREBASE_MESSAGING_SENDER_ID",
-                    appId: (typeof window !== 'undefined' && window.ENV) ? window.ENV.FIREBASE_APP_ID : "1:1234567890:web:c172d676b5701729fde924"
-                }
+            // 3 ADMIN PREREQUISITE CREDENTIALS
+            ADMIN_CONFIG: {
+                KEY: "GT_ADMIN_MASTER_2026",
+                PIN: "2026",
+                NAME: "Godfrey Anthony"
             },
 
             init: function() {
-                window.addEventListener('online', () => {
-                    document.getElementById('net-status-bar').style.display = 'none';
-                    this.showToast('Network connection restored.');
-                });
-                window.addEventListener('offline', () => {
-                    document.getElementById('net-status-bar').style.display = 'block';
-                });
+                const savedTheme = localStorage.getItem('gt_theme') || 'dark';
+                document.body.setAttribute('data-theme', savedTheme);
+                this.updateThemeButton(savedTheme);
+                this.renderRoleFields('Student');
+                this.initInteractionListeners();
+                this.initFirebase();
 
-                try {
-                    const cfg = this.API_KEYS.FIREBASE_CONFIG;
-                    if (cfg.apiKey && cfg.apiKey !== "YOUR_FIREBASE_API_KEY") {
-                        firebase.initializeApp(cfg);
-                        window.db = firebase.firestore();
-                        window.auth = firebase.auth();
-                        
-                        window.auth.onAuthStateChanged((user) => {
-                            if (user) {
-                                this.currentUserEmail = user.email;
-                                this.switchAuthMode('login');
-                                document.getElementById('p1-email').value = user.email;
-                                this.showToast('Existing user session detected. Switched to login mode.');
-                            }
-                        });
-                        console.log("Firebase Cloud SDK initialized successfully.");
-                    } else {
-                        console.warn("Firebase configuration pending Netlify environment injection. Running local mode.");
+                // Global listener to close custom select dropdowns when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.custom-select-container')) {
+                        document.querySelectorAll('.custom-select-container').forEach(el => el.classList.remove('open'));
                     }
-                } catch(e) {
-                    console.error("Firebase init exception:", e);
-                }
+                });
+            },
 
-                this.populateStates('Nigeria');
+            // ENHANCED ENVIRONMENT VARIABLE DETECTOR
+            getEnvVariable: function(key) {
+                // Check Node/Bundler process environment
+                if (typeof process !== 'undefined' && process.env && process.env[key]) {
+                    return process.env[key];
+                }
+                // Check global window object
+                if (typeof window !== 'undefined' && window[key]) {
+                    return window[key];
+                }
+                // Check custom application env scope
+                if (typeof window !== 'undefined' && window.GT_ENV && window.GT_ENV[key]) {
+                    return window.GT_ENV[key];
+                }
+                return null;
+            },
+
+            // BULLETPROOF FIREBASE INITIALIZATION & USER-DELIGHT ERROR HANDLER
+            initFirebase: function() {
+                try {
+                    const apiKey = this.getEnvVariable('FIREBASE_API_KEY') || this.getEnvVariable('REACT_APP_FIREBASE_API_KEY');
+                    const authDomain = this.getEnvVariable('FIREBASE_AUTH_DOMAIN') || this.getEnvVariable('REACT_APP_FIREBASE_AUTH_DOMAIN');
+                    const projectId = this.getEnvVariable('FIREBASE_PROJECT_ID') || this.getEnvVariable('REACT_APP_FIREBASE_PROJECT_ID');
+                    const storageBucket = this.getEnvVariable('FIREBASE_STORAGE_BUCKET');
+                    const messagingSenderId = this.getEnvVariable('FIREBASE_MESSAGING_SENDER_ID');
+                    const appId = this.getEnvVariable('FIREBASE_APP_ID');
+
+                    // If critical environment variables are missing, throw formatted error
+                    if (!apiKey || !projectId) {
+                        throw new Error("ENV_KEY_MISSING: Could not automatically read Firebase credentials from system environmental variables.");
+                    }
+
+                    const firebaseConfig = { apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId };
+
+                    if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
+                        firebase.initializeApp(firebaseConfig);
+                        this.db = firebase.firestore();
+                        this.auth = firebase.auth();
+                        console.log("Firebase initialized successfully with environment variables.");
+                    } else if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                        this.db = firebase.firestore();
+                        this.auth = firebase.auth();
+                    }
+                } catch (e) {
+                    console.error("[GT-AnthoFlock Developer Diagnostics] Firebase Initialization Error:", e.message);
+                    
+                    // Display user-friendly, pleasant notification to the end user
+                    setTimeout(() => {
+                        this.showToast("Notice: Our system was unable to load external database credentials due to environmental variable permissions. Local mode is active.");
+                    }, 800);
+                }
+            },
+
+            // CUSTOM DROPDOWN CONTROL ENGINE
+            toggleCustomDropdown: function(containerId) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                const isOpen = container.classList.contains('open');
+                
+                // Close all other dropdowns first
+                document.querySelectorAll('.custom-select-container').forEach(el => el.classList.remove('open'));
+                
+                if (!isOpen) {
+                    container.classList.add('open');
+                }
+            },
+
+            selectCustomOption: function(containerId, value, displayLabel, callbackName) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+
+                // Update hidden input value
+                const hiddenInputId = containerId.replace('container-', '');
+                const hiddenInput = document.getElementById(hiddenInputId);
+                if (hiddenInput) hiddenInput.value = value;
+
+                // Update visible text label
+                const labelEl = document.getElementById('label-' + hiddenInputId);
+                if (labelEl) labelEl.textContent = displayLabel;
+
+                // Toggle active selected class styling
+                container.querySelectorAll('.custom-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                    if (opt.textContent.trim() === displayLabel.trim()) {
+                        opt.classList.add('selected');
+                    }
+                });
+
+                container.classList.remove('open');
+
+                // Trigger specific callback if passed
+                if (callbackName && typeof this[callbackName] === 'function') {
+                    this[callbackName](value);
+                }
+            },
+
+            initInteractionListeners: function() {
+                const brandTriggerEl = document.getElementById('brandLogoTrigger');
+                const registerSecretTap = () => {
+                    this.secretTapCount++;
+                    clearTimeout(this.secretTapTimer);
+                    this.secretTapTimer = setTimeout(() => { this.secretTapCount = 0; }, 1400);
+
+                    if (this.secretTapCount >= 6) {
+                        this.secretTapCount = 0;
+                        this.openAdminModal();
+                    }
+                };
+
+                if (brandTriggerEl) brandTriggerEl.addEventListener('click', registerSecretTap);
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.altKey && e.shiftKey && e.key === 'A') {
+                        e.preventDefault();
+                        this.openAdminModal();
+                    }
+                });
+            },
+
+            toggleTheme: function() {
+                const body = document.body;
+                const isDark = body.getAttribute('data-theme') === 'dark';
+                const newTheme = isDark ? 'light' : 'dark';
+                
+                body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('gt_theme', newTheme);
+                this.updateThemeButton(newTheme);
+            },
+
+            updateThemeButton: function(theme) {
+                const btn = document.getElementById('themeBtn');
+                if (theme === 'dark') {
+                    btn.innerHTML = '<i class="fa-solid fa-moon" style="color:var(--primary-color);"></i> <span>Dark Mode</span>';
+                } else {
+                    btn.innerHTML = '<i class="fa-solid fa-sun" style="color:var(--accent-gold);"></i> <span>Light Mode</span>';
+                }
+            },
+
+            togglePassVisibility: function(inputId, iconId) {
+                const input = document.getElementById(inputId);
+                const icon = document.getElementById(iconId);
+                if (!input || !icon) return;
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
+            },
+
+            filterModules: function(query) {
+                const q = query.toLowerCase().trim();
+                const cards = document.querySelectorAll('.modules-grid .card');
+                let visibleCount = 0;
+                
+                cards.forEach(card => {
+                    const text = card.textContent.toLowerCase() + " " + card.getAttribute('data-keywords');
+                    if (text.includes(q)) {
+                        card.style.display = 'flex';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                document.getElementById('searchCount').textContent = `Showing ${visibleCount} of 4 core modules`;
+            },
+
+            showToast: function(message) {
+                const container = document.getElementById('toast-container');
+                container.innerHTML = '';
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.innerHTML = `<i class="fa-solid fa-circle-info" style="color:var(--accent-gold);"></i> <span>${message}</span>`;
+                container.appendChild(toast);
+                setTimeout(() => { toast.remove(); }, 4200);
+            },
+
+            openAuthModal: function(mode, moduleName) {
+                this.switchAuthMode(mode || 'signup');
+                if (moduleName) this.targetModule = moduleName + '.html';
+                document.getElementById('authModal').classList.add('active');
+            },
+
+            closeAuthModal: function() {
+                document.getElementById('authModal').classList.remove('active');
+            },
+
+            openAdminModal: function() {
+                document.getElementById('adminTerminalModal').classList.add('active');
+                this.showToast("Developer Secret Key Gate Active.");
+            },
+
+            closeAdminModal: function() {
+                document.getElementById('adminTerminalModal').classList.remove('active');
+                document.getElementById('adminReq1').value = '';
+                document.getElementById('adminReq2').value = '';
+                document.getElementById('adminReq3').value = '';
+            },
+
+            verifyAdminMasterKey: function() {
+                const key = document.getElementById('adminReq1').value.trim();
+                const pin = document.getElementById('adminReq2').value.trim();
+                const name = document.getElementById('adminReq3').value.trim();
+
+                if (key === this.ADMIN_CONFIG.KEY && pin === this.ADMIN_CONFIG.PIN && name.toLowerCase() === this.ADMIN_CONFIG.NAME.toLowerCase()) {
+                    this.showToast("Admin Credentials Verified! Granting Access...");
+                    this.closeAdminModal();
+                    setTimeout(() => { window.location.href = "admin-console.html"; }, 1000);
+                } else {
+                    this.showToast("Access Denied: All 3 Admin Prerequisites Must Be Correct.");
+                }
+            },
+
+            closeModalOnOutside: function(e) {
+                if (e.target.id === 'authModal') this.closeAuthModal();
+                if (e.target.id === 'adminTerminalModal') this.closeAdminModal();
             },
 
             switchAuthMode: function(mode) {
                 this.isLoginMode = (mode === 'login');
-                const signupFields = document.querySelectorAll('.signup-only');
+                const stepIndicator = document.getElementById('stepIndicatorContainer');
+
                 if (this.isLoginMode) {
                     document.getElementById('tab-login').classList.add('active');
                     document.getElementById('tab-signup').classList.remove('active');
-                    document.getElementById('btn-page-1-submit').innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Log In to Platform';
-                    signupFields.forEach(field => { field.style.display = 'none'; field.querySelector('input')?.removeAttribute('required'); });
+                    document.getElementById('authModalTitle').textContent = 'Account Login';
+                    stepIndicator.style.display = 'none';
+                    document.getElementById('login-panel').classList.remove('hidden');
+                    document.querySelectorAll('.auth-step-panel:not(#login-panel)').forEach(el => el.classList.add('hidden'));
                 } else {
                     document.getElementById('tab-signup').classList.add('active');
                     document.getElementById('tab-login').classList.remove('active');
-                    document.getElementById('btn-page-1-submit').innerHTML = '<i class="fa-solid fa-arrow-right"></i> Continue to Profile Setup';
-                    signupFields.forEach(field => { field.style.display = 'block'; field.querySelector('input')?.setAttribute('required', 'true'); });
+                    document.getElementById('authModalTitle').textContent = 'Create Your Account';
+                    stepIndicator.style.display = 'flex';
+                    document.getElementById('login-panel').classList.add('hidden');
+                    this.nextRegistrationStep(1);
                 }
             },
 
-            checkPasswordStrength: function(val) {
-                const fill = document.getElementById('pwd-fill');
-                if (!fill) return;
-                let score = 0;
-                if (val.length >= 8) score += 33;
-                if (/[A-Z]/.test(val)) score += 33;
-                if (/[0-9]/.test(val) || /[^A-Za-z0-9]/.test(val)) score += 34;
-                
-                fill.style.width = score + '%';
-                if (score < 40) fill.style.background = 'var(--accent-danger)';
-                else if (score < 80) fill.style.background = 'var(--accent-warning)';
-                else fill.style.background = 'var(--accent-success)';
-                
-                this.validatePasswordMatch();
-            },
+            nextRegistrationStep: function(step) {
+                this.currentRegStep = step;
+                document.querySelectorAll('.auth-step-panel').forEach(el => el.classList.add('hidden'));
+                document.getElementById(`reg-step-${step}`).classList.remove('hidden');
 
-            validatePasswordMatch: function() {
-                const pass = document.getElementById('p1-password').value;
-                const confirmPass = document.getElementById('p1-confirm-password').value;
-                const errEl = document.getElementById('err-password');
-                if (confirmPass.length > 0 && pass !== confirmPass) {
-                    errEl.style.display = 'block';
-                } else {
-                    errEl.style.display = 'none';
+                for (let i = 1; i <= 4; i++) {
+                    const bullet = document.getElementById(`bullet-${i}`);
+                    bullet.classList.remove('active', 'completed');
+                    if (i < step) bullet.classList.add('completed');
+                    if (i === step) bullet.classList.add('active');
                 }
-            },
-
-            formatPhoneInputMask: function() {
-                const dial = document.getElementById('p1-dial-code').value;
-                const phoneInput = document.getElementById('p1-phone');
-                if (dial === '+234') phoneInput.placeholder = '8169923809';
-                else if (dial === '+1') phoneInput.placeholder = '2025550143';
-                else phoneInput.placeholder = 'Enter mobile number';
-            },
-
-            togglePasswordVisibility: function(id, iconEl) {
-                const input = document.getElementById(id);
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    iconEl.classList.remove('fa-eye');
-                    iconEl.classList.add('fa-eye-slash');
-                } else {
-                    input.type = 'password';
-                    iconEl.classList.remove('fa-eye-slash');
-                    iconEl.classList.add('fa-eye');
-                }
-            },
-
-            copyToClipboard: function(text) {
-                navigator.clipboard.writeText(text).then(() => {
-                    this.showToast('Account Number copied to clipboard!');
-                }).catch(() => {
-                    this.showToast('Account Number: ' + text);
-                });
-            },
-
-            populateStates: function(country) {
-                const stateSelect = document.getElementById('p2-state');
-                stateSelect.innerHTML = '';
-                const states = LocationData[country] || LocationData["Other"];
-                states.forEach(state => {
-                    const opt = document.createElement('option');
-                    opt.value = state;
-                    opt.textContent = state;
-                    stateSelect.appendChild(opt);
-                });
-            },
-
-            onCountryChange: function() {
-                this.selectedCountry = document.getElementById('p2-country').value;
-                this.populateStates(this.selectedCountry);
             },
 
             selectRole: function(role) {
                 this.selectedRole = role;
                 document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
-                if(role.includes('Programmer')) {
-                    document.getElementById('role-dev-card').classList.add('selected');
-                } else if(role.includes('Gadget')) {
-                    document.getElementById('role-tech-card').classList.add('selected');
-                } else {
-                    document.getElementById('role-student-card').classList.add('selected');
+                if(role === 'Student') document.getElementById('role-student').classList.add('selected');
+                else if(role === 'Customer') document.getElementById('role-customer').classList.add('selected');
+                else if(role === 'Employee') document.getElementById('role-employee').classList.add('selected');
+
+                this.renderRoleFields(role);
+            },
+
+            renderRoleFields: function(role) {
+                const container = document.getElementById('dynamicRoleFields');
+                if (!container) return;
+
+                if (role === 'Student') {
+                    container.innerHTML = `
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label>Academic Class Level</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-graduation-cap input-icon"></i>
+                                    <div class="custom-select-container" id="container-studentClass">
+                                        <div class="custom-select-trigger" onclick="GTApp.toggleCustomDropdown('container-studentClass')">
+                                            <span id="label-studentClass">SSS 3</span>
+                                            <i class="fa-solid fa-chevron-down custom-select-arrow"></i>
+                                        </div>
+                                        <div class="custom-select-options">
+                                            <div class="custom-option option-accent-emerald" onclick="GTApp.selectCustomOption('container-studentClass', 'JSS 1', 'JSS 1', 'onStudentClassChange')">JSS 1</div>
+                                            <div class="custom-option option-accent-emerald" onclick="GTApp.selectCustomOption('container-studentClass', 'JSS 2', 'JSS 2', 'onStudentClassChange')">JSS 2</div>
+                                            <div class="custom-option option-accent-emerald" onclick="GTApp.selectCustomOption('container-studentClass', 'JSS 3', 'JSS 3', 'onStudentClassChange')">JSS 3</div>
+                                            <div class="custom-option option-accent-emerald" onclick="GTApp.selectCustomOption('container-studentClass', 'SSS 1', 'SSS 1', 'onStudentClassChange')">SSS 1</div>
+                                            <div class="custom-option option-accent-emerald" onclick="GTApp.selectCustomOption('container-studentClass', 'SSS 2', 'SSS 2', 'onStudentClassChange')">SSS 2</div>
+                                            <div class="custom-option selected option-accent-emerald" onclick="GTApp.selectCustomOption('container-studentClass', 'SSS 3', 'SSS 3', 'onStudentClassChange')">SSS 3</div>
+                                        </div>
+                                        <input type="hidden" id="studentClass" value="SSS 3">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" id="stemFocusGroup">
+                                <label>Department Track</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-atom input-icon"></i>
+                                    <div class="custom-select-container" id="container-studentSubject">
+                                        <div class="custom-select-trigger" onclick="GTApp.toggleCustomDropdown('container-studentSubject')">
+                                            <span id="label-studentSubject">Science Division</span>
+                                            <i class="fa-solid fa-chevron-down custom-select-arrow"></i>
+                                        </div>
+                                        <div class="custom-select-options">
+                                            <div class="custom-option selected option-accent-emerald" onclick="GTApp.selectCustomOption('container-studentSubject', 'Science', 'Science Division')">Science Division</div>
+                                            <div class="custom-option option-accent-amber" onclick="GTApp.selectCustomOption('container-studentSubject', 'Arts', 'Arts Division')">Arts Division</div>
+                                            <div class="custom-option option-accent-purple" onclick="GTApp.selectCustomOption('container-studentSubject', 'Commercial', 'Commercial Division')">Commercial Division</div>
+                                        </div>
+                                        <input type="hidden" id="studentSubject" value="Science">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="studentAge">Age</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-cake-candles input-icon"></i>
+                                    <input type="number" id="studentAge" class="form-control" placeholder="18">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="studentNickname">Nickname (Optional)</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-signature input-icon"></i>
+                                    <input type="text" id="studentNickname" class="form-control" placeholder="AnthoCode">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentSchool">School Name (Optional)</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-school input-icon"></i>
+                                <input type="text" id="studentSchool" class="form-control" placeholder="Enter school name">
+                            </div>
+                        </div>
+                    `;
+                } else if (role === 'Customer') {
+                    container.innerHTML = `
+                        <div class="form-group">
+                            <label>Mobile Phone Brand (Optional)</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-mobile-screen input-icon"></i>
+                                <div class="custom-select-container" id="container-customerPhoneBrand">
+                                    <div class="custom-select-trigger" onclick="GTApp.toggleCustomDropdown('container-customerPhoneBrand')">
+                                        <span id="label-customerPhoneBrand">Infinix (Hot Series / Note Series)</span>
+                                        <i class="fa-solid fa-chevron-down custom-select-arrow"></i>
+                                    </div>
+                                    <div class="custom-select-options">
+                                        <div class="custom-option selected option-accent-amber" onclick="GTApp.selectCustomOption('container-customerPhoneBrand', 'Infinix', 'Infinix (Hot Series / Note Series)')">Infinix (Hot Series / Note Series)</div>
+                                        <div class="custom-option option-accent-amber" onclick="GTApp.selectCustomOption('container-customerPhoneBrand', 'Tecno', 'Tecno (Spark / Camon)')">Tecno (Spark / Camon)</div>
+                                        <div class="custom-option option-accent-emerald" onclick="GTApp.selectCustomOption('container-customerPhoneBrand', 'Samsung', 'Samsung (Galaxy Series)')">Samsung (Galaxy Series)</div>
+                                        <div class="custom-option option-accent-purple" onclick="GTApp.selectCustomOption('container-customerPhoneBrand', 'iPhone', 'Apple iPhone')">Apple iPhone</div>
+                                        <div class="custom-option option-accent-amber" onclick="GTApp.selectCustomOption('container-customerPhoneBrand', 'Xiaomi', 'Xiaomi / Redmi')">Xiaomi / Redmi</div>
+                                        <div class="custom-option option-accent-purple" onclick="GTApp.selectCustomOption('container-customerPhoneBrand', 'Other', 'Other Device Model')">Other Device Model</div>
+                                    </div>
+                                    <input type="hidden" id="customerPhoneBrand" value="Infinix">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Primary Support Service Objective</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-comment-dots input-icon"></i>
+                                <div class="custom-select-container" id="container-customerReason">
+                                    <div class="custom-select-trigger" onclick="GTApp.toggleCustomDropdown('container-customerReason')">
+                                        <span id="label-customerReason">Device Troubleshooting & Performance Help</span>
+                                        <i class="fa-solid fa-chevron-down custom-select-arrow"></i>
+                                    </div>
+                                    <div class="custom-select-options">
+                                        <div class="custom-option selected option-accent-amber" onclick="GTApp.selectCustomOption('container-customerReason', 'tech_support', 'Device Troubleshooting & Performance Help')">Device Troubleshooting & Performance Help</div>
+                                        <div class="custom-option option-accent-emerald" onclick="GTApp.selectCustomOption('container-customerReason', 'hardware_diag', 'Phone & Power Bank Circuit Repairs')">Phone & Power Bank Circuit Repairs</div>
+                                        <div class="custom-option option-accent-purple" onclick="GTApp.selectCustomOption('container-customerReason', 'web_project', 'Custom Website Development Request')">Custom Website Development Request</div>
+                                        <div class="custom-option option-accent-purple" onclick="GTApp.selectCustomOption('container-customerReason', 'ai_integration', 'Learn AI Assistant Tools & Workflows')">Learn AI Assistant Tools & Workflows</div>
+                                        <div class="custom-option option-accent-purple" onclick="GTApp.selectCustomOption('container-customerReason', 'software_dev', 'General Software Engineering Solutions')">General Software Engineering Solutions</div>
+                                        <div class="custom-option option-accent-emerald" onclick="GTApp.selectCustomOption('container-customerReason', 'stem_guidance', 'STEM Academic Learning Assistance')">STEM Academic Learning Assistance</div>
+                                    </div>
+                                    <input type="hidden" id="customerReason" value="tech_support">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (role === 'Employee') {
+                    container.innerHTML = `
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label>Desired Role Specialty</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-briefcase input-icon"></i>
+                                    <div class="custom-select-container" id="container-empRoleApply">
+                                        <div class="custom-select-trigger" onclick="GTApp.toggleCustomDropdown('container-empRoleApply')">
+                                            <span id="label-empRoleApply">Software Engineer & Web Dev</span>
+                                            <i class="fa-solid fa-chevron-down custom-select-arrow"></i>
+                                        </div>
+                                        <div class="custom-select-options">
+                                            <div class="custom-option option-accent-amber" onclick="GTApp.selectCustomOption('container-empRoleApply', 'content_creator', 'Tech Content Creator & Writer')">Tech Content Creator & Writer</div>
+                                            <div class="custom-option selected option-accent-purple" onclick="GTApp.selectCustomOption('container-empRoleApply', 'software_engineer', 'Software Engineer & Web Dev')">Software Engineer & Web Dev</div>
+                                            <div class="custom-option option-accent-emerald" onclick="GTApp.selectCustomOption('container-empRoleApply', 'stem_educator', 'STEM Academic Instructor')">STEM Academic Instructor</div>
+                                            <div class="custom-option option-accent-amber" onclick="GTApp.selectCustomOption('container-empRoleApply', 'hardware_specialist', 'Hardware Repair Technician')">Hardware Repair Technician</div>
+                                            <div class="custom-option option-accent-purple" onclick="GTApp.selectCustomOption('container-empRoleApply', 'sales_agent', 'Freelance Tech Representative')">Freelance Tech Representative</div>
+                                            <div class="custom-option option-accent-amber" onclick="GTApp.selectCustomOption('container-empRoleApply', 'video_creator', 'Video Producer & Media Lead')">Video Producer & Media Lead</div>
+                                        </div>
+                                        <input type="hidden" id="empRoleApply" value="software_engineer">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Work Shift Preference</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-clock input-icon"></i>
+                                    <div class="custom-select-container" id="container-empShift">
+                                        <div class="custom-select-trigger" onclick="GTApp.toggleCustomDropdown('container-empShift')">
+                                            <span id="label-empShift">Full-Time Onsite Operations</span>
+                                            <i class="fa-solid fa-chevron-down custom-select-arrow"></i>
+                                        </div>
+                                        <div class="custom-select-options">
+                                            <div class="custom-option selected option-accent-emerald" onclick="GTApp.selectCustomOption('container-empShift', 'Full-Time', 'Full-Time Onsite Operations')">Full-Time Onsite Operations</div>
+                                            <div class="custom-option option-accent-amber" onclick="GTApp.selectCustomOption('container-empShift', 'Part-Time', 'Part-Time / Shift Basis')">Part-Time / Shift Basis</div>
+                                            <div class="custom-option option-accent-purple" onclick="GTApp.selectCustomOption('container-empShift', 'Remote', 'Fully Remote Engineering')">Fully Remote Engineering</div>
+                                        </div>
+                                        <input type="hidden" id="empShift" value="Full-Time">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 }
             },
 
-            updateProgress: function(step) {
-                this.currentStep = step;
-                for (let i = 1; i <= 4; i++) {
-                    const dot = document.getElementById(`step-dot-${i}`);
-                    dot.classList.remove('active', 'completed');
-                    if (i < step) dot.classList.add('completed');
-                    if (i === step) dot.classList.add('active');
-                    document.getElementById(`page-${i}`).classList.add('hidden');
-                }
-                document.getElementById(`page-${step}`).classList.remove('hidden');
-                const fillPercent = ((step - 1) / 3) * 100;
-                document.getElementById('progress-line').style.width = fillPercent + '%';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            },
-
-            showToast: function(message) {
-                const container = document.getElementById('toast-container');
-                const toast = document.createElement('div');
-                toast.className = 'toast';
-                toast.innerHTML = `<i class="fa-solid fa-circle-info" style="color:var(--accent-primary); margin-right:8px;"></i> ${message}`;
-                container.appendChild(toast);
-                setTimeout(() => { toast.remove(); }, 4500);
-            },
-
-            sanitizeInput: function(str) {
-                return str.replace(/[&<>"']/g, function(m) {
-                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
-                });
-            },
-
-            handlePage1Submit: function(e) {
-                e.preventDefault();
-                const email = this.sanitizeInput(document.getElementById('p1-email').value.trim());
-                const pass = document.getElementById('p1-password').value;
-
-                if (this.isLoginMode) {
-                    if (window.auth) {
-                        window.auth.signInWithEmailAndPassword(email, pass)
-                            .then((res) => {
-                                this.currentUserEmail = res.user.email;
-                                this.showToast('Logged in successfully!');
-                                this.updateProgress(2);
-                            })
-                            .catch((err) => {
-                                console.error("Firebase Login Error:", err);
-                                this.showToast('Login Error: ' + err.message);
-                            });
-                    } else {
-                        this.currentUserEmail = email;
-                        this.showToast('Logged in successfully!');
-                        this.updateProgress(2);
-                    }
-                } else {
-                    const username = this.sanitizeInput(document.getElementById('p1-username').value.trim());
-                    const dialCode = document.getElementById('p1-dial-code').value;
-                    const phoneRaw = document.getElementById('p1-phone').value.trim();
-                    const fullPhone = dialCode + phoneRaw;
-                    const confirmPass = document.getElementById('p1-confirm-password').value;
-
-                    if (pass !== confirmPass) {
-                        document.getElementById('err-password').style.display = 'block';
-                        return;
-                    }
-                    document.getElementById('err-password').style.display = 'none';
-
-                    this.currentUserName = username;
-                    this.currentUserPhone = fullPhone;
-                    this.currentUserEmail = email;
-
-                    if (window.auth && window.db) {
-                        window.auth.createUserWithEmailAndPassword(email, pass)
-                            .then((res) => {
-                                const uid = res.user.uid;
-                                return window.db.collection("anto_flock_users").doc(uid).set({
-                                    uid: uid,
-                                    username: username,
-                                    email: email,
-                                    phone: fullPhone,
-                                    approvalStatus: "Pending",
-                                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                                });
-                            })
-                            .then(() => {
-                                this.showToast('Account created and saved to Firebase!');
-                                this.updateProgress(2);
-                            })
-                            .catch((err) => {
-                                console.error("Firebase Registration Error:", err);
-                                this.showToast('Registration Error: ' + err.message);
-                            });
-                    } else {
-                        this.showToast('Account registered successfully!');
-                        this.updateProgress(2);
-                    }
-                }
-            },
-
-            handlePage2Submit: function(e) {
-                e.preventDefault();
-                const country = document.getElementById('p2-country').value;
-                const state = document.getElementById('p2-state').value;
-                this.selectedCountry = country;
-
-                document.getElementById('currency-country-label').textContent = country;
-                document.getElementById('dynamic-currency-fee').textContent = CountryCurrencies[country] || CountryCurrencies["Other"];
-
-                if (window.auth && window.auth.currentUser && window.db) {
-                    const uid = window.auth.currentUser.uid;
-                    window.db.collection("anto_flock_users").doc(uid).update({
-                        role: this.selectedRole,
-                        country: country,
-                        state: state,
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    }).catch(err => console.error("Firestore update error:", err));
-                }
-
-                this.showToast('Profile specialization saved.');
-                this.updateProgress(3);
-            },
-
-            /* UPGRADED ADVANCED JS PAYMENT SCANNER: Amount, Currency, Time & Sender Name Verification */
-            scanAndVerifySlip: function(inputEl) {
-                const file = inputEl.files[0];
-                const submitBtn = document.getElementById('btn-submit-slip');
-                const placeholder = document.getElementById('upload-placeholder-text');
-                const viewport = document.getElementById('scanner-viewport');
-                const imgPreview = document.getElementById('receipt-img-preview');
-                const laser = document.getElementById('scanner-laser');
-                const consoleBox = document.getElementById('scanner-console');
-
-                if (!file) {
-                    submitBtn.disabled = true;
-                    return;
-                }
-
-                placeholder.style.display = 'none';
-                viewport.style.display = 'block';
-                laser.style.display = 'block';
-                consoleBox.style.display = 'block';
-
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    imgPreview.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-
-                consoleBox.innerHTML = "> [OCR ENGINE]: Initializing Advanced Slip Analyzer...<br>";
-                submitBtn.disabled = true;
-
-                setTimeout(() => { consoleBox.innerHTML += "> [SCAN]: Extracting Amount & Currency Symbols...<br>"; consoleBox.scrollTop = consoleBox.scrollHeight; }, 400);
-                setTimeout(() => { consoleBox.innerHTML += "> [SCAN]: Scanning Timestamp & Transfer Date...<br>"; consoleBox.scrollTop = consoleBox.scrollHeight; }, 900);
-                setTimeout(() => { consoleBox.innerHTML += "> [MATCH]: Verifying Beneficiary (8169923809 - MiniPoint MFB)...<br>"; consoleBox.scrollTop = consoleBox.scrollHeight; }, 1400);
-                setTimeout(() => { 
-                    // Store mock extracted OCR data for Firestore logging
-                    this.extractedOCRData = {
-                        detectedAmount: this.selectedCountry === "Nigeria" ? "₦100" : "$1.00",
-                        detectedSender: this.currentUserName || "Godfrey Anthony",
-                        detectedTimestamp: new Date().toISOString(),
-                        bankMatch: "MiniPoint MFB (8169923809)",
-                        verified: true
-                    };
-
-                    consoleBox.innerHTML += `> [SUCCESS]: Amount: ${this.extractedOCRData.detectedAmount} | Sender: ${this.extractedOCRData.detectedSender} | Status: VALIDATED!<br>`;
-                    consoleBox.scrollTop = consoleBox.scrollHeight;
-                    laser.style.display = 'none';
-                    this.slipVerified = true;
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Slip Verified & Approved - Submit';
-                    this.showToast('Payment slip amount, currency, and sender successfully verified!');
-                }, 2000);
-            },
-
-            handlePage3Submit: function(e) {
-                e.preventDefault();
-                if (!this.slipVerified || !this.extractedOCRData) {
-                    this.showToast('Please upload and successfully scan a valid payment receipt first.');
-                    return;
-                }
-
-                if (window.auth && window.auth.currentUser && window.db) {
-                    const uid = window.auth.currentUser.uid;
-                    window.db.collection("anto_flock_subscriptions").doc(uid).set({
-                        userId: uid,
-                        role: this.selectedRole,
-                        country: this.selectedCountry,
-                        amount: this.extractedOCRData.detectedAmount,
-                        senderName: this.extractedOCRData.detectedSender,
-                        transferTime: this.extractedOCRData.detectedTimestamp,
-                        status: "Pending",
-                        beneficiaryBank: "MiniPoint MFB",
-                        beneficiaryAccount: "8169923809",
-                        beneficiaryName: "Godfrey Precious Ifeanyichukwu",
-                        ocrVerified: true,
-                        submittedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    })
-                    .then(() => {
-                        this.showToast('Verified receipt submitted to Admin Gate!');
-                        this.updateProgress(4);
-                        this.listenForAdminApproval(uid);
-                    })
-                    .catch(err => {
-                        console.error("Firestore error:", err);
-                        this.showToast('Receipt submitted successfully.');
-                        this.updateProgress(4);
-                    });
-                } else {
-                    this.showToast('Receipt submitted successfully. Awaiting admin approval.');
-                    this.updateProgress(4);
-                }
-            },
-
-            listenForAdminApproval: function(uid) {
-                if (!window.db) return;
-                this.firestoreListener = window.db.collection("anto_flock_subscriptions").doc(uid)
-                    .onSnapshot((doc) => {
-                        if (doc.exists && doc.data().status === "Approved") {
-                            this.triggerApprovalState();
-                        }
-                    });
-            },
-
-            triggerApprovalState: function() {
-                document.getElementById('approval-status-badge').className = 'status-badge badge-approved';
-                document.getElementById('approval-status-badge').innerHTML = '<i class="fa-solid fa-check-circle"></i> Approved & Active (1-Month Access Granted)';
-                document.getElementById('approval-status-desc').textContent = 'Your payment receipt has been verified by the admin! Welcome to the main platform.';
-                document.getElementById('activation-status-box').classList.remove('hidden');
-                this.startCountdownTimer();
-                this.showToast('Congratulations! Admin has approved your account access!');
-            },
-
-            checkApprovalStatus: function() {
-                this.showToast('Checking Admin Approval status...');
-                setTimeout(() => {
-                    this.triggerApprovalState();
-                }, 1000);
-            },
-
-            startCountdownTimer: function() {
-                let secondsLeft = 30 * 24 * 60 * 60; // 30-day 1-month plan
-                if(this.timerInterval) clearInterval(this.timerInterval);
+            onStudentClassChange: function(classValue) {
+                const stemGroup = document.getElementById('stemFocusGroup');
+                if (!stemGroup) return;
                 
-                this.timerInterval = setInterval(() => {
-                    if (secondsLeft <= 0) { clearInterval(this.timerInterval); return; }
-                    secondsLeft--;
-                    const days = Math.floor(secondsLeft / (3600 * 24));
-                    const hours = Math.floor((secondsLeft % (3600 * 24)) / 3600);
-                    const minutes = Math.floor((secondsLeft % 3600) / 60);
-                    const seconds = secondsLeft % 60;
-                    
-                    const timerEl = document.getElementById('countdown-timer');
-                    if(timerEl) {
-                        timerEl.textContent = `${days}d ${String(hours).padStart(2,'0')}h ${String(minutes).padStart(2,'0')}m ${String(seconds).padStart(2,'0')}s`;
+                if (classValue.startsWith('SSS')) {
+                    stemGroup.style.display = 'block';
+                } else {
+                    stemGroup.style.display = 'none';
+                }
+            },
+
+            // VALIDATION: HUMAN NAME, EMAIL, AND PHONE
+            validateStep1: function() {
+                try {
+                    const name = document.getElementById('authName').value.trim();
+                    const email = document.getElementById('authEmail').value.trim();
+                    const phone = document.getElementById('authPhone').value.trim();
+
+                    // Human name regex: requires at least two space-separated words, alpha characters only
+                    const humanNameRegex = /^[A-Za-z]{2,}(?:[' -][A-Za-z]+)+$/;
+                    if (!name || !humanNameRegex.test(name)) {
+                        throw new Error("Please enter a valid human full name (e.g., Godfrey Anthony).");
                     }
-                }, 1000);
+
+                    // Strict RFC email validation
+                    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                    if (!email || !emailRegex.test(email)) {
+                        throw new Error("Please enter a valid, properly formatted email address.");
+                    }
+
+                    // Phone length check
+                    const phoneClean = phone.replace(/[^0-9]/g, '');
+                    if (!phoneClean || phoneClean.length < 7 || phoneClean.length > 14) {
+                        throw new Error("Please enter a valid phone number (7 to 14 digits).");
+                    }
+
+                    this.nextRegistrationStep(2);
+                } catch(err) {
+                    this.showToast(err.message);
+                }
+            },
+
+            // VALIDATION: PASSWORDS MATCH & STRENGTH
+            validateStep3: function() {
+                try {
+                    const pass = document.getElementById('authPass').value;
+                    const passConfirm = document.getElementById('authPassConfirm').value;
+
+                    if (!pass || pass.length < 8) {
+                        throw new Error("Password must be at least 8 characters long.");
+                    }
+
+                    if (pass !== passConfirm) {
+                        throw new Error("Passwords do not match. Please verify.");
+                    }
+
+                    this.nextRegistrationStep(4);
+                } catch(err) {
+                    this.showToast(err.message);
+                }
+            },
+
+            // FORM SUBMISSION & FIREBASE DUPLICATE CHECK / FIRESTORE SYNC
+            handleFormSubmit: async function(e) {
+                e.preventDefault();
+                try {
+                    if (this.isLoginMode) {
+                        const email = document.getElementById('loginEmail').value.trim();
+                        const pass = document.getElementById('loginPass').value;
+
+                        if (!email || !pass) {
+                            throw new Error("Please enter both email and password.");
+                        }
+
+                        if (this.auth) {
+                            await this.auth.signInWithEmailAndPassword(email, pass);
+                            this.showToast(`Authenticated via Firebase as ${email}. Redirecting...`);
+                        } else {
+                            this.showToast(`Authenticated as ${email}. Redirecting...`);
+                        }
+
+                        this.closeAuthModal();
+                        setTimeout(() => { window.location.href = this.targetModule; }, 1000);
+                    } else {
+                        const name = document.getElementById('authName').value.trim();
+                        const email = document.getElementById('authEmail').value.trim();
+                        const countryCode = document.getElementById('authCountryCode').value;
+                        const phone = document.getElementById('authPhone').value.trim();
+                        const fullPhone = countryCode + phone.replace(/^0+/, '');
+                        const pass = document.getElementById('authPass').value;
+
+                        // Gather dynamic role profile data
+                        let roleData = {};
+                        if (this.selectedRole === 'Student') {
+                            roleData = {
+                                studentClass: document.getElementById('studentClass')?.value || 'SSS 3',
+                                studentSubject: document.getElementById('studentSubject')?.value || 'Science',
+                                age: document.getElementById('studentAge')?.value || '',
+                                nickname: document.getElementById('studentNickname')?.value || '',
+                                school: document.getElementById('studentSchool')?.value || ''
+                            };
+                        } else if (this.selectedRole === 'Customer') {
+                            roleData = {
+                                phoneBrand: document.getElementById('customerPhoneBrand')?.value || 'Infinix',
+                                reason: document.getElementById('customerReason')?.value || 'tech_support'
+                            };
+                        } else if (this.selectedRole === 'Employee') {
+                            roleData = {
+                                roleApply: document.getElementById('empRoleApply')?.value || 'software_engineer',
+                                shift: document.getElementById('empShift')?.value || 'Full-Time'
+                            };
+                        }
+
+                        const userPayload = {
+                            fullName: name,
+                            email: email,
+                            phoneNumber: fullPhone,
+                            role: this.selectedRole,
+                            roleDetails: roleData,
+                            createdAt: new Date().toISOString()
+                        };
+
+                        // DUPLICATE CHECK & FIRESTORE STORAGE
+                        if (this.db) {
+                            // Check existing email
+                            const emailCheck = await this.db.collection('users').where('email', '==', email).get();
+                            if (!emailCheck.empty) {
+                                throw new Error("An account with this email address already exists.");
+                            }
+
+                            // Check existing phone number
+                            const phoneCheck = await this.db.collection('users').where('phoneNumber', '==', fullPhone).get();
+                            if (!phoneCheck.empty) {
+                                throw new Error("An account with this phone number already exists.");
+                            }
+
+                            // Create Auth user if enabled
+                            if (this.auth) {
+                                const userCred = await this.auth.createUserWithEmailAndPassword(email, pass);
+                                await this.db.collection('users').doc(userCred.user.uid).set(userPayload);
+                            } else {
+                                await this.db.collection('users').add(userPayload);
+                            }
+                        }
+
+                        this.showToast(`Registration successful for ${name} (${this.selectedRole}). Welcome!`);
+                        this.closeAuthModal();
+                        setTimeout(() => { window.location.href = this.targetModule; }, 1000);
+                    }
+                } catch(err) {
+                    this.showToast(err.message);
+                }
             }
         };
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                GTApp.closeAuthModal();
+                GTApp.closeAdminModal();
+            }
+        });
     </script>
 </body>
 </html>
