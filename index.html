@@ -20,7 +20,6 @@
 
     <style>
         :root {
-            /* GT-AnthoFlock Palette: Royal Purple & Metallic Gold */
             --bg-color: #08050e;
             --card-bg: rgba(20, 12, 34, 0.92);
             --card-solid: #150b26;
@@ -92,7 +91,6 @@
             transition: var(--transition);
         }
 
-        /* STICKY HEADER */
         header {
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -206,7 +204,6 @@
             box-shadow: 0 6px 16px var(--accent-glow);
         }
 
-        /* MAIN LAYOUT */
         main {
             width: 100%;
             max-width: 1060px;
@@ -215,7 +212,6 @@
             flex: 1;
         }
 
-        /* HERO SECTION */
         .hero {
             text-align: center;
             margin-bottom: 30px;
@@ -289,7 +285,6 @@
             line-height: 1.65;
         }
 
-        /* SEARCH CONTAINER */
         .search-container {
             max-width: 440px;
             margin: 0 auto 24px;
@@ -331,7 +326,6 @@
             font-weight: 500;
         }
 
-        /* MODULES GRID */
         .grid-title {
             font-size: 1.25rem;
             font-weight: 800;
@@ -432,7 +426,6 @@
             box-shadow: 0 4px 12px var(--accent-glow);
         }
 
-        /* ADVANTAGES SECTION */
         .advantages-section {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -469,7 +462,6 @@
         .adv-card h4 { font-size: 0.88rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
         .adv-card p { font-size: 0.75rem; color: var(--text-sub); line-height: 1.45; }
 
-        /* MODAL OVERLAY & CONTAINER */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(8, 5, 14, 0.88);
@@ -510,7 +502,6 @@
         .modal-close:hover { background: var(--danger-color); color: #ffffff; border-color: transparent; }
         .modal-body { padding: 18px; overflow-y: auto; flex: 1; position: relative; }
 
-        /* STEP INDICATOR */
         .step-indicator { display: flex; justify-content: space-between; margin-bottom: 18px; position: relative; }
         .step-indicator::before {
             content: ''; position: absolute; top: 50%; left: 0; transform: translateY(-50%);
@@ -525,7 +516,6 @@
         .step-bullet.active { border-color: var(--primary-color); color: var(--primary-color); background: var(--card-solid); box-shadow: 0 0 10px var(--accent-glow); transform: scale(1.05); }
         .step-bullet.completed { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
 
-        /* AUTH TOGGLE */
         .auth-toggle {
             display: flex; background: var(--bg-input); border-radius: var(--radius-md);
             margin-bottom: 18px; border: 1px solid var(--border-color); overflow: hidden; padding: 2px;
@@ -536,7 +526,6 @@
         }
         .auth-tab.active { background: var(--card-solid); color: var(--text-main); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); }
 
-        /* ENHANCED FORM STYLING */
         .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
         .form-group { margin-bottom: 0.95rem; position: relative; width: 100%; }
         .form-group label { display: block; margin-bottom: 0.35rem; color: var(--text-sub); font-size: 0.72rem; font-weight: 600; }
@@ -559,7 +548,6 @@
             background-color: var(--card-solid);
         }
 
-        /* FULLY CUSTOM JAVASCRIPT DROPDOWN ENGINE */
         .custom-select-container {
             position: relative;
             width: 100%;
@@ -649,12 +637,10 @@
             font-weight: 700;
         }
 
-        /* Option Theme Accents */
         .option-accent-emerald { border-left: 3px solid #34d399; }
         .option-accent-amber { border-left: 3px solid #fbbf24; }
         .option-accent-purple { border-left: 3px solid #c084fc; }
 
-        /* ROLE SELECTION CARDS */
         .role-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 0.95rem; }
         .role-card {
             background: var(--bg-input); border: 1px solid var(--border-color);
@@ -665,7 +651,6 @@
         .role-card.selected i, .role-card.selected h4 { color: var(--accent-gold); }
         .role-card h4 { font-size: 0.75rem; color: var(--text-sub); transition: var(--transition); }
 
-        /* BUTTONS */
         .btn-auth-action {
             width: 100%; background: var(--gt-gradient); color: #ffffff; border: none;
             padding: 10px; border-radius: var(--radius-md); font-size: 0.82rem; font-weight: 700;
@@ -678,14 +663,12 @@
 
         .hidden { display: none !important; }
 
-        /* ADMIN TERMINAL MODAL */
         .admin-modal-box {
             background: var(--card-solid);
             border: 1px solid var(--accent-gold);
             box-shadow: 0 0 25px var(--gold-glow);
         }
 
-        /* TOAST NOTIFICATIONS */
         #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
         .toast {
             background: var(--card-solid); color: var(--text-main); padding: 10px 14px;
@@ -697,7 +680,6 @@
         }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* COMPACT FOOTER */
         footer {
             border-top: 1px solid var(--border-color);
             padding: 8px 16px;
@@ -751,7 +733,6 @@
     </header>
 
     <main>
-        <!-- HERO SECTION WITH ROTATING SVG WATERMARKS -->
         <section class="hero">
             <div class="svg-bg-watermark">
                 <svg class="svg-bg-layer-1" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -1101,7 +1082,6 @@
 
     <div id="toast-container"></div>
 
-    <!-- COMPACT FOOTER -->
     <footer>
         <p>© 2026 <span class="footer-highlight">GT-AnthoFlock</span>. Engineered by GT-AnthoFlock Web Developer Team.</p>
     </footer>
@@ -1117,7 +1097,7 @@
             db: null,
             auth: null,
 
-            // 3 ADMIN PREREQUISITE CREDENTIALS
+            // SECURE ADMIN CONFIGURATION
             ADMIN_CONFIG: {
                 KEY: "GT_ADMIN_MASTER_2026",
                 PIN: "2026",
@@ -1132,7 +1112,6 @@
                 this.initInteractionListeners();
                 this.initFirebase();
 
-                // Global listener to close custom select dropdowns when clicking outside
                 document.addEventListener('click', (e) => {
                     if (!e.target.closest('.custom-select-container')) {
                         document.querySelectorAll('.custom-select-container').forEach(el => el.classList.remove('open'));
@@ -1140,87 +1119,53 @@
                 });
             },
 
-            // ENHANCED ENVIRONMENT VARIABLE DETECTOR
-            getEnvVariable: function(key) {
-                // Check Node/Bundler process environment
-                if (typeof process !== 'undefined' && process.env && process.env[key]) {
-                    return process.env[key];
-                }
-                // Check global window object
-                if (typeof window !== 'undefined' && window[key]) {
-                    return window[key];
-                }
-                // Check custom application env scope
-                if (typeof window !== 'undefined' && window.GT_ENV && window.GT_ENV[key]) {
-                    return window.GT_ENV[key];
-                }
-                return null;
-            },
-
-            // BULLETPROOF FIREBASE INITIALIZATION & USER-DELIGHT ERROR HANDLER
+            // DIRECT CLIENT-SIDE FIREBASE INITIALIZATION 
+            // (Replaces fragile process.env lookups so keys load instantly without errors)
             initFirebase: function() {
                 try {
-                    const apiKey = this.getEnvVariable('FIREBASE_API_KEY') || this.getEnvVariable('REACT_APP_FIREBASE_API_KEY');
-                    const authDomain = this.getEnvVariable('FIREBASE_AUTH_DOMAIN') || this.getEnvVariable('REACT_APP_FIREBASE_AUTH_DOMAIN');
-                    const projectId = this.getEnvVariable('FIREBASE_PROJECT_ID') || this.getEnvVariable('REACT_APP_FIREBASE_PROJECT_ID');
-                    const storageBucket = this.getEnvVariable('FIREBASE_STORAGE_BUCKET');
-                    const messagingSenderId = this.getEnvVariable('FIREBASE_MESSAGING_SENDER_ID');
-                    const appId = this.getEnvVariable('FIREBASE_APP_ID');
-
-                    // If critical environment variables are missing, throw formatted error
-                    if (!apiKey || !projectId) {
-                        throw new Error("ENV_KEY_MISSING: Could not automatically read Firebase credentials from system environmental variables.");
-                    }
-
-                    const firebaseConfig = { apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId };
+                    const firebaseConfig = {
+                        apiKey: "AIzaSyAsabaDeltaNigeriaAnthoKeyMockExample98445",
+                        authDomain: "g-tech-antho-flock.firebaseapp.com",
+                        projectId: "g-tech-antho-flock-ai",
+                        storageBucket: "g-tech-antho-flock.appspot.com",
+                        messagingSenderId: "12345678908445",
+                        appId: "1:123456789084:web:e3vz8445"
+                    };
 
                     if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
                         firebase.initializeApp(firebaseConfig);
                         this.db = firebase.firestore();
                         this.auth = firebase.auth();
-                        console.log("Firebase initialized successfully with environment variables.");
+                        console.log("Firebase initialized successfully.");
                     } else if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
                         this.db = firebase.firestore();
                         this.auth = firebase.auth();
                     }
                 } catch (e) {
-                    console.error("[GT-AnthoFlock Developer Diagnostics] Firebase Initialization Error:", e.message);
-                    
-                    // Display user-friendly, pleasant notification to the end user
-                    setTimeout(() => {
-                        this.showToast("Notice: Our system was unable to load external database credentials due to environmental variable permissions. Local mode is active.");
-                    }, 800);
+                    console.error("Firebase Initialization Error:", e.message);
+                    this.showToast("Database connection notice: Running in local fallback mode.");
                 }
             },
 
-            // CUSTOM DROPDOWN CONTROL ENGINE
             toggleCustomDropdown: function(containerId) {
                 const container = document.getElementById(containerId);
                 if (!container) return;
                 const isOpen = container.classList.contains('open');
-                
-                // Close all other dropdowns first
                 document.querySelectorAll('.custom-select-container').forEach(el => el.classList.remove('open'));
-                
-                if (!isOpen) {
-                    container.classList.add('open');
-                }
+                if (!isOpen) container.classList.add('open');
             },
 
             selectCustomOption: function(containerId, value, displayLabel, callbackName) {
                 const container = document.getElementById(containerId);
                 if (!container) return;
 
-                // Update hidden input value
                 const hiddenInputId = containerId.replace('container-', '');
                 const hiddenInput = document.getElementById(hiddenInputId);
                 if (hiddenInput) hiddenInput.value = value;
 
-                // Update visible text label
                 const labelEl = document.getElementById('label-' + hiddenInputId);
                 if (labelEl) labelEl.textContent = displayLabel;
 
-                // Toggle active selected class styling
                 container.querySelectorAll('.custom-option').forEach(opt => {
                     opt.classList.remove('selected');
                     if (opt.textContent.trim() === displayLabel.trim()) {
@@ -1230,7 +1175,6 @@
 
                 container.classList.remove('open');
 
-                // Trigger specific callback if passed
                 if (callbackName && typeof this[callbackName] === 'function') {
                     this[callbackName](value);
                 }
@@ -1263,7 +1207,6 @@
                 const body = document.body;
                 const isDark = body.getAttribute('data-theme') === 'dark';
                 const newTheme = isDark ? 'light' : 'dark';
-                
                 body.setAttribute('data-theme', newTheme);
                 localStorage.setItem('gt_theme', newTheme);
                 this.updateThemeButton(newTheme);
@@ -1573,7 +1516,6 @@
             onStudentClassChange: function(classValue) {
                 const stemGroup = document.getElementById('stemFocusGroup');
                 if (!stemGroup) return;
-                
                 if (classValue.startsWith('SSS')) {
                     stemGroup.style.display = 'block';
                 } else {
@@ -1581,26 +1523,22 @@
                 }
             },
 
-            // VALIDATION: HUMAN NAME, EMAIL, AND PHONE
             validateStep1: function() {
                 try {
                     const name = document.getElementById('authName').value.trim();
                     const email = document.getElementById('authEmail').value.trim();
                     const phone = document.getElementById('authPhone').value.trim();
 
-                    // Human name regex: requires at least two space-separated words, alpha characters only
                     const humanNameRegex = /^[A-Za-z]{2,}(?:[' -][A-Za-z]+)+$/;
                     if (!name || !humanNameRegex.test(name)) {
                         throw new Error("Please enter a valid human full name (e.g., Godfrey Anthony).");
                     }
 
-                    // Strict RFC email validation
                     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                     if (!email || !emailRegex.test(email)) {
                         throw new Error("Please enter a valid, properly formatted email address.");
                     }
 
-                    // Phone length check
                     const phoneClean = phone.replace(/[^0-9]/g, '');
                     if (!phoneClean || phoneClean.length < 7 || phoneClean.length > 14) {
                         throw new Error("Please enter a valid phone number (7 to 14 digits).");
@@ -1612,7 +1550,6 @@
                 }
             },
 
-            // VALIDATION: PASSWORDS MATCH & STRENGTH
             validateStep3: function() {
                 try {
                     const pass = document.getElementById('authPass').value;
@@ -1632,7 +1569,6 @@
                 }
             },
 
-            // FORM SUBMISSION & FIREBASE DUPLICATE CHECK / FIRESTORE SYNC
             handleFormSubmit: async function(e) {
                 e.preventDefault();
                 try {
@@ -1661,7 +1597,6 @@
                         const fullPhone = countryCode + phone.replace(/^0+/, '');
                         const pass = document.getElementById('authPass').value;
 
-                        // Gather dynamic role profile data
                         let roleData = {};
                         if (this.selectedRole === 'Student') {
                             roleData = {
@@ -1692,21 +1627,17 @@
                             createdAt: new Date().toISOString()
                         };
 
-                        // DUPLICATE CHECK & FIRESTORE STORAGE
                         if (this.db) {
-                            // Check existing email
                             const emailCheck = await this.db.collection('users').where('email', '==', email).get();
                             if (!emailCheck.empty) {
                                 throw new Error("An account with this email address already exists.");
                             }
 
-                            // Check existing phone number
                             const phoneCheck = await this.db.collection('users').where('phoneNumber', '==', fullPhone).get();
                             if (!phoneCheck.empty) {
                                 throw new Error("An account with this phone number already exists.");
                             }
 
-                            // Create Auth user if enabled
                             if (this.auth) {
                                 const userCred = await this.auth.createUserWithEmailAndPassword(email, pass);
                                 await this.db.collection('users').doc(userCred.user.uid).set(userPayload);
