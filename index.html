@@ -1119,24 +1119,20 @@
                 });
             },
 
-            // DIRECT CLIENT-SIDE FIREBASE INITIALIZATION 
-            // (Replaces fragile process.env lookups so keys load instantly without errors)
-            initFirebase: function() {
+            // UPDATED FIREBASE INITIALIZATION: Fetches configuration securely via Netlify Function endpoint
+            initFirebase: async function() {
                 try {
-                    const firebaseConfig = {
-                        apiKey: "AIzaSyAsabaDeltaNigeriaAnthoKeyMockExample98445",
-                        authDomain: "g-tech-antho-flock.firebaseapp.com",
-                        projectId: "g-tech-antho-flock-ai",
-                        storageBucket: "g-tech-antho-flock.appspot.com",
-                        messagingSenderId: "12345678908445",
-                        appId: "1:123456789084:web:e3vz8445"
-                    };
+                    const response = await fetch('/.netlify/functions/get-env');
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch environment variables from Netlify function.");
+                    }
+                    const firebaseConfig = await response.json();
 
                     if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
                         firebase.initializeApp(firebaseConfig);
                         this.db = firebase.firestore();
                         this.auth = firebase.auth();
-                        console.log("Firebase initialized successfully.");
+                        console.log("Firebase initialized successfully via Netlify Function environment variables.");
                     } else if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
                         this.db = firebase.firestore();
                         this.auth = firebase.auth();
