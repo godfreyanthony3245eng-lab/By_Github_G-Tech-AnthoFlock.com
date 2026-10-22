@@ -1119,20 +1119,23 @@
                 });
             },
 
-            // UPDATED FIREBASE INITIALIZATION: Fetches configuration securely via Netlify Function endpoint
-            initFirebase: async function() {
+            // DIRECT CLIENT-SIDE FIREBASE INITIALIZATION 
+            initFirebase: function() {
                 try {
-                    const response = await fetch('/.netlify/functions/get-env');
-                    if (!response.ok) {
-                        throw new Error("Failed to fetch environment variables from Netlify function.");
-                    }
-                    const firebaseConfig = await response.json();
+                    const firebaseConfig = {
+                        apiKey: "AIzaSyAsabaDeltaNigeriaAnthoKeyMockExample98445",
+                        authDomain: "g-tech-antho-flock.firebaseapp.com",
+                        projectId: "g-tech-antho-flock-ai",
+                        storageBucket: "g-tech-antho-flock.appspot.com",
+                        messagingSenderId: "12345678908445",
+                        appId: "1:123456789084:web:e3vz8445"
+                    };
 
                     if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
                         firebase.initializeApp(firebaseConfig);
                         this.db = firebase.firestore();
                         this.auth = firebase.auth();
-                        console.log("Firebase initialized successfully via Netlify Function environment variables.");
+                        console.log("Firebase initialized successfully.");
                     } else if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
                         this.db = firebase.firestore();
                         this.auth = firebase.auth();
@@ -1624,21 +1627,22 @@
                         };
 
                         if (this.db) {
-                            const emailCheck = await this.db.collection('users').where('email', '==', email).get();
+                            // Updated collection path from 'users' to 'gtech_users' to match Firebase console
+                            const emailCheck = await this.db.collection('gtech_users').where('email', '==', email).get();
                             if (!emailCheck.empty) {
                                 throw new Error("An account with this email address already exists.");
                             }
 
-                            const phoneCheck = await this.db.collection('users').where('phoneNumber', '==', fullPhone).get();
+                            const phoneCheck = await this.db.collection('gtech_users').where('phoneNumber', '==', fullPhone).get();
                             if (!phoneCheck.empty) {
                                 throw new Error("An account with this phone number already exists.");
                             }
 
                             if (this.auth) {
                                 const userCred = await this.auth.createUserWithEmailAndPassword(email, pass);
-                                await this.db.collection('users').doc(userCred.user.uid).set(userPayload);
+                                await this.db.collection('gtech_users').doc(userCred.user.uid).set(userPayload);
                             } else {
-                                await this.db.collection('users').add(userPayload);
+                                await this.db.collection('gtech_users').add(userPayload);
                             }
                         }
 
