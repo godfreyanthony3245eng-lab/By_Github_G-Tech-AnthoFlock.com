@@ -661,6 +661,18 @@
         .btn-secondary-action { background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: none; }
         .btn-secondary-action:hover { background: var(--card-solid); border-color: var(--primary-color); color: var(--primary-color); }
 
+        .btn-google {
+            background: #ffffff;
+            color: #1a0f28;
+            border: 1px solid #cbd5e1;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .btn-google:hover {
+            background: #f8fafc;
+            transform: translateY(-2px);
+        }
+
         .hidden { display: none !important; }
 
         .admin-modal-box {
@@ -935,6 +947,10 @@
                         </div>
 
                         <button type="button" class="btn-auth-action" onclick="GTApp.validateStep1()">Continue to Profile</button>
+                        
+                        <button type="button" class="btn-auth-action btn-google" onclick="GTApp.signInWithGoogle()">
+                            <i class="fa-brands fa-google" style="color: #ea4335;"></i> Continue with Google
+                        </button>
                     </div>
 
                     <!-- STEP 2: PROFILE & ROLE DETAILS -->
@@ -1028,6 +1044,10 @@
 
                         <button type="submit" class="btn-auth-action" id="btnLoginSubmit">
                             <i class="fa-solid fa-right-to-bracket"></i> Account Login
+                        </button>
+
+                        <button type="button" class="btn-auth-action btn-google" onclick="GTApp.signInWithGoogle()">
+                            <i class="fa-brands fa-google" style="color: #ea4335;"></i> Sign in with Google
                         </button>
                     </div>
 
@@ -1158,8 +1178,8 @@
             updateUIAfterLogin: function(user) {
                 const headerActions = document.querySelector('.header-actions');
                 if (headerActions) {
-                    // Pull Google Profile photo or displayName if available; fallback to "J's Brian"
-                    const displayName = user.displayName || (user.email ? user.email.split('@')[0] : "J's Brian");
+                    // Fallback name to "J's Brian" if displayName is absent
+                    const displayName = user.displayName || "J's Brian";
                     const photoURL = user.photoURL;
 
                     let avatarHTML = photoURL 
@@ -1199,6 +1219,38 @@
                 if (this.auth) {
                     await this.auth.signOut();
                     this.showToast("Signed out successfully.");
+                }
+            },
+
+            signInWithGoogle: async function() {
+                try {
+                    if (!this.auth) {
+                        throw new Error("Authentication service is unavailable.");
+                    }
+                    const provider = new firebase.auth.GoogleAuthProvider();
+                    const result = await this.auth.signInWithPopup(provider);
+                    const user = result.user;
+
+                    // Sync Google user data to Firestore
+                    if (this.db) {
+                        const userRef = this.db.collection('gtech_users').doc(user.uid);
+                        const doc = await userRef.get();
+                        if (!doc.exists) {
+                            await userRef.set({
+                                fullName: user.displayName || "J's Brian",
+                                email: user.email,
+                                phoneNumber: user.phoneNumber || "",
+                                photoURL: user.photoURL || "",
+                                role: 'Student',
+                                createdAt: new Date().toISOString()
+                            });
+                        }
+                    }
+
+                    this.showToast(`Welcome, ${user.displayName || "J's Brian"}! Signed in via Google.`);
+                    this.closeAuthModal();
+                } catch (err) {
+                    this.showToast("Google sign-in failed: " + err.message);
                 }
             },
 
@@ -1666,7 +1718,7 @@
                                 phoneBrand: document.getElementById('customerPhoneBrand')?.value || 'Infinix',
                                 reason: document.getElementById('customerReason')?.value || 'tech_support'
                             };
-                        } else if (this.src === 'Employee') {
+                        } else if (this.selectedRole === 'Employee') {
                             roleData = {
                                 roleApply: document.getElementById('empRoleApply')?.value || 'software_engineer',
                                 shift: document.getElementById('empShift')?.value || 'Full-Time'
@@ -1683,6 +1735,7 @@
                         };
 
                         if (this.db) {
+                            // Check existing records first before completing auth creation
                             const emailCheck = await this.db.collection('gtech_users').where('email', '==', email).get();
                             if (!emailCheck.empty) {
                                 throw new Error("An account with this email address already exists.");
@@ -1696,17 +1749,20 @@
                             if (this.auth) {
                                 const userCred = await this.auth.createUserWithEmailAndPassword(email, pass);
                                 await userCred.user.updateProfile({ displayName: name });
+                                // Await database storage strictly before declaring success
                                 await this.db.collection('gtech_users').doc(userCred.user.uid).set(userPayload);
                             } else {
                                 await this.db.collection('gtech_users').add(userPayload);
                             }
+                        } else {
+                            throw new Error("Database connection not established.");
                         }
 
                         this.showToast(`Registration successful for ${name} (${this.selectedRole}). Welcome!`);
                         this.closeAuthModal();
                     }
                 } catch(err) {
-                    this.showToast(err.message);
+                    this.showToast("Registration Error: " + err.message);
                 }
             }
         };
