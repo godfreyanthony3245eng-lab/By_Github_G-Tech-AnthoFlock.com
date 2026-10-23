@@ -12,7 +12,7 @@
 
     <!-- Third-Party Assets: FontAwesome, Google Fonts, Firebase Compat SDKs -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
@@ -1124,6 +1124,17 @@
                 NAME: "Godfrey Anthony"
             },
 
+            // FALLBACK CONFIGURATION IF SERVERLESS FUNCTION IS UNREACHABLE
+            // Replace values below with your Firebase Web Config details if needed
+            DEFAULT_FIREBASE_CONFIG: {
+                apiKey: "AIzaSy_YOUR_FIREBASE_API_KEY_HERE",
+                authDomain: "gt-anthoflock.firebaseapp.com",
+                projectId: "gt-anthoflock",
+                storageBucket: "gt-anthoflock.appspot.com",
+                messagingSenderId: "1234567890",
+                appId: "1:1234567890:web:abcdef123456"
+            },
+
             init: async function() {
                 const savedTheme = localStorage.getItem('gt_theme') || 'dark';
                 document.body.setAttribute('data-theme', savedTheme);
@@ -1142,21 +1153,34 @@
 
             initFirebase: async function() {
                 try {
-                    const response = await fetch('/.netlify/functions/get-env');
-                    if (!response.ok) {
-                        throw new Error("Failed to fetch environment configuration from Netlify function.");
-                    }
-                    const firebaseConfig = await response.json();
+                    let firebaseConfig = null;
 
-                    if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
-                        firebase.initializeApp(firebaseConfig);
+                    // 1. Attempt to fetch config from Netlify endpoint
+                    try {
+                        const response = await fetch('/.netlify/functions/get-env');
+                        if (response.ok) {
+                            firebaseConfig = await response.json();
+                        }
+                    } catch (e) {
+                        console.warn("Netlify function endpoint not reachable, resorting to fallback config...");
                     }
 
+                    // Use fallback config if endpoint failed or was empty
+                    if (!firebaseConfig || !firebaseConfig.apiKey) {
+                        firebaseConfig = this.DEFAULT_FIREBASE_CONFIG;
+                    }
+
+                    // 2. Initialize Firebase safely before referencing Services
                     if (typeof firebase !== 'undefined') {
+                        if (firebase.apps.length === 0) {
+                            firebase.initializeApp(firebaseConfig);
+                        }
+
+                        // Reference initialized Firebase instance
                         this.db = firebase.firestore();
                         this.auth = firebase.auth();
 
-                        // Session persistence observer updates header UI automatically
+                        // Observer for user auth session updates
                         this.auth.onAuthStateChanged((user) => {
                             if (user) {
                                 this.currentUser = user;
@@ -1167,19 +1191,20 @@
                             }
                         });
 
-                        console.log("Firebase initialized successfully with Netlify environment variables.");
+                        console.log("Firebase initialized successfully.");
+                    } else {
+                        throw new Error("Firebase SDK libraries missing from page.");
                     }
                 } catch (e) {
-                    console.error("Firebase Initialization Error:", e.message);
-                    this.showToast("Database connection notice: Running in local fallback mode.");
+                    console.error("Firebase Initialization Warning:", e.message);
+                    this.showToast("Auth Notice: Running in demo state (" + e.message + ")");
                 }
             },
 
             updateUIAfterLogin: function(user) {
                 const headerActions = document.querySelector('.header-actions');
                 if (headerActions) {
-                    // Fallback name to "J's Brian" if displayName is absent
-                    const displayName = user.displayName || "J's Brian";
+                    const displayName = user.displayName || user.email?.split('@')[0] || "J's Brian";
                     const photoURL = user.photoURL;
 
                     let avatarHTML = photoURL 
@@ -1231,7 +1256,6 @@
                     const result = await this.auth.signInWithPopup(provider);
                     const user = result.user;
 
-                    // Sync Google user data to Firestore
                     if (this.db) {
                         const userRef = this.db.collection('gtech_users').doc(user.uid);
                         const doc = await userRef.get();
@@ -1250,7 +1274,7 @@
                     this.showToast(`Welcome, ${user.displayName || "J's Brian"}! Signed in via Google.`);
                     this.closeAuthModal();
                 } catch (err) {
-                    this.showToast("Google sign-in failed: " + err.message);
+                    this.showToast("Google Sign-In Notice: " + err.message);
                 }
             },
 
@@ -1688,13 +1712,12 @@
                             throw new Error("Please enter both email and password.");
                         }
 
-                        if (this.auth) {
-                            await this.auth.signInWithEmailAndPassword(email, pass);
-                            this.showToast(`Authenticated via Firebase as ${email}. Welcome back!`);
-                        } else {
-                            this.showToast(`Authenticated as ${email}. Welcome back!`);
+                        if (!this.auth) {
+                            throw new Error("Authentication service is unavailable.");
                         }
 
+                        await this.auth.signInWithEmailAndPassword(email, pass);
+                        this.showToast(`Logged in successfully as ${email}. Welcome back!`);
                         this.closeAuthModal();
                     } else {
                         const name = document.getElementById('authName').value.trim();
@@ -1734,35 +1757,35 @@
                             createdAt: new Date().toISOString()
                         };
 
-                        if (this.db) {
-                            // Check existing records first before completing auth creation
-                            const emailCheck = await this.db.collection('gtech_users').where('email', '==', email).get();
-                            if (!emailCheck.empty) {
-                                throw new Error("An account with this email address already exists.");
-                            }
-
-                            const phoneCheck = await this.db.collection('gtech_users').where('phoneNumber', '==', fullPhone).get();
-                            if (!phoneCheck.empty) {
-                                throw new Error("An account with this phone number already exists.");
-                            }
-
-                            if (this.auth) {
-                                const userCred = await this.auth.createUserWithEmailAndPassword(email, pass);
-                                await userCred.user.updateProfile({ displayName: name });
-                                // Await database storage strictly before declaring success
-                                await this.db.collection('gtech_users').doc(userCred.user.uid).set(userPayload);
-                            } else {
-                                await this.db.collection('gtech_users').add(userPayload);
-                            }
-                        } else {
-                            throw new Error("Database connection not established.");
+                        if (!this.auth || !this.db) {
+                            throw new Error("Database service is not ready. Check initialization keys.");
                         }
+
+                        const emailCheck = await this.db.collection('gtech_users').where('email', '==', email).get();
+                        if (!emailCheck.empty) {
+                            throw new Error("An account with this email address already exists.");
+                        }
+
+                        const phoneCheck = await this.db.collection('gtech_users').where('phoneNumber', '==', fullPhone).get();
+                        if (!phoneCheck.empty) {
+                            throw new Error("An account with this phone number already exists.");
+                        }
+
+                        const userCred = await this.auth.createUserWithEmailAndPassword(email, pass);
+                        await userCred.user.updateProfile({ displayName: name });
+                        
+                        await this.db.collection('gtech_users').doc(userCred.user.uid).set(userPayload);
 
                         this.showToast(`Registration successful for ${name} (${this.selectedRole}). Welcome!`);
                         this.closeAuthModal();
                     }
                 } catch(err) {
-                    this.showToast("Registration Error: " + err.message);
+                    let msg = err.message;
+                    if (err.code === 'auth/user-not-found') msg = "No user found with this email. Please Sign Up first.";
+                    if (err.code === 'auth/wrong-password') msg = "Incorrect password. Please try again.";
+                    if (err.code === 'auth/email-already-in-use') msg = "An account with this email already exists.";
+                    
+                    this.showToast("Authentication Error: " + msg);
                 }
             }
         };
