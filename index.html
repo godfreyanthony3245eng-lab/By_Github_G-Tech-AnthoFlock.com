@@ -1104,13 +1104,15 @@
                 NAME: "Godfrey Anthony"
             },
 
-            init: function() {
+            init: async function() {
                 const savedTheme = localStorage.getItem('gt_theme') || 'dark';
                 document.body.setAttribute('data-theme', savedTheme);
                 this.updateThemeButton(savedTheme);
                 this.renderRoleFields('Student');
                 this.initInteractionListeners();
-                this.initFirebase();
+                
+                // Asynchronously fetch environment config and initialize Firebase
+                await this.initFirebase();
 
                 document.addEventListener('click', (e) => {
                     if (!e.target.closest('.custom-select-container')) {
@@ -1119,23 +1121,20 @@
                 });
             },
 
-            // DIRECT CLIENT-SIDE FIREBASE INITIALIZATION 
-            initFirebase: function() {
+            // DYNAMICALLY FETCH FIREBASE CONFIG FROM NETLIFY FUNCTION
+            initFirebase: async function() {
                 try {
-                    const firebaseConfig = {
-                        apiKey: "AIzaSyAsabaDeltaNigeriaAnthoKeyMockExample98445",
-                        authDomain: "g-tech-antho-flock.firebaseapp.com",
-                        projectId: "g-tech-antho-flock-ai",
-                        storageBucket: "g-tech-antho-flock.appspot.com",
-                        messagingSenderId: "12345678908445",
-                        appId: "1:123456789084:web:e3vz8445"
-                    };
+                    const response = await fetch('/.netlify/functions/get-env');
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch environment configuration from Netlify function.");
+                    }
+                    const firebaseConfig = await response.json();
 
                     if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
                         firebase.initializeApp(firebaseConfig);
                         this.db = firebase.firestore();
                         this.auth = firebase.auth();
-                        console.log("Firebase initialized successfully.");
+                        console.log("Firebase initialized successfully using Netlify environment variables.");
                     } else if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
                         this.db = firebase.firestore();
                         this.auth = firebase.auth();
