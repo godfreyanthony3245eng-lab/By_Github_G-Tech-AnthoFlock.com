@@ -1091,11 +1091,11 @@
             isLoginMode: false,
             currentRegStep: 1,
             selectedRole: 'Student',
-            targetModule: 'dashboard.html',
             secretTapCount: 0,
             secretTapTimer: null,
             db: null,
             auth: null,
+            currentUser: null,
 
             // SECURE ADMIN CONFIGURATION
             ADMIN_CONFIG: {
@@ -1111,7 +1111,6 @@
                 this.renderRoleFields('Student');
                 this.initInteractionListeners();
                 
-                // Asynchronously fetch environment config and initialize Firebase
                 await this.initFirebase();
 
                 document.addEventListener('click', (e) => {
@@ -1121,7 +1120,6 @@
                 });
             },
 
-            // DYNAMICALLY FETCH FIREBASE CONFIG FROM NETLIFY FUNCTION
             initFirebase: async function() {
                 try {
                     const response = await fetch('/.netlify/functions/get-env');
@@ -1132,16 +1130,75 @@
 
                     if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
                         firebase.initializeApp(firebaseConfig);
+                    }
+
+                    if (typeof firebase !== 'undefined') {
                         this.db = firebase.firestore();
                         this.auth = firebase.auth();
-                        console.log("Firebase initialized successfully using Netlify environment variables.");
-                    } else if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-                        this.db = firebase.firestore();
-                        this.auth = firebase.auth();
+
+                        // Session persistence observer updates header UI automatically
+                        this.auth.onAuthStateChanged((user) => {
+                            if (user) {
+                                this.currentUser = user;
+                                this.updateUIAfterLogin(user);
+                            } else {
+                                this.currentUser = null;
+                                this.updateUIAfterLogout();
+                            }
+                        });
+
+                        console.log("Firebase initialized successfully with Netlify environment variables.");
                     }
                 } catch (e) {
                     console.error("Firebase Initialization Error:", e.message);
                     this.showToast("Database connection notice: Running in local fallback mode.");
+                }
+            },
+
+            updateUIAfterLogin: function(user) {
+                const headerActions = document.querySelector('.header-actions');
+                if (headerActions) {
+                    // Pull Google Profile photo or displayName if available; fallback to "J's Brian"
+                    const displayName = user.displayName || (user.email ? user.email.split('@')[0] : "J's Brian");
+                    const photoURL = user.photoURL;
+
+                    let avatarHTML = photoURL 
+                        ? `<img src="${photoURL}" alt="Profile" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-gold);">`
+                        : `<i class="fa-solid fa-circle-user" style="font-size:1.2rem; color:var(--accent-gold);"></i>`;
+
+                    headerActions.innerHTML = `
+                        <button class="btn-action" onclick="GTApp.toggleTheme()" id="themeBtn">
+                            <i class="fa-solid fa-moon" style="color:var(--primary-color);"></i> <span>Dark Mode</span>
+                        </button>
+                        <div style="font-size:0.8rem; font-weight:700; color:var(--accent-gold); display:flex; align-items:center; gap:8px;">
+                            ${avatarHTML}
+                            <span>${displayName}</span>
+                        </div>
+                        <button class="btn-action" onclick="GTApp.handleLogout()" style="border-color:var(--danger-color); color:var(--danger-color);">
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout
+                        </button>
+                    `;
+                }
+            },
+
+            updateUIAfterLogout: function() {
+                const headerActions = document.querySelector('.header-actions');
+                if (headerActions) {
+                    headerActions.innerHTML = `
+                        <button class="btn-action" onclick="GTApp.toggleTheme()" id="themeBtn">
+                            <i class="fa-solid fa-moon" style="color:var(--primary-color);"></i> <span>Dark Mode</span>
+                        </button>
+                        <button class="btn-primary-head" onclick="GTApp.openAuthModal('signup')">
+                            <i class="fa-solid fa-user-plus" style="margin-right: 4px;"></i> Get Started
+                        </button>
+                    `;
+                }
+            },
+
+            handleLogout: async function() {
+                if (this.auth) {
+                    await this.auth.signOut();
+                    this.showToast("Signed out successfully.");
                 }
             },
 
@@ -1212,10 +1269,12 @@
 
             updateThemeButton: function(theme) {
                 const btn = document.getElementById('themeBtn');
-                if (theme === 'dark') {
-                    btn.innerHTML = '<i class="fa-solid fa-moon" style="color:var(--primary-color);"></i> <span>Dark Mode</span>';
-                } else {
-                    btn.innerHTML = '<i class="fa-solid fa-sun" style="color:var(--accent-gold);"></i> <span>Light Mode</span>';
+                if (btn) {
+                    if (theme === 'dark') {
+                        btn.innerHTML = '<i class="fa-solid fa-moon" style="color:var(--primary-color);"></i> <span>Dark Mode</span>';
+                    } else {
+                        btn.innerHTML = '<i class="fa-solid fa-sun" style="color:var(--accent-gold);"></i> <span>Light Mode</span>';
+                    }
                 }
             },
 
@@ -1263,9 +1322,8 @@
                 setTimeout(() => { toast.remove(); }, 4200);
             },
 
-            openAuthModal: function(mode, moduleName) {
+            openAuthModal: function(mode) {
                 this.switchAuthMode(mode || 'signup');
-                if (moduleName) this.targetModule = moduleName + '.html';
                 document.getElementById('authModal').classList.add('active');
             },
 
@@ -1580,13 +1638,12 @@
 
                         if (this.auth) {
                             await this.auth.signInWithEmailAndPassword(email, pass);
-                            this.showToast(`Authenticated via Firebase as ${email}. Redirecting...`);
+                            this.showToast(`Authenticated via Firebase as ${email}. Welcome back!`);
                         } else {
-                            this.showToast(`Authenticated as ${email}. Redirecting...`);
+                            this.showToast(`Authenticated as ${email}. Welcome back!`);
                         }
 
                         this.closeAuthModal();
-                        setTimeout(() => { window.location.href = this.targetModule; }, 1000);
                     } else {
                         const name = document.getElementById('authName').value.trim();
                         const email = document.getElementById('authEmail').value.trim();
@@ -1609,7 +1666,7 @@
                                 phoneBrand: document.getElementById('customerPhoneBrand')?.value || 'Infinix',
                                 reason: document.getElementById('customerReason')?.value || 'tech_support'
                             };
-                        } else if (this.selectedRole === 'Employee') {
+                        } else if (this.src === 'Employee') {
                             roleData = {
                                 roleApply: document.getElementById('empRoleApply')?.value || 'software_engineer',
                                 shift: document.getElementById('empShift')?.value || 'Full-Time'
@@ -1626,7 +1683,6 @@
                         };
 
                         if (this.db) {
-                            // Updated collection path from 'users' to 'gtech_users' to match Firebase console
                             const emailCheck = await this.db.collection('gtech_users').where('email', '==', email).get();
                             if (!emailCheck.empty) {
                                 throw new Error("An account with this email address already exists.");
@@ -1639,6 +1695,7 @@
 
                             if (this.auth) {
                                 const userCred = await this.auth.createUserWithEmailAndPassword(email, pass);
+                                await userCred.user.updateProfile({ displayName: name });
                                 await this.db.collection('gtech_users').doc(userCred.user.uid).set(userPayload);
                             } else {
                                 await this.db.collection('gtech_users').add(userPayload);
@@ -1647,7 +1704,6 @@
 
                         this.showToast(`Registration successful for ${name} (${this.selectedRole}). Welcome!`);
                         this.closeAuthModal();
-                        setTimeout(() => { window.location.href = this.targetModule; }, 1000);
                     }
                 } catch(err) {
                     this.showToast(err.message);
