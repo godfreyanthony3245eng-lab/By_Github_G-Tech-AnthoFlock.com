@@ -1125,7 +1125,6 @@
             },
 
             // FALLBACK CONFIGURATION IF SERVERLESS FUNCTION IS UNREACHABLE
-            // Replace values below with your Firebase Web Config details if needed
             DEFAULT_FIREBASE_CONFIG: {
                 apiKey: "AIzaSy_YOUR_FIREBASE_API_KEY_HERE",
                 authDomain: "gt-anthoflock.firebaseapp.com",
@@ -1155,9 +1154,9 @@
                 try {
                     let firebaseConfig = null;
 
-                    // 1. Attempt to fetch config from Netlify endpoint
+                    // 1. Attempt to fetch config from Netlify function endpoint (fixed path to match /env)
                     try {
-                        const response = await fetch('/.netlify/functions/get-env');
+                        const response = await fetch('/.netlify/functions/env');
                         if (response.ok) {
                             firebaseConfig = await response.json();
                         }
