@@ -10,13 +10,12 @@
     <meta property="og:title" content="GT-AnthoFlock - Official Technical Workspace">
     <meta property="og:description" content="Empowering developers, students, hardware technicians, and clients with custom software solutions, secondary STEM study guides, and micro-circuit diagnostics.">
 
-    <!-- Third-Party Assets: FontAwesome, Google Fonts, Firebase Compat SDKs -->
+    <!-- Third-Party Assets: FontAwesome, Google Fonts, Firebase Database Compat SDKs -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
     <style>
         :root {
@@ -516,26 +515,11 @@
         .step-bullet.active { border-color: var(--primary-color); color: var(--primary-color); background: var(--card-solid); box-shadow: 0 0 10px var(--accent-glow); transform: scale(1.05); }
         .step-bullet.completed { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
 
-        .auth-toggle {
-            display: flex; background: var(--bg-input); border-radius: var(--radius-md);
-            margin-bottom: 18px; border: 1px solid var(--border-color); overflow: hidden; padding: 2px;
-        }
-        .auth-tab {
-            flex: 1; text-align: center; padding: 7px; cursor: pointer; font-size: 0.78rem;
-            font-weight: 600; color: var(--text-sub); border-radius: calc(var(--radius-md) - 2px); transition: var(--transition);
-        }
-        .auth-tab.active { background: var(--card-solid); color: var(--text-main); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); }
-
         .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
         .form-group { margin-bottom: 0.95rem; position: relative; width: 100%; }
         .form-group label { display: block; margin-bottom: 0.35rem; color: var(--text-sub); font-size: 0.72rem; font-weight: 600; }
         .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
         .input-wrapper i.input-icon { position: absolute; left: 12px; color: var(--accent-gold); font-size: 0.8rem; z-index: 2; transition: var(--transition); }
-        .input-wrapper i.toggle-password {
-            position: absolute; right: 12px; color: var(--text-sub); font-size: 0.85rem; z-index: 2;
-            cursor: pointer; transition: var(--transition);
-        }
-        .input-wrapper i.toggle-password:hover { color: var(--accent-gold); }
 
         .form-control {
             width: 100%; padding: 10px 12px 10px 36px; background: var(--bg-input);
@@ -661,18 +645,6 @@
         .btn-secondary-action { background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: none; }
         .btn-secondary-action:hover { background: var(--card-solid); border-color: var(--primary-color); color: var(--primary-color); }
 
-        .btn-google {
-            background: #ffffff;
-            color: #1a0f28;
-            border: 1px solid #cbd5e1;
-            margin-top: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .btn-google:hover {
-            background: #f8fafc;
-            transform: translateY(-2px);
-        }
-
         .hidden { display: none !important; }
 
         .admin-modal-box {
@@ -738,7 +710,7 @@
             <button class="btn-action" onclick="GTApp.toggleTheme()" id="themeBtn">
                 <i class="fa-solid fa-moon" style="color:var(--primary-color);"></i> <span>Dark Mode</span>
             </button>
-            <button class="btn-primary-head" onclick="GTApp.openAuthModal('signup')">
+            <button class="btn-primary-head" onclick="GTApp.openAuthModal()">
                 <i class="fa-solid fa-user-plus" style="margin-right: 4px;"></i> Get Started
             </button>
         </div>
@@ -807,7 +779,7 @@
                     <h3 class="card-title">1. AI Assistant Suite</h3>
                     <p class="card-desc">Experience next-generation intelligent conversational assistance built for deep debugging, algorithm evaluation, and step-by-step problem solving. Our AI suite delivers instant code refactoring recommendations, multi-language context tracking, and continuous developer workflow optimization.</p>
                 </div>
-                <button class="card-btn" onclick="GTApp.openAuthModal('signup', 'ai-suite')">
+                <button class="card-btn" onclick="GTApp.openAuthModal('ai-suite')">
                     <span>Explore AI Suite</span> <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
@@ -818,7 +790,7 @@
                     <h3 class="card-title">2. Student STEM Portal</h3>
                     <p class="card-desc">Access comprehensive, structured secondary school learning materials covering Physics, Chemistry, Calculus, Cell Biology, Computer Studies, and Economics. Built specifically for JSS 1 through SSS 3 students, this portal provides interactive lesson modules and diagnostic exams.</p>
                 </div>
-                <button class="card-btn" onclick="GTApp.openAuthModal('signup', 'stem-portal')">
+                <button class="card-btn" onclick="GTApp.openAuthModal('stem-portal')">
                     <span>Access Academy</span> <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
@@ -829,7 +801,7 @@
                     <h3 class="card-title">3. Live Code Sandbox</h3>
                     <p class="card-desc">Write, evaluate, and preview single-page web applications directly within your mobile or desktop browser without setting up local runtime dependencies. Featuring a virtual multi-file explorer, real-time syntax token highlighting, and live execution previews.</p>
                 </div>
-                <button class="card-btn" onclick="GTApp.openAuthModal('signup', 'code-sandbox')">
+                <button class="card-btn" onclick="GTApp.openAuthModal('code-sandbox')">
                     <span>Launch Sandbox</span> <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
@@ -840,7 +812,7 @@
                     <h3 class="card-title">4. Repair & Diagnostics</h3>
                     <p class="card-desc">Master electronic circuit troubleshooting with step-by-step digital multimeter testing guides, component schematic pinouts, micro-soldering instructions, and power module evaluations targeting power bank ICs, voltage regulators, and salvaged component restoration.</p>
                 </div>
-                <button class="card-btn" onclick="GTApp.openAuthModal('signup', 'repair-diagnostics')">
+                <button class="card-btn" onclick="GTApp.openAuthModal('repair-diagnostics')">
                     <span>View Repair Guides</span> <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
@@ -877,24 +849,18 @@
         </section>
     </main>
 
-    <!-- AUTHENTICATION MODAL WIZARD -->
+    <!-- REGISTRATION / DATA SUBMISSION WIZARD MODAL -->
     <div class="modal-overlay" id="authModal" onclick="GTApp.closeModalOnOutside(event)">
         <div class="modal-container">
             <div class="modal-header">
-                <div class="modal-title" id="authModalTitle">Create Your Account</div>
+                <div class="modal-title" id="authModalTitle">Ecosystem Registration Form</div>
                 <button class="modal-close" onclick="GTApp.closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
-                <div class="auth-toggle">
-                    <div class="auth-tab active" id="tab-signup" onclick="GTApp.switchAuthMode('signup')">Sign Up</div>
-                    <div class="auth-tab" id="tab-login" onclick="GTApp.switchAuthMode('login')">Login</div>
-                </div>
-
                 <div class="step-indicator" id="stepIndicatorContainer">
                     <div class="step-bullet active" id="bullet-1"><i class="fa-solid fa-user"></i></div>
                     <div class="step-bullet" id="bullet-2"><i class="fa-solid fa-id-badge"></i></div>
-                    <div class="step-bullet" id="bullet-3"><i class="fa-solid fa-lock"></i></div>
-                    <div class="step-bullet" id="bullet-4"><i class="fa-solid fa-check"></i></div>
+                    <div class="step-bullet" id="bullet-3"><i class="fa-solid fa-check"></i></div>
                 </div>
 
                 <form id="authForm" onsubmit="GTApp.handleFormSubmit(event)">
@@ -922,7 +888,6 @@
                             <div class="form-grid-2" style="grid-template-columns: 130px 1fr; gap: 6px;">
                                 <div class="input-wrapper">
                                     <i class="fa-solid fa-globe input-icon"></i>
-                                    <!-- Custom UI Dropdown for Country Code -->
                                     <div class="custom-select-container" id="container-authCountryCode">
                                         <div class="custom-select-trigger" onclick="GTApp.toggleCustomDropdown('container-authCountryCode')">
                                             <span id="label-authCountryCode">+234 (NG)</span>
@@ -947,10 +912,6 @@
                         </div>
 
                         <button type="button" class="btn-auth-action" onclick="GTApp.validateStep1()">Continue to Profile</button>
-                        
-                        <button type="button" class="btn-auth-action btn-google" onclick="GTApp.signInWithGoogle()">
-                            <i class="fa-brands fa-google" style="color: #ea4335;"></i> Continue with Google
-                        </button>
                     </div>
 
                     <!-- STEP 2: PROFILE & ROLE DETAILS -->
@@ -977,78 +938,24 @@
 
                         <div style="display: flex; gap: 10px; margin-top: 14px;">
                             <button type="button" class="btn-auth-action btn-secondary-action" onclick="GTApp.nextRegistrationStep(1)">Back</button>
-                            <button type="button" class="btn-auth-action" onclick="GTApp.nextRegistrationStep(3)">Continue to Security</button>
+                            <button type="button" class="btn-auth-action" onclick="GTApp.nextRegistrationStep(3)">Review & Save</button>
                         </div>
                     </div>
 
-                    <!-- STEP 3: SECURITY & STRICT PASSWORDS -->
+                    <!-- STEP 3: REVIEW & SUBMIT TO REALTIME DATABASE -->
                     <div class="auth-step-panel hidden" id="reg-step-3">
-                        <div class="form-group">
-                            <label for="authPass">Create Password (Min. 8 Chars)</label>
-                            <div class="input-wrapper">
-                                <i class="fa-solid fa-lock input-icon"></i>
-                                <input type="password" id="authPass" class="form-control" placeholder="••••••••" required>
-                                <i class="fa-solid fa-eye-slash toggle-password" id="togglePass1" onclick="GTApp.togglePassVisibility('authPass', 'togglePass1')"></i>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="authPassConfirm">Confirm Password</label>
-                            <div class="input-wrapper">
-                                <i class="fa-solid fa-shield-halved input-icon"></i>
-                                <input type="password" id="authPassConfirm" class="form-control" placeholder="••••••••" required>
-                                <i class="fa-solid fa-eye-slash toggle-password" id="togglePass2" onclick="GTApp.togglePassVisibility('authPassConfirm', 'togglePass2')"></i>
-                            </div>
-                        </div>
-
-                        <div style="display: flex; gap: 10px; margin-top: 14px;">
-                            <button type="button" class="btn-auth-action btn-secondary-action" onclick="GTApp.nextRegistrationStep(2)">Back</button>
-                            <button type="button" class="btn-auth-action" onclick="GTApp.validateStep3()">Review Setup</button>
-                        </div>
-                    </div>
-
-                    <!-- STEP 4: REVIEW & SUBMIT TO FIREBASE -->
-                    <div class="auth-step-panel hidden" id="reg-step-4">
                         <div style="background: var(--bg-input); border: 1px solid var(--border-color); padding: 16px; border-radius: var(--radius-md); margin-bottom: 16px; text-align: center;">
                             <i class="fa-solid fa-circle-check" style="font-size: 2rem; color: var(--accent-gold); margin-bottom: 8px; display: block;"></i>
-                            <h4 style="color: var(--text-main); margin-bottom: 4px;">Credentials Verified</h4>
-                            <p style="font-size: 0.78rem; color: var(--text-sub);">All profile specifications are formatted for Firebase database synchronization.</p>
+                            <h4 style="color: var(--text-main); margin-bottom: 4px;">Profile Ready for Database</h4>
+                            <p style="font-size: 0.78rem; color: var(--text-sub);">Your information will be securely saved directly into your Firebase Realtime Database.</p>
                         </div>
 
                         <div style="display: flex; gap: 10px;">
-                            <button type="button" class="btn-auth-action btn-secondary-action" onclick="GTApp.nextRegistrationStep(3)">Back</button>
+                            <button type="button" class="btn-auth-action btn-secondary-action" onclick="GTApp.nextRegistrationStep(2)">Back</button>
                             <button type="submit" class="btn-auth-action" id="btnCompleteRegister">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> Complete Registration
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Save to Realtime DB
                             </button>
                         </div>
-                    </div>
-
-                    <!-- LOGIN PANEL -->
-                    <div class="auth-step-panel hidden" id="login-panel">
-                        <div class="form-group">
-                            <label for="loginEmail">Email Address</label>
-                            <div class="input-wrapper">
-                                <i class="fa-solid fa-envelope input-icon"></i>
-                                <input type="email" id="loginEmail" class="form-control" placeholder="user@domain.com">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="loginPass">Password</label>
-                            <div class="input-wrapper">
-                                <i class="fa-solid fa-lock input-icon"></i>
-                                <input type="password" id="loginPass" class="form-control" placeholder="••••••••">
-                                <i class="fa-solid fa-eye-slash toggle-password" id="toggleLoginPass" onclick="GTApp.togglePassVisibility('loginPass', 'toggleLoginPass')"></i>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn-auth-action" id="btnLoginSubmit">
-                            <i class="fa-solid fa-right-to-bracket"></i> Account Login
-                        </button>
-
-                        <button type="button" class="btn-auth-action btn-google" onclick="GTApp.signInWithGoogle()">
-                            <i class="fa-brands fa-google" style="color: #ea4335;"></i> Sign in with Google
-                        </button>
                     </div>
 
                 </form>
@@ -1108,14 +1015,11 @@
 
     <script>
         const GTApp = {
-            isLoginMode: false,
             currentRegStep: 1,
             selectedRole: 'Student',
             secretTapCount: 0,
             secretTapTimer: null,
             db: null,
-            auth: null,
-            currentUser: null,
 
             // SECURE ADMIN CONFIGURATION
             ADMIN_CONFIG: {
@@ -1128,6 +1032,7 @@
             DEFAULT_FIREBASE_CONFIG: {
                 apiKey: "AIzaSy_YOUR_FIREBASE_API_KEY_HERE",
                 authDomain: "gt-anthoflock.firebaseapp.com",
+                databaseURL: "https://gt-anthoflock-default-rtdb.firebaseio.com",
                 projectId: "gt-anthoflock",
                 storageBucket: "gt-anthoflock.appspot.com",
                 messagingSenderId: "1234567890",
@@ -1154,7 +1059,7 @@
                 try {
                     let firebaseConfig = null;
 
-                    // 1. Attempt to fetch config from Netlify function endpoint (fixed path to match /env)
+                    // 1. Attempt to fetch config from Netlify function endpoint
                     try {
                         const response = await fetch('/.netlify/functions/env');
                         if (response.ok) {
@@ -1164,116 +1069,25 @@
                         console.warn("Netlify function endpoint not reachable, resorting to fallback config...");
                     }
 
-                    // Use fallback config if endpoint failed or was empty
                     if (!firebaseConfig || !firebaseConfig.apiKey) {
                         firebaseConfig = this.DEFAULT_FIREBASE_CONFIG;
                     }
 
-                    // 2. Initialize Firebase safely before referencing Services
+                    // 2. Initialize Firebase Realtime Database
                     if (typeof firebase !== 'undefined') {
                         if (firebase.apps.length === 0) {
                             firebase.initializeApp(firebaseConfig);
                         }
 
-                        // Reference initialized Firebase instance
-                        this.db = firebase.firestore();
-                        this.auth = firebase.auth();
-
-                        // Observer for user auth session updates
-                        this.auth.onAuthStateChanged((user) => {
-                            if (user) {
-                                this.currentUser = user;
-                                this.updateUIAfterLogin(user);
-                            } else {
-                                this.currentUser = null;
-                                this.updateUIAfterLogout();
-                            }
-                        });
-
-                        console.log("Firebase initialized successfully.");
+                        // Reference initialized Firebase Realtime Database instance
+                        this.db = firebase.database();
+                        console.log("Firebase Realtime Database initialized successfully.");
                     } else {
-                        throw new Error("Firebase SDK libraries missing from page.");
+                        throw new Error("Firebase SDK library missing from page.");
                     }
                 } catch (e) {
                     console.error("Firebase Initialization Warning:", e.message);
-                    this.showToast("Auth Notice: Running in demo state (" + e.message + ")");
-                }
-            },
-
-            updateUIAfterLogin: function(user) {
-                const headerActions = document.querySelector('.header-actions');
-                if (headerActions) {
-                    const displayName = user.displayName || user.email?.split('@')[0] || "J's Brian";
-                    const photoURL = user.photoURL;
-
-                    let avatarHTML = photoURL 
-                        ? `<img src="${photoURL}" alt="Profile" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-gold);">`
-                        : `<i class="fa-solid fa-circle-user" style="font-size:1.2rem; color:var(--accent-gold);"></i>`;
-
-                    headerActions.innerHTML = `
-                        <button class="btn-action" onclick="GTApp.toggleTheme()" id="themeBtn">
-                            <i class="fa-solid fa-moon" style="color:var(--primary-color);"></i> <span>Dark Mode</span>
-                        </button>
-                        <div style="font-size:0.8rem; font-weight:700; color:var(--accent-gold); display:flex; align-items:center; gap:8px;">
-                            ${avatarHTML}
-                            <span>${displayName}</span>
-                        </div>
-                        <button class="btn-action" onclick="GTApp.handleLogout()" style="border-color:var(--danger-color); color:var(--danger-color);">
-                            <i class="fa-solid fa-right-from-bracket"></i> Logout
-                        </button>
-                    `;
-                }
-            },
-
-            updateUIAfterLogout: function() {
-                const headerActions = document.querySelector('.header-actions');
-                if (headerActions) {
-                    headerActions.innerHTML = `
-                        <button class="btn-action" onclick="GTApp.toggleTheme()" id="themeBtn">
-                            <i class="fa-solid fa-moon" style="color:var(--primary-color);"></i> <span>Dark Mode</span>
-                        </button>
-                        <button class="btn-primary-head" onclick="GTApp.openAuthModal('signup')">
-                            <i class="fa-solid fa-user-plus" style="margin-right: 4px;"></i> Get Started
-                        </button>
-                    `;
-                }
-            },
-
-            handleLogout: async function() {
-                if (this.auth) {
-                    await this.auth.signOut();
-                    this.showToast("Signed out successfully.");
-                }
-            },
-
-            signInWithGoogle: async function() {
-                try {
-                    if (!this.auth) {
-                        throw new Error("Authentication service is unavailable.");
-                    }
-                    const provider = new firebase.auth.GoogleAuthProvider();
-                    const result = await this.auth.signInWithPopup(provider);
-                    const user = result.user;
-
-                    if (this.db) {
-                        const userRef = this.db.collection('gtech_users').doc(user.uid);
-                        const doc = await userRef.get();
-                        if (!doc.exists) {
-                            await userRef.set({
-                                fullName: user.displayName || "J's Brian",
-                                email: user.email,
-                                phoneNumber: user.phoneNumber || "",
-                                photoURL: user.photoURL || "",
-                                role: 'Student',
-                                createdAt: new Date().toISOString()
-                            });
-                        }
-                    }
-
-                    this.showToast(`Welcome, ${user.displayName || "J's Brian"}! Signed in via Google.`);
-                    this.closeAuthModal();
-                } catch (err) {
-                    this.showToast("Google Sign-In Notice: " + err.message);
+                    this.showToast("Notice: Running in demo state (" + e.message + ")");
                 }
             },
 
@@ -1353,22 +1167,6 @@
                 }
             },
 
-            togglePassVisibility: function(inputId, iconId) {
-                const input = document.getElementById(inputId);
-                const icon = document.getElementById(iconId);
-                if (!input || !icon) return;
-
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                } else {
-                    input.type = 'password';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                }
-            },
-
             filterModules: function(query) {
                 const q = query.toLowerCase().trim();
                 const cards = document.querySelectorAll('.modules-grid .card');
@@ -1397,8 +1195,8 @@
                 setTimeout(() => { toast.remove(); }, 4200);
             },
 
-            openAuthModal: function(mode) {
-                this.switchAuthMode(mode || 'signup');
+            openAuthModal: function() {
+                this.nextRegistrationStep(1);
                 document.getElementById('authModal').classList.add('active');
             },
 
@@ -1437,33 +1235,12 @@
                 if (e.target.id === 'adminTerminalModal') this.closeAdminModal();
             },
 
-            switchAuthMode: function(mode) {
-                this.isLoginMode = (mode === 'login');
-                const stepIndicator = document.getElementById('stepIndicatorContainer');
-
-                if (this.isLoginMode) {
-                    document.getElementById('tab-login').classList.add('active');
-                    document.getElementById('tab-signup').classList.remove('active');
-                    document.getElementById('authModalTitle').textContent = 'Account Login';
-                    stepIndicator.style.display = 'none';
-                    document.getElementById('login-panel').classList.remove('hidden');
-                    document.querySelectorAll('.auth-step-panel:not(#login-panel)').forEach(el => el.classList.add('hidden'));
-                } else {
-                    document.getElementById('tab-signup').classList.add('active');
-                    document.getElementById('tab-login').classList.remove('active');
-                    document.getElementById('authModalTitle').textContent = 'Create Your Account';
-                    stepIndicator.style.display = 'flex';
-                    document.getElementById('login-panel').classList.add('hidden');
-                    this.nextRegistrationStep(1);
-                }
-            },
-
             nextRegistrationStep: function(step) {
                 this.currentRegStep = step;
                 document.querySelectorAll('.auth-step-panel').forEach(el => el.classList.add('hidden'));
                 document.getElementById(`reg-step-${step}`).classList.remove('hidden');
 
-                for (let i = 1; i <= 4; i++) {
+                for (let i = 1; i <= 3; i++) {
                     const bullet = document.getElementById(`bullet-${i}`);
                     bullet.classList.remove('active', 'completed');
                     if (i < step) bullet.classList.add('completed');
@@ -1681,110 +1458,59 @@
                 }
             },
 
-            validateStep3: function() {
-                try {
-                    const pass = document.getElementById('authPass').value;
-                    const passConfirm = document.getElementById('authPassConfirm').value;
-
-                    if (!pass || pass.length < 8) {
-                        throw new Error("Password must be at least 8 characters long.");
-                    }
-
-                    if (pass !== passConfirm) {
-                        throw new Error("Passwords do not match. Please verify.");
-                    }
-
-                    this.nextRegistrationStep(4);
-                } catch(err) {
-                    this.showToast(err.message);
-                }
-            },
-
             handleFormSubmit: async function(e) {
                 e.preventDefault();
                 try {
-                    if (this.isLoginMode) {
-                        const email = document.getElementById('loginEmail').value.trim();
-                        const pass = document.getElementById('loginPass').value;
+                    const name = document.getElementById('authName').value.trim();
+                    const email = document.getElementById('authEmail').value.trim();
+                    const countryCode = document.getElementById('authCountryCode').value;
+                    const phone = document.getElementById('authPhone').value.trim();
+                    const fullPhone = countryCode + phone.replace(/^0+/, '');
 
-                        if (!email || !pass) {
-                            throw new Error("Please enter both email and password.");
-                        }
-
-                        if (!this.auth) {
-                            throw new Error("Authentication service is unavailable.");
-                        }
-
-                        await this.auth.signInWithEmailAndPassword(email, pass);
-                        this.showToast(`Logged in successfully as ${email}. Welcome back!`);
-                        this.closeAuthModal();
-                    } else {
-                        const name = document.getElementById('authName').value.trim();
-                        const email = document.getElementById('authEmail').value.trim();
-                        const countryCode = document.getElementById('authCountryCode').value;
-                        const phone = document.getElementById('authPhone').value.trim();
-                        const fullPhone = countryCode + phone.replace(/^0+/, '');
-                        const pass = document.getElementById('authPass').value;
-
-                        let roleData = {};
-                        if (this.selectedRole === 'Student') {
-                            roleData = {
-                                studentClass: document.getElementById('studentClass')?.value || 'SSS 3',
-                                studentSubject: document.getElementById('studentSubject')?.value || 'Science',
-                                age: document.getElementById('studentAge')?.value || '',
-                                nickname: document.getElementById('studentNickname')?.value || '',
-                                school: document.getElementById('studentSchool')?.value || ''
-                            };
-                        } else if (this.selectedRole === 'Customer') {
-                            roleData = {
-                                phoneBrand: document.getElementById('customerPhoneBrand')?.value || 'Infinix',
-                                reason: document.getElementById('customerReason')?.value || 'tech_support'
-                            };
-                        } else if (this.selectedRole === 'Employee') {
-                            roleData = {
-                                roleApply: document.getElementById('empRoleApply')?.value || 'software_engineer',
-                                shift: document.getElementById('empShift')?.value || 'Full-Time'
-                            };
-                        }
-
-                        const userPayload = {
-                            fullName: name,
-                            email: email,
-                            phoneNumber: fullPhone,
-                            role: this.selectedRole,
-                            roleDetails: roleData,
-                            createdAt: new Date().toISOString()
+                    let roleData = {};
+                    if (this.selectedRole === 'Student') {
+                        roleData = {
+                            studentClass: document.getElementById('studentClass')?.value || 'SSS 3',
+                            studentSubject: document.getElementById('studentSubject')?.value || 'Science',
+                            age: document.getElementById('studentAge')?.value || '',
+                            nickname: document.getElementById('studentNickname')?.value || '',
+                            school: document.getElementById('studentSchool')?.value || ''
                         };
-
-                        if (!this.auth || !this.db) {
-                            throw new Error("Database service is not ready. Check initialization keys.");
-                        }
-
-                        const emailCheck = await this.db.collection('gtech_users').where('email', '==', email).get();
-                        if (!emailCheck.empty) {
-                            throw new Error("An account with this email address already exists.");
-                        }
-
-                        const phoneCheck = await this.db.collection('gtech_users').where('phoneNumber', '==', fullPhone).get();
-                        if (!phoneCheck.empty) {
-                            throw new Error("An account with this phone number already exists.");
-                        }
-
-                        const userCred = await this.auth.createUserWithEmailAndPassword(email, pass);
-                        await userCred.user.updateProfile({ displayName: name });
-                        
-                        await this.db.collection('gtech_users').doc(userCred.user.uid).set(userPayload);
-
-                        this.showToast(`Registration successful for ${name} (${this.selectedRole}). Welcome!`);
-                        this.closeAuthModal();
+                    } else if (this.selectedRole === 'Customer') {
+                        roleData = {
+                            phoneBrand: document.getElementById('customerPhoneBrand')?.value || 'Infinix',
+                            reason: document.getElementById('customerReason')?.value || 'tech_support'
+                        };
+                    } else if (this.selectedRole === 'Employee') {
+                        roleData = {
+                            roleApply: document.getElementById('empRoleApply')?.value || 'software_engineer',
+                            shift: document.getElementById('empShift')?.value || 'Full-Time'
+                        };
                     }
+
+                    const userPayload = {
+                        fullName: name,
+                        email: email,
+                        phoneNumber: fullPhone,
+                        role: this.selectedRole,
+                        roleDetails: roleData,
+                        createdAt: new Date().toISOString()
+                    };
+
+                    if (!this.db) {
+                        throw new Error("Realtime Database service is not initialized.");
+                    }
+
+                    // Push user record directly to Realtime Database under 'gtech_users'
+                    const newUserRef = this.db.ref('gtech_users').push();
+                    await newUserRef.set(userPayload);
+
+                    this.showToast(`Registration saved successfully for ${name}! Data stored in Realtime Database.`);
+                    this.closeAuthModal();
+                    document.getElementById('authForm').reset();
+                    this.nextRegistrationStep(1);
                 } catch(err) {
-                    let msg = err.message;
-                    if (err.code === 'auth/user-not-found') msg = "No user found with this email. Please Sign Up first.";
-                    if (err.code === 'auth/wrong-password') msg = "Incorrect password. Please try again.";
-                    if (err.code === 'auth/email-already-in-use') msg = "An account with this email already exists.";
-                    
-                    this.showToast("Authentication Error: " + msg);
+                    this.showToast("Database Save Error: " + err.message);
                 }
             }
         };
